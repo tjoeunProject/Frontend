@@ -11,6 +11,7 @@ function App() {
         App 컴포넌트는 Router를 감싸는 단순한 Wrapper 역할을 수행합니다.
       */}
       <AppRouter /> 
+    
     </div>
   );
 }

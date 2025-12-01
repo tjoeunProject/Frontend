@@ -10,6 +10,7 @@ import SolutionBackground from '../assets/Intro4.png';
 import HowToMapIcon from '../assets/Intro5.png';    
 import RoadMapInfographic from '../assets/Intro6.png'; 
 import LoginV2Users from '../assets/Intro7.png';   
+import './survey/SurveyFirstPage';
 
 function IntroPage() {
   //  App.css를 사용하므로, 복잡한 absolute position을 위한 스타일만 인라인으로 남깁니다.
@@ -182,6 +183,12 @@ function IntroPage() {
       <footer className="footer">
         <p>Copyright 2023. Lorem and Ipsum All rights reserved.</p>
       </footer>
+    <div style={{ padding: '20px' }}>
+        <Header />
+      <h1>🌍 소개 페이지</h1>
+      <p>여행 서비스의 비전과 주요 기능을 소개합니다.</p>
+      {/* 여기에 소개 페이지의 실제 UI와 MVVM View 로직이 들어갑니다. */}
+      <a href='/survey/SurveyFirstPage'>설문조사 갈 버튼</a>
     </div>
   );
 }

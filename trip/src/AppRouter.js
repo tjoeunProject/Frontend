@@ -9,6 +9,11 @@ import HomePage from './pages/IntroPage';
 import HistoryPage from './pages/HistoryPage';
 import RankingPage from './pages/RankingPage';
 import MyTravelPage from './pages/MyTravelPage';
+import LoginPage from './features/auth/AuthView'; 
+import SurveyPage from './pages/survey/SurveyFirstPage';
+import SurveyPage2 from './pages/survey/SurveyTwoPage';
+import SurveyPage3 from './pages/survey/SurveyThreePage';
+import MapPage from './pages/MapPage';
 
 function AppRouter() {
   return (
@@ -32,6 +37,14 @@ function AppRouter() {
 
     
         
+        <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
+
+        <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
+
+        <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
+
+        <Route path="/map" element={<MapPage />} />
+
         {/* 404 페이지 (선택 사항) */}
         <Route path="*" element={<div>404 Not Found</div>}/>
       </Routes>
