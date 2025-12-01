@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import RoutePick from '../../assets/RoutePick.png';     
 
 // 스타일은 예시이며, 실제 CSS로 대체해야 함.
 const headerStyle = {
@@ -19,8 +20,10 @@ const navItemStyle = {
 function Header() {
   return (
     <header style={headerStyle}>
-      <nav style={{ display: 'flex' }}>
-        <h1 style={{ margin: 0, marginRight: '30px' }}><Link to="/" style={navItemStyle}>LOGO</Link></h1>
+      <nav style={{ display: 'flex', alignItems: 'center' }}>
+        <Link to="/" style={{ marginRight: '30px' }}>
+          <img src={RoutePick} alt="LOGO" className="header-logo"/>
+        </Link>
         <Link to="/" style={navItemStyle}>소개</Link>
         <Link to="/history" style={navItemStyle}>히스토리</Link>
         <Link to="/ranking" style={navItemStyle}>랭킹</Link>
