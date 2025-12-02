@@ -188,4 +188,5 @@ function IntroPage() {
     </div>
   );
 }
+
 export default IntroPage;
