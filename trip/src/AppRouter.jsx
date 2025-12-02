@@ -11,6 +11,9 @@ import SurveyPage from './pages/survey/SurveyFirstPage.jsx';
 import SurveyPage2 from './pages/survey/SurveyTwoPage.jsx';
 import SurveyPage3 from './pages/survey/SurveyThreePage.jsx';
 import HomePage from './pages/IntroPage.jsx';
+import HistoryPage from './pages/HistoryPage.jsx';
+import RankingPage from './pages/RankingPage.jsx';
+import MyTravelPage from './pages/MyTravelPage.jsx';
 import MapPage from './map.jsx';
 
 function AppRouter() {
@@ -21,7 +24,13 @@ function AppRouter() {
       {/* 화면별 라우팅 관리 */}
       <Routes>
         {/* 소개 (메인 화면) */}
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
+
+        <Route path="/history" element={<HistoryPage/>}/>
+
+        <Route path="/ranking" element={<RankingPage/>}/>
+
+        <Route path="/mytravel" element={<MyTravelPage/>}/>
 
         <Route path="/map" element={<MapPage />} />
         
