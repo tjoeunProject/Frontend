@@ -79,6 +79,8 @@ function IntroPage() {
           AI 콕콕 플래너 - 코스 만들기 !!!
         </button>
         <a href="#" className="info-link">AI 콕콕 플래너란??</a>
+        <a href='/survey/SurveyFirstPage'>설문조사 갈 버튼</a>
+        <a href='/map'>지도 갈 버튼</a>
       </section>
 
 
@@ -182,15 +184,8 @@ function IntroPage() {
       {/* 11. 푸터 */}
       <footer className="footer">
         <p>Copyright 2023. Lorem and Ipsum All rights reserved.</p>
-      </footer>
-    <div style={{ padding: '20px' }}>
-        <Header />
-      <h1>🌍 소개 페이지</h1>
-      <p>여행 서비스의 비전과 주요 기능을 소개합니다.</p>
-      {/* 여기에 소개 페이지의 실제 UI와 MVVM View 로직이 들어갑니다. */}
-      <a href='/survey/SurveyFirstPage'>설문조사 갈 버튼</a>
+      </footer>      
     </div>
   );
 }
-
 export default IntroPage;
