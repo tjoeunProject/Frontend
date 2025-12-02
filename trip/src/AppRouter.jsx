@@ -14,6 +14,8 @@ import HomePage from './pages/IntroPage.jsx';
 import HistoryPage from './pages/HistoryPage.jsx';
 import RankingPage from './pages/RankingPage.jsx';
 import MyTravelPage from './pages/MyTravelPage.jsx';
+import LoginPage from './pages/Login.jsx';
+import SignupPage from './pages/SignupPage.jsx';
 import MapPage from './map.jsx';
 
 function AppRouter() {
@@ -39,6 +41,10 @@ function AppRouter() {
         <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
 
         <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
+
+        <Route path="/login" element={<LoginPage />}/>
+
+        <Route path="/signup" element={<SignupPage />}/>
 
         {/* 404 페이지 (선택 사항) */}
         <Route path="*" element={<div>404 Not Found</div>}/>
