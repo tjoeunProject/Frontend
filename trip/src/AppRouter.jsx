@@ -18,6 +18,11 @@ import LoginPage from './pages/Login.jsx';
 import SignupPage from './pages/SignupPage.jsx';
 import MapPage from './map.jsx';
 
+import { AuthProvider } from './member_ex/AuthContext.jsx';
+import TestLoginPage from './member_ex/LoginPage.jsx';
+import DashboardPage from './member_ex/DashboardPage.jsx';
+import PrivateRoute from './member_ex/PrivateRoute.jsx';
+
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -50,7 +55,21 @@ function AppRouter() {
         <Route path="*" element={<div>404 Not Found</div>}/>
       </Routes>
       {/* Footer 등 기타 공통 컴포넌트 */}
+
+      <AuthProvider> {/* 2. 그 안에서 인증 관리자가 동작합니다 */}
+        
+        <Routes>
+          <Route path="/login1" element={<TestLoginPage />} />
+          
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<DashboardPage />} />
+          </Route>
+        </Routes>
+
+      </AuthProvider>
     </BrowserRouter>
+
+    
   );
 }
 
