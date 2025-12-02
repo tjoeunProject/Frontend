@@ -103,8 +103,8 @@ function IntroPage() {
         <Link to="/survey/SurveyFirstPage" className="cta-button">
           AI 콕콕 플래너 - 코스 만들기 !!!
         </Link>
-        <a href="#" className="info-link">AI 콕콕 플래너란??</a>
-        <a href='/map'>지도 갈 버튼</a>
+        <Link to="#" className="info-link">AI 콕콕 플래너란??</Link> 
+        <Link to='/map'>지도 갈 버튼</Link>
       </section>
 
 
