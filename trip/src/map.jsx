@@ -4,11 +4,19 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import MapPage from './pages/MapPage.jsx';
 
+import { useLocation } from 'react-router-dom'; // 1. useLocation 추가 12-2
+
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('search');
   const [searchResults, setSearchResults] = useState([]);
+
+  // 12-02 이정민 수정  - 검색어 기반 검색
+  // 2. 받아온 데이터 꾸러미(location) 풀기
+  const location = useLocation();
+  const searchKeyword = location.state?.searchKeyword; // "부산" 같은 글자가 여기 들어옴
+
 
   /** Day별 일정 구조 */
   const [itineraryByDay, setItineraryByDay] = useState({
@@ -246,6 +254,10 @@ const handleOptimize = async () => {
   ============================================================ */
   return (
     <MapPage
+      // ★ 3. MapPage에게 검색어 전달 (props로 넘겨줌)
+      //  12 -2 수정 
+      initialSearchKeyword={searchKeyword} 
+
       activeTab={activeTab}
       setActiveTab={setActiveTab}
 

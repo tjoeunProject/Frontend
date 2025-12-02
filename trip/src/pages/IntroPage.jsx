@@ -1,7 +1,9 @@
 import React from 'react';
 import Header from '../components/common/Header';
-import { BrowserRouter, Route, Routes, Link} from 'react-router-dom';
- 
+import { BrowserRouter, Route, Routes, Link, useNavigate} from 'react-router-dom';
+import { useState } from 'react'; 
+
+
 // 제공된 8개의 이미지 파일을 각각 import 
 import MapImage from '../assets/map.png';                  
 import PhoneTapImage from '../assets/Intro1.png';        
@@ -14,6 +16,23 @@ import LoginV2Users from '../assets/Intro7.png';
 import './survey/SurveyFirstPage';
 
 function IntroPage() {
+  // 12-02 이정민 수정  - 검색어 기반 검색
+  const navigate = useNavigate(); // 3. 이동 도구 생성
+  const [keyword, setKeyword] = useState(''); // 4. 검색어 저장할 공간
+
+  // 5. 검색 함수 만들기
+  const handleSearch = (e) => {
+    e.preventDefault(); // 새로고침 방지
+    if (!keyword.trim()) {
+      alert("검색어를 입력해주세요!");
+      return;
+    }
+    // ★ 핵심: /map으로 가면서 state에 'searchKeyword'라는 이름으로 검색어를 담아 보냄
+    navigate('/map', { state: { searchKeyword: keyword } });
+  };
+
+
+
   //  App.css를 사용하므로, 복잡한 absolute position을 위한 스타일만 인라인으로 남깁니다.
 
   // 지도 섹션의 마커 및 컬러 블록 스타일 (최종 디자인 화면을 기준으로 조정)
@@ -68,14 +87,19 @@ function IntroPage() {
       </section>
 
       <section className="search-cta-section">
-        <div className="search-bar-container">
+        
+          {/* // 12-02 이정민 수정  - 검색어 기반 검색 */}
+        <form onSubmit={handleSearch} className="search-bar-container">
           <input 
             type="text" 
             placeholder="가시고 싶으신 여행지 혹은 맛집 있으세요??" 
             className="search-input"
+            value={keyword} // 연결
+            onChange={(e) => setKeyword(e.target.value)} // 입력할 때마다 저장
           />
-          <span className="search-icon">🔍</span>
-        </div>
+          {/* 돋보기 눌러도 검색되게 onClick 추가 */}
+          <span className="search-icon" onClick={handleSearch} style={{cursor: 'pointer'}}>🔍</span>
+        </form>
         <Link to="/survey/SurveyFirstPage" className="cta-button">
           AI 콕콕 플래너 - 코스 만들기 !!!
         </Link>

@@ -1,7 +1,7 @@
 // MapPage.jsx
 // 토스트 박스 넣을 예정
 import React from 'react';
-import { Map, Marker, APIProvider } from '@vis.gl/react-google-maps';
+import { Map, Marker, APIProvider , useMap, useMapsLibrary} from '@vis.gl/react-google-maps';
 import { BrowserRouter, Route, Routes, Link} from 'react-router-dom';
 
 import SearchBox from '../components/SearchBox';
@@ -16,10 +16,15 @@ import ItineraryListNormal from '../components/ItineraryListNormal';
 import ItineraryListOptimized from '../components/ItineraryListOptimized';
 
 import DirectionsPolyline from '../components/DirectionsPolyline';
+import { useState, useEffect, useRef } from 'react';
 
 import './MapPage.css';
 // const { toasts, register } = useToast();
 const MapPage = ({
+  initialSearchKeyword, 
+  // ★ 아까 map.jsx에서 받은 검색어, 
+
+
   activeTab,
   setActiveTab,
   searchResults,
@@ -58,6 +63,10 @@ const MapPage = ({
     ...(itineraryByDay?.day3 || []),
   ];
 
+
+
+
+
   return (
     <APIProvider apiKey={API_KEY}>
       <div className="mappage-container">
@@ -65,7 +74,10 @@ const MapPage = ({
         {/* ===== 왼쪽 사이드바 ===== */}
         <div className="sidebar">
           <div className="sidebar-tabs">
-            <TabButton isActive={activeTab === 'search'} onClick={() => setActiveTab('search')}>
+            <TabButton isActive={activeTab === 'search'} onClick={() => 
+              setActiveTab('search')
+              
+              }>
               🔍 장소 찾기
             </TabButton>
 
@@ -155,6 +167,15 @@ const MapPage = ({
             disableDefaultUI={false}
             onClick={handleMapClick}
           >
+            {/* ★ 여기에 방금 만든 자동 검색기를 끼워넣으세요! */}
+            {initialSearchKeyword && (
+              <AutoSearcher 
+                keyword={initialSearchKeyword} 
+                onPlaceFound={handleManualSearch} 
+              />
+            )}
+
+
             <SearchBox onPlaceSelect={handleManualSearch} />
             <MapRecenter center={mapCenter} />
             <HandleMapIdle onIdle={() => setShowButton(true)} />
@@ -245,5 +266,43 @@ const MapPage = ({
     </APIProvider>
   );
 };
+
+
+const AutoSearcher = ({ keyword, onPlaceFound }) => {
+  const map = useMap();
+  const placesLib = useMapsLibrary('places');
+
+  // ★ "검색 했음" 표시를 위한 변수 (useRef 사용)
+  // 화면이 새로 그려져도 이 값은 True로 유지됩니다.
+  const hasSearched = useRef(false);
+
+  useEffect(() => {
+    // 지도나 라이브러리가 없거나, 검색어가 없으면 중단
+    if (!map || !placesLib || !keyword) return;
+
+    // ★ 핵심: 이미 검색을 한 적이 있다면(True라면) 아무것도 하지 말고 끝내라!
+    if (hasSearched.current) return;
+    
+    // 구글 텍스트 검색 실행 (예: "해운대" -> 해운대 좌표 찾기)
+    const service = new placesLib.PlacesService(map);
+    const request = {
+      query: keyword,
+      fields: ['name', 'geometry', 'place_id', 'rating', 'user_ratings_total']
+    };
+
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === placesLib.PlacesServiceStatus.OK && results && results.length > 0) {
+        // 찾았으면 부모(App)에 있는 handleManualSearch 함수를 실행시킴!
+        onPlaceFound(results[0]); 
+
+        // ★ 검색 성공 후 "나 이제 검색했음!" 하고 체크 표시
+        hasSearched.current = true;
+      }
+    });
+  }, [map, placesLib, keyword, onPlaceFound]);
+
+  return null; // 화면에는 아무것도 안 그림
+};
+
 
 export default MapPage;
