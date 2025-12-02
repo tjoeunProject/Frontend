@@ -1,8 +1,6 @@
 import React from 'react';
 import Header from '../../components/common/Header';
-import './SurveyFirstPage';
-import { DateRangePicker } from 'rsuite';
-import { addDays } from 'date-fns';
+import './SurveyFirstPage.jsx';
 
 function SurveyTwoPage(){
 
