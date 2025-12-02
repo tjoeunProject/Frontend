@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from '../components/common/Header';
+import { BrowserRouter, Route, Routes, Link} from 'react-router-dom';
  
 // 제공된 8개의 이미지 파일을 각각 import 
 import MapImage from '../assets/map.png';                  
@@ -75,11 +76,10 @@ function IntroPage() {
           />
           <span className="search-icon">🔍</span>
         </div>
-        <button className="cta-button">
+        <Link to="/survey/SurveyFirstPage" className="cta-button">
           AI 콕콕 플래너 - 코스 만들기 !!!
-        </button>
+        </Link>
         <a href="#" className="info-link">AI 콕콕 플래너란??</a>
-        <a href='/survey/SurveyFirstPage'>설문조사 갈 버튼</a>
         <a href='/map'>지도 갈 버튼</a>
       </section>
 
