@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; 
+// import Header from '../components/common/Header'; 
 
-// Header 컴포넌트는 프로젝트 구조에 따라 주석 처리합니다.
 import RoutePick from '../assets/RoutePick.png';
 
 // 비밀번호 표시/숨김 아이콘 (Login.jsx에서 재사용)
@@ -12,7 +13,7 @@ const EyeOffIcon = (props) => (
 );
 
 
-const SignupPage = () => {
+const SignupPage = () => { 
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -24,25 +25,45 @@ const SignupPage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // 비밀번호 일치 여부와 8자 이상 여부를 동시에 관리
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true); // 8자 이상 유효성 상태
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
 
-    // 비밀번호 확인 로직
+    let newPassword = formData.password;
+    let newConfirmPassword = formData.confirmPassword;
+
+    if (id === 'password') { // 비밀번호 8개 이상일 때 가능 
+        newPassword = value;
+        setIsPasswordValid(value.length >= 8); // 비밀번호 길이 검사
+    } else if (id === 'confirmPassword') {
+        newConfirmPassword = value;
+    }
+
+    // 비밀번호 일치 검사 (현재 입력된 값과 다른 쪽 값 비교)
     if (id === 'password' || id === 'confirmPassword') {
-        const newPassword = id === 'password' ? value : formData.password;
-        const newConfirmPassword = id === 'confirmPassword' ? value : formData.confirmPassword;
-        setPasswordMatch(newPassword === newConfirmPassword);
+      const p1 = id === 'password' ? value : formData.password;
+      const p2 = id === 'confirmPassword' ? value : formData.confirmPassword;
+      // 두 필드 모두 값이 있을 때만 일치 여부 확인, 아니면 true (오류 메시지 숨김)
+      if (p1 && p2) {
+        setPasswordMatch(p1 === p2);
+      } else {
+        setPasswordMatch(true);
+      }
     }
   };
+
+  const isFormValid = formData.password && formData.confirmPassword && passwordMatch && isPasswordValid;
 
   const handleSignup = (e) => {
     e.preventDefault();
 
-    if (!passwordMatch || formData.password === '') {
-        console.error('오류: 비밀번호가 일치하지 않거나 비어 있습니다.');
+    if (!isFormValid) {
+        console.error('오류: 입력 필드를 확인해 주세요 (비밀번호 불일치 또는 길이 부족).');
         return;
     }
 
@@ -53,14 +74,23 @@ const SignupPage = () => {
 
   return (
     <div className="page-container">
-      <div className="header-logo-text">
-                  <img src={RoutePick} alt="LOGO" className="header-logo"/>
-              </div>
-      <div className="login-container signup-container">
+      
+      {/* 헤더 컴포넌트 없이 직접 구현한 상단 로고 영역을 Link로 감싸서 페이지 이동 가능하게 함 */}
+      <header className="main-header">
+        <div className="header-logo-text">
+            <Link to="/"> 
+                <img src={RoutePick} alt="LOGO" className="header-logo"/>
+            </Link>
+        </div>
+      </header>
+      
+      <div className="login-container signup-container"> {/* signup-container 추가하여 필요 시 개별 스타일 적용 */}
+        {/* 상단 로고 텍스트 (기존 코드를 유지하되, Link는 이미 상단 header에 추가됨) */}
+        {/* <img src={RoutePick} alt="LOGO" className="header-logo"/> */}
 
         {/* 회원가입 제목 섹션 */}
         <h2 className="signup-title">
-          회원가입 <br />
+          회원가입<br />
         </h2>
 
         <form onSubmit={handleSignup} style={{ width: '100%' }}>
@@ -107,7 +137,7 @@ const SignupPage = () => {
 
           {/* 4. 생년월일 */}
           <div className="input-group">
-            <label htmlFor="birthdate">생년월일 </label>
+            <label htmlFor="birthdate">생년월일</label>
             <input
               id="birthdate"
               type="date" // 캘린더 대신 date input 사용
@@ -142,7 +172,8 @@ const SignupPage = () => {
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                className="login-input"
+                // 비밀번호가 유효하지 않을 때만 input-error 클래스 적용
+                className={`login-input ${!isPasswordValid ? 'input-error' : ''}`}
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -156,16 +187,21 @@ const SignupPage = () => {
                 {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
               </div>
             </div>
+             {/* 8자 미만일 때 오류 메시지 표시 */}
+            {!isPasswordValid && formData.password.length > 0 && (
+                <p className="error-message">비밀번호는 8자 이상이어야 합니다.</p>
+            )}
           </div>
           
           {/* 7. 비밀번호 확인 */}
           <div className="input-group">
-            <label htmlFor="confirmPassword">비밀번호 확인</label>
+            <label htmlFor="confirmPassword">비밀번호 확인 </label>
             <div className="input-container">
               <input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                className={`login-input ${!passwordMatch ? 'input-error' : ''}`}
+                // 비밀번호 불일치 시 input-error 클래스 적용
+                className={`login-input ${!passwordMatch && formData.confirmPassword.length > 0 ? 'input-error' : ''}`}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
@@ -179,7 +215,8 @@ const SignupPage = () => {
                 {showConfirmPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
               </div>
             </div>
-            {!passwordMatch && (
+            {/* 비밀번호가 다르고, 확인 필드에 내용이 있을 때만 오류 메시지 표시 */}
+            {!passwordMatch && formData.confirmPassword.length > 0 && (
                 <p className="error-message">비밀번호가 일치하지 않습니다.</p>
             )}
           </div>
@@ -189,10 +226,10 @@ const SignupPage = () => {
           <button 
             type="submit" 
             className="login-button" 
-            disabled={!passwordMatch}
+            disabled={!isFormValid} // 비밀번호 유효성과 일치 여부 모두 확인
             style={{ 
-              backgroundColor: passwordMatch ? '#ff8c00' : '#cccccc',
-              cursor: passwordMatch ? 'pointer' : 'not-allowed'
+              backgroundColor: isFormValid ? '#ff8c00' : '#cccccc',
+              cursor: isFormValid ? 'pointer' : 'not-allowed'
             }}
           >
             회원가입하기

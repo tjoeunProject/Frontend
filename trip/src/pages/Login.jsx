@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. useNavigate 임포트
+import { useNavigate, Link} from 'react-router-dom'; // 1. useNavigate 임포트
 
 // 🚨 에셋 경로 오류 해결: 임포트 구문을 제거하고 이미지 URL을 인라인으로 사용하거나,
 // 서버에 업로드된 login.jpg의 ID를 사용하여 대체합니다.
@@ -34,8 +34,7 @@ const LoginPage = () => {
     console.log(`${platform} 로그인 시도`);
   };
 
-  const goToSignup = (e) => {
-    e.preventDefault();
+  const goToSignup = () => {
     navigate('/signup'); // 3. /signup 경로로 이동
   };
   
@@ -118,11 +117,10 @@ const LoginPage = () => {
           </button>
         </form>
 
-        {/* 링크 그룹 */}
+         {/* 링크 그룹 */}
         <div className="link-group">
-          <a href="/signup" onClick={goToSignup}>회원가입 하기</a> {/* 라우팅 기능 연결 완료 */}
-          |
-          <a href="#" onClick={goToFindPassword}>비밀번호 찾기</a>
+          <Link to="/signup">회원가입 하기</Link> {/* 라우팅 기능 연결 완료 */}
+          <a href="#" onClick={goToFindPassword}>비밀번호 찾기</a> {/* 외부 기능이므로 a 태그 유지 */}
         </div>
 
         {/* SNS 로그인 */}
