@@ -1,6 +1,8 @@
 // MapPage.jsx
+// 토스트 박스 넣을 예정
 import React from 'react';
 import { Map, Marker, APIProvider } from '@vis.gl/react-google-maps';
+import { BrowserRouter, Route, Routes, Link} from 'react-router-dom';
 
 import SearchBox from '../components/SearchBox';
 import MapRecenter from '../components/MapRecenter';
@@ -16,7 +18,7 @@ import ItineraryListOptimized from '../components/ItineraryListOptimized';
 import DirectionsPolyline from '../components/DirectionsPolyline';
 
 import './MapPage.css';
-
+// const { toasts, register } = useToast();
 const MapPage = ({
   activeTab,
   setActiveTab,
@@ -131,9 +133,14 @@ const MapPage = ({
                   🚀 3일 코스로 최적화하기
                 </button>
               ) : (
+                <div>
                 <button className="btn-edit" onClick={() => setActiveTab('itinerary')}>
                   🔄 다시 편집하기
                 </button>
+                <Link to="/home" className="btn-optimize">
+                  저장하기
+                </Link>
+                </div>
               )}
             </div>
           )}

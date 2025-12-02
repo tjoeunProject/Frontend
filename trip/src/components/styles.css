@@ -1,0 +1,23 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.toastButtons {
+  display: flex;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  width: 90%;
+  transform: translate(-50%, 0);
+}
+.button {
+  flex: 1;
+  margin-right: 10px;
+  height: 40px;
+  background: white;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+}
