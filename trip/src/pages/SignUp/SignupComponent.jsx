@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 // 경로 재수정: ../components/common/Header로 수정
-import Header from '../components/common/Header'; 
 // CSS 경로 재수정
-import '../resources/css/SignupPage.css'; 
+import '../../resources/css/SignupPage.css'; 
+
 
 // 비밀번호 표시/숨김 아이콘 (Login.jsx에서 재사용)
 const EyeIcon = (props) => (
@@ -13,7 +13,7 @@ const EyeOffIcon = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.73 0 1.45-.08 2.14-.23"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
 );
 
-const SignupPage = () => {
+const SignupComponent = () => {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -67,25 +67,21 @@ const SignupPage = () => {
         return;
     }
 
-
     // 실제 회원가입 로직이 여기에 들어갑니다.
     console.log('회원가입 시도:', formData);
     console.log('회원가입 성공 (데모)');
   };
 
   return (
-    <div className="page-container">
-      <Header/>
-      <div className="header-logo-text">
-              </div>
-      <div className="login-container signup-container">
+    
+    <div className="center-style">
 
         {/* 회원가입 제목 섹션 */}
         <h2 className="signup-title">
           회원가입 <br />
         </h2>
 
-        <form onSubmit={handleSignup} style={{ width: '100%' }}>
+        <form onSubmit={handleSignup} className="form-style">
           
           {/* 1. 이메일 */}
           <div className="input-group">
@@ -227,23 +223,9 @@ const SignupPage = () => {
             회원가입하기
           </button>
         </form>
-
-        {/* 하단 푸터 영역 (Login.jsx와 동일) */}
-        <div className="footer-section">
-          <div className="logo-ver">로고 ver.2</div>
-          <div className="footer-links">
-            <a href="#" onClick={(e) => e.preventDefault()}>개인정보 처리방침</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>서비스 이용 약관</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>문의하기 @gmail.com</a>
-          </div>
-          <div className="copyright">
-            Copyright 2025 tjeun proj<br />
-            All right reserved.
-          </div>
-        </div>
       </div>
-    </div>
+  
   );
 };
 
-export default SignupPage;
+export default SignupComponent;

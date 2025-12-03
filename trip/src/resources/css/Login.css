@@ -1,27 +1,14 @@
-/* LoginPage.css */
+/* 후순위로 css 버그찾을때 수정하겠습니다 */
 
 /* 로그인 페이지 전체 컨테이너: 화면 전체를 채우고 내용을 중앙에 배치합니다. */
-.page-container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* 상단에서 시작하도록 수정 (헤더 고려) */
-    background-color: #f0f4f8;
-    padding: 40px 20px;
-}
-
 .login-container {
-    background-color: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background-color: white; 
     width: 100%;
-    max-width: 400px; /* 로그인 폼의 최대 너비 */
+    max-width: 100%; /* 로그인 폼의 최대 너비 */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 20px;
 }
 
 .header-logo-text .header-logo {
@@ -34,7 +21,8 @@
 }
 
 .login-image {
-    width: 100%;
+    width: 50%;
+    padding-top: 20px;
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -44,7 +32,7 @@
     font-size: 1.1rem;
     color: #333;
     line-height: 1.5;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 /* 입력 필드 그룹 */
@@ -107,8 +95,8 @@
 .link-group {
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    margin-top: 10px;
+    width: 80%;
+    margin-top: 20px;
     padding: 0 5px;
     font-size: 0.9rem;
 }
@@ -129,7 +117,7 @@
     color: #777;
     font-size: 0.9rem;
     position: relative;
-    width: 100%;
+    width: 80%;
 }
 
 .sns-login-title::before,
@@ -151,9 +139,13 @@
 }
 
 .sns-icons {
+    size : 20px;
+    width: 100px;
+    height: 100px;
     display: flex;
-    gap: 15px;
+    gap: 50px;
     margin-bottom: 40px;
+    justify-content: center;
 }
 
 .sns-icon-button {
@@ -168,6 +160,7 @@
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
+    
 }
 
 .sns-icon-button:hover {
@@ -185,22 +178,6 @@
 
 .sns-icon-google {
     background-color: #ea4335; /* 구글 빨간색 */
-}
-
-
-/* 푸터 섹션 */
-.footer-section {
-    width: 100%;
-    padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
-    font-size: 0.8rem;
-    color: #aaa;
-    line-height: 1.5;
-}
-
-.footer-links a {
-    color: #999;
-    margin: 0 5px;
 }
 
 .copyright {
