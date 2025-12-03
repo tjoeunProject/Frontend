@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate, Link} from 'react-router-dom'; // 1. useNavigate 임포트
+import { useNavigate, Link} from 'react-router-dom';
+import '../resources/css/Login.css';  
 
 // 🚨 에셋 경로 오류 해결: 임포트 구문을 제거하고 이미지 URL을 인라인으로 사용하거나,
 // 서버에 업로드된 login.jpg의 ID를 사용하여 대체합니다.
-import RoutePick from '../assets/RoutePick.png';
-import LoginImg from '../assets/login.png';
+import RoutePick from '../resources/img/RoutePick.png';
+import LoginImg from '../resources/img/login.png';
 
 // Lucide-react 아이콘을 사용하여 시각적 요소를 추가합니다.
-// 설치가 필요 없는 인라인 SVG를 사용했습니다.
 const EyeIcon = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
 );
@@ -23,34 +23,39 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // 2. useNavigate 훅 사용
+  const navigate = useNavigate(); 
 
   const handleLogin = (e) => {
     e.preventDefault();
     console.log('Login attempt:', { email, password });
+    // TODO: 실제 로그인 로직 구현
   };
 
   const handleSnsLogin = (platform) => {
     console.log(`${platform} 로그인 시도`);
+    // TODO: SNS 로그인 로직 구현
   };
 
   const goToSignup = () => {
-    navigate('/signup'); // 3. /signup 경로로 이동
+    navigate('/signup'); 
   };
   
   const goToFindPassword = (e) => {
     e.preventDefault();
     console.log("비밀번호 찾기 페이지로 이동합니다.");
+    // TODO: 비밀번호 찾기 로직 구현
   };
 
   return (
     <div className="page-container">
+      {/* Login 페이지에는 Header를 추가하지 않았습니다. */}
+      {/* <Header /> */}
       <div className="login-container">
         <div className="header-logo-text">
-            <img src={RoutePick} alt="LOGO" className="header-logo"/>
+            <img src={RoutePick} alt="LOGO" className="header-logo"/> 
         </div>
 
-        {/* 이미지 섹션: 사용자 이미지는 login.png로 가정하고 있습니다. */}
+        {/* 이미지 섹션 */}
         <div className="login-image-container">
           <img 
             src={LoginImg} 
@@ -58,11 +63,7 @@ const LoginPage = () => {
             className="login-image"
             onError={(e) => {
               e.target.onerror = null; 
-              e.target.src="https://placehold.co/250x350/e0e0e0/555?text=Login+Image" // 대체 이미지
-            }}
-            style={{ 
-              objectFit: 'cover', 
-              aspectRatio: '250/350', // 이미지 비율 유지
+              e.target.src="https://placehold.co/250x350/e0e0e0/555?text=Login+Image" 
             }}
           />
         </div>
@@ -119,8 +120,8 @@ const LoginPage = () => {
 
          {/* 링크 그룹 */}
         <div className="link-group">
-          <Link to="/signup">회원가입 하기</Link> {/* 라우팅 기능 연결 완료 */}
-          <a href="#" onClick={goToFindPassword}>비밀번호 찾기</a> {/* 외부 기능이므로 a 태그 유지 */}
+          <Link to="/signup">회원가입 하기</Link> 
+          <a href="#" onClick={goToFindPassword}>비밀번호 찾기</a>
         </div>
 
         {/* SNS 로그인 */}
