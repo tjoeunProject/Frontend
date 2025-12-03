@@ -194,6 +194,11 @@ function IntroPage() {
 
           <img src={RoadMapInfographic} className="roadmap-infographic" />
         </div>
+
+{/* 테스트 케이스 나중에 삭제 바람 */}
+        <Link to="/login1" className="cta-button">
+          로그인 테스트
+        </Link>
       </section>
 
       {/* ==========================
