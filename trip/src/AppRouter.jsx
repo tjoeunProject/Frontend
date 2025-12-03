@@ -1,10 +1,4 @@
-import React from 'react';
-
-// 공통 컴포넌트
-import Header from './components/common/Header.jsx';
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 
 // 페이지 컴포넌트
 import SurveyPage from './pages/survey/SurveyFirstPage.jsx';
@@ -27,25 +21,15 @@ function AppRouter() {
       <Routes>
         {/* 소개 (메인 화면) */}
         <Route path="/" element={<HomePage />} />
-
         <Route path="/history" element={<HistoryPage/>}/>
-
         <Route path="/ranking" element={<RankingPage/>}/>
-
         <Route path="/mytravel" element={<MyTravelPage/>}/>
-
-        <Route path="/map" element={<MapPage />} />
-        
+        <Route path="/map" element={<MapPage />} />      
         <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
-
         <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
-
         <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
-
         <Route path="/login" element={<LoginPage />}/>
-
         <Route path="/signup" element={<SignupPage />}/>
-
         {/* 404 페이지 (선택 사항) */}
         <Route path="*" element={<div>404 Not Found</div>}/>
       </Routes>
