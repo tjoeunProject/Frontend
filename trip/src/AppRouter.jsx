@@ -10,7 +10,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SurveyPage from './pages/survey/SurveyFirstPage.jsx';
 import SurveyPage2 from './pages/survey/SurveyTwoPage.jsx';
 import SurveyPage3 from './pages/survey/SurveyThreePage.jsx';
-import HomePage from './pages/IntroPage.jsx';
+import HomePage from './pages/Intro/IntroPage.jsx';
 import HistoryPage from './pages/HistoryPage.jsx';
 import RankingPage from './pages/RankingPage.jsx';
 import MyTravelPage from './pages/MyTravelPage.jsx';

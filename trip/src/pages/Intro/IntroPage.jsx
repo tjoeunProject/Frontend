@@ -12,6 +12,27 @@ import SolutionBackground from '../resources/img/Intro4.png';
 import HowToMapIcon from '../resources/img/Intro5.png';
 import RoadMapInfographic from '../resources/img/Intro6.png';
 import LoginV2Users from '../resources/img/Intro7.png';
+import { useState, React} from 'react';
+import Header from '../../components/common/Header';
+import { BrowserRouter, Route, Routes, Link} from 'react-router-dom';
+import ErrorDialog from "../../components/Dialog/ErrorDialog";
+import {Layout, DialogContainer } from "../../lib/MyLayout";
+import MyLayout from "../../lib/MyLayout";
+import Modal from "react-modal";
+import Dialog2 from "../../components/Dialog/Dialog";
+import './Intro.css';
+
+// 제공된 8개의 이미지 파일을 각각 import 
+import MapImage from '../../assets/map.png';                  
+import PhoneTapImage from '../../assets/Intro1.png';        
+import HotelRoomsPreview from '../../assets/Intro2.png'; 
+import FatiguePerson from '../../assets/Intro3.png';   
+import SolutionBackground from '../../assets/Intro4.png'; 
+import HowToMapIcon from '../../assets/Intro5.png';    
+import RoadMapInfographic from '../../assets/Intro6.png'; 
+import LoginV2Users from '../../assets/Intro7.png';   
+import '../survey/SurveyFirstPage';
+import Backdrop from '../../components/Dialog/Backdrop';
 
 function IntroPage() {
 
@@ -31,7 +52,53 @@ function IntroPage() {
   return (
     <div className="page-centered-container">
       
-      {/* ✔ 상단 고정 헤더 */}
+  
+
+  
+  return (
+
+    const [isOpen, setIsOpen] = useState(false);  
+    <div className="page-container">
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+        contentLabel="AI 톡톡 플래너 설명"
+        style={{
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      transform: 'translate(-50%, -50%)',
+      width: '500px',       // 모달 너비
+      maxWidth: '90%',      // 모바일 대응
+      maxHeight: '80vh',    // 화면 높이에 맞춰 스크롤 가능
+      padding: '30px',      // 안쪽 여백
+      borderRadius: '12px', // 모서리 둥글게
+      boxShadow: '0 4px 20px rgba(0,0,0,0.2)', // 그림자
+      overflowY: 'auto',    // 내용 길면 스크롤
+    },
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.4)', // 배경 어둡게
+      zIndex: 1000, // 다른 요소 위로
+    },
+  }}
+      >
+        <h2>🤖 AI 톡톡 플래너란 ❓</h2>
+        <h4>AI가 여행 고민 대신 해결하는 스마트 도우미</h4>
+
+        <ul>
+    <li>AI가 여행 고민 대신 해결! 간단한 설문만으로 최적 동선 자동 생성</li><br></br>
+    <li>숙소·맛집·관광지 정보(사진, 평점, 영업시간) 한눈에 ❗❗</li><br></br>
+    <li>단톡방 혼란, 사이트 무한탐색 → 1분 맞춤 코스 완성</li><br></br>
+    <li>이제 설렘만 챙기고, 귀찮음은 AI에게 맡기세요! ✨</li><br></br>
+  </ul>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+  <button onClick={() => setIsOpen(false)}>닫기</button>
+</div>
+      </Modal>
+      <div>
+      {/* 1. 상단 메뉴 (Header) */}
       <Header />
 
       {/* ==========================
@@ -87,20 +154,53 @@ function IntroPage() {
         <form onSubmit={handleSearch} className="search-bar-container">
           <input
             type="text"
+        <div className="map-placeholder" style={{ backgroundImage: `url(${MapImage})` }}>
+          {/* 지도 마커 (Image 1의 마커 배치) */}
+          {/* <div style={{ ...mapMarkerStyle, top: '20%', left: '20%' }}></div>
+          <div style={mapMarker2Style}></div>
+
+          {/* 우측 컬러 블록 (최종 디자인에 따라 배치) */}
+          {/* <div style={{ ...colorBlockStyle, backgroundColor: '#FF0000', top: '20%' }}></div>
+          <div style={{ ...colorBlockStyle, backgroundColor: '#FFFF00', top: '40%' }}></div>
+          <div style={{ ...colorBlockStyle, backgroundColor: '#0000FF', top: '60%' }}></div>
+          <div style={{ ...colorBlockStyle, backgroundColor: '#FF00FF', top: '80%' }}></div> */}
+        </div>
+        <form></form>
+      </section>
+
+      
+        <div className="search-bar-container">
+          <input 
+            type="text" 
+            placeholder="가시고 싶으신 여행지 혹은 맛집 있으세요??" 
             className="search-input"
             placeholder="가시고 싶으신 여행지 혹은 맛집 있으세요??"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)} // 입력할 때마다 저장
           />
           <span className="search-icon" onClick={handleSearch}>🔍</span>
-        </form>
+      
 
         <Link to="/survey/SurveyFirstPage" className="cta-button">
           AI 콕콕 플래너 - 코스 만들기 !!!
         </Link>
 
         <Link to="#" className="info-link">AI 콕콕 플래너란??</Link>
-      </section>
+      
+        <a 
+  href="#"
+  className="info-link"
+  onClick={(e) => {
+    e.preventDefault();   // 페이지 상단으로 튀는 기본동작 방지
+    setIsOpen(true);      // 모달 열기
+  }}
+>
+  AI 콕콕 플래너란??
+</a>
+        <a href='/map'>지도 갈 버튼</a>
+        
+
+  
 
       {/* ==========================
           3. 경험 섹션
@@ -163,6 +263,13 @@ function IntroPage() {
       {/* ==========================
           6. 여행 준비 이렇게 편합니다
       =========================== */}
+      {/* 6. "이제 귀찮음은 ____ 이 대신할게요!" 섹션 */}
+      <section className="section-base call-to-action-section">
+        <h2 className="call-to-action-title">이제 귀찮음은 RoutePick 이 대신할게요!</h2>
+        <p className="call-to-action-description">여러분은 즐겁게 하세요.</p>
+      </section>
+      
+      {/* 7. "여행 준비, 이렇게 편할 수 있어요." 섹션 (Image 6: how-to-map-icon.png) */}
       <section className="section-base how-to-section">
         <h2>여행 준비, 이렇게 편할 수 있어요.</h2>
 
@@ -203,8 +310,10 @@ function IntroPage() {
         <p>Copyright 2023 RoutePick All rights reserved.</p>
       </footer>
 
+        <p>Copyright 2023. Lorem and Ipsum All rights reserved.</p>
+      </footer>    
     </div>
+    
   );
-}
 
 export default IntroPage;
