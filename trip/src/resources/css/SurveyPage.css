@@ -1,0 +1,10 @@
+/* 헤더 때문에 상단 여백 필요 */
+.page-with-header {
+  padding-top: 120px;
+}
+.survey-content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Noto Sans KR', sans-serif;
+}

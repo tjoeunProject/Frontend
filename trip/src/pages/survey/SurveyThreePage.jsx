@@ -1,10 +1,10 @@
 import React from 'react';
 import Header from '../../components/common/Header';
-
+import "../../resources/css/SurveyPage.css";
 function SurveyThreePage(){
    
     return (
-        <div>
+        <div className="page-with-header">
             <Header />
             <h1>
                 설문조사 파이널 번 들어갈 예쩡

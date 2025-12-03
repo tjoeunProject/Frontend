@@ -51,26 +51,9 @@ const LoginPage = () => {
   return (
     
     <div className="page-container">
-      {/* Login 페이지에는 Header를 추가하지 않았습니다. */}
-      {/* <Header /> */}
-      <div>
-                <Button title="Open dialog" onPress={() => setIsOpen(true)} />
-                <Modal onClose={() => setIsOpen(false)} open={isOpen}>
-                  <div>
-                
-                      <h1>Payment successful</h1>
-                      <div>
-                        <p>
-                          Your payment has been successfully submitted. We’ve sent you an
-                          email with all of the details of your order.
-                        </p>
-                      </div>
-                      <Button title="Got it, thanks!" onPress={() => setIsOpen(false)} />
-                
-                  </div>
-                </Modal>
-              </div>
+
       <div className="login-container">
+        
         <div className="header-logo-text">
             <img src={RoutePick} alt="LOGO" className="header-logo"/> 
         </div>
