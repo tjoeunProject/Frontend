@@ -1,4 +1,4 @@
-/* Footer.css */
+/* 후순위로 css 버그찾을때 수정하겠습니다 */
 
 /* 1. 최상위 섹션: 가로 배치 및 수직 중앙 정렬 (유지) */
 .footer-section {
@@ -17,7 +17,7 @@
 .footer-logo { 
     height: 100px;
     cursor: pointer;
-    max-width: 25%;
+
 }
 
 /* 3. 링크 영역 (핵심 수정: 링크들을 가로로 배치) */
@@ -37,7 +37,7 @@
 
 .footer-links a { 
     /* 링크 사이에 좌우 마진 추가 */
-    margin: 35px 15px; 
+    margin: 15px 15px; 
     font-size: 14px;
     color: #333;
     text-decoration: none;

@@ -8,8 +8,8 @@ import HomePage from './pages/Intro/IntroPage.jsx';
 import HistoryPage from './pages/HistoryPage.jsx';
 import RankingPage from './pages/RankingPage.jsx';
 import MyTravelPage from './pages/MyTravelPage.jsx';
-import LoginPage from './pages/Login.jsx';
-import SignupPage from './pages/SignupPage.jsx';
+import LoginPage from './pages/Login/Login.jsx';
+import SignupPage from './pages/SignUp/SignupPage.jsx';
 import MapPage from './map.jsx';
 
 function AppRouter() {
