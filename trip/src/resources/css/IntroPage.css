@@ -12,7 +12,7 @@
 
 /* 공통 섹션 여백 */
 .section-base {
-  margin: 110px 0;
+  margin: 10px 0;
 }
 
 /* 공통 타이틀 */
@@ -76,6 +76,7 @@
   font-weight: 400;
 }
 
+
 /* 돋보기 아이콘 – 오렌지 스타일 아니고 이미지 스타일 그대로 */
 .search-icon {
     font-size: 22px;
@@ -117,10 +118,21 @@
 =========================== */
 
 .experience-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 50px;
-  align-items: center;
+    display: grid;
+    /* 🚨 3열 -> 2열로 수정 */
+    grid-template-columns: repeat(2, 1fr);
+    
+    max-width: 1000px; /* Grid 컨테이너 최대 너비 제한 */
+    margin: 10px auto; /* 상하 마진 40px, 좌우 auto로 Grid 컨테이너를 중앙 배치 */
+    padding: 0 0px; /* 👈 좌우 패딩 20px 추가 */
+    
+    gap: 10px; /* 요소들 사이의 간격 */
+    align-items: center;
+}
+
+.experience-card {
+  padding: 30px;
+  text-align: center;
 }
 
 .experience-card h3 {
@@ -168,6 +180,7 @@
 .solution-section {
   border-radius: 15px;
   text-align: center;
+  width: 100%;
   padding: 150px 30px;
   background-size: cover;
   background-position: center;
@@ -202,7 +215,7 @@
 =========================== */
 
 .roadmap-infographic {
-  width: 450px;
+  width: 460px;
 }
 
 
