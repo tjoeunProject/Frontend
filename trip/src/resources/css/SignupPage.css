@@ -1,0 +1,109 @@
+/* 전체 페이지 배경 (인트로처럼 연한 회색) */
+.page-container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding-top: 80px; /* Header 고정이라 여백 필요함 */
+  display: flex;
+  justify-content: center;
+}
+
+/* 가운데 흰색 카드 형태 (인트로 첫 화면 같은 느낌) */
+.signup-container {
+  background: #ffffff;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 40px;
+  padding: 40px 40px 60px 40px;
+  
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+/* 제목 스타일 */
+.signup-title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* 각 입력 그룹 */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+/* 라벨 */
+.input-group label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* 인풋 박스 */
+.login-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+/* Date input 아이콘이 겹치지 않도록 조정 */
+input[type="date"] {
+  padding-right: 10px;
+}
+
+/* 비밀번호 input + 아이콘 정렬 */
+.input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+}
+
+/* 오류 input 빨간 테두리 */
+.input-error {
+  border-color: red;
+}
+
+/* 오류 메시지 */
+.error-message {
+  font-size: 13px;
+  color: red;
+  margin-top: 5px;
+}
+
+/* 회원가입 버튼 */
+.login-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #ff8c00;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* 푸터 */
+.footer-section {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+}
+
+.footer-links a {
+  margin: 0 10px;
+  color: #666;
+  text-decoration: underline;
+  font-size: 12px;
+}

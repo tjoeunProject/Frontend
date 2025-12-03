@@ -1,12 +1,13 @@
 import React from 'react';
 import Header from '../../components/common/Header';
+import "../../resources/css/SurveyPage.css";
 import './SurveyTwoPage';
 import {Link} from 'react-router-dom';
 
 function SurveyFirstPage() {
 
     return (
-        <div>
+        <div className="page-with-header">
         <Header/>
             <h1>
             설문조사 1페이지 들어갈 예정입니다.
