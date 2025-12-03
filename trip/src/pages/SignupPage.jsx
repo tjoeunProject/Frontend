@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; 
-// import Header from '../components/common/Header'; 
-
-import RoutePick from '../assets/RoutePick.png';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
+// 경로 재수정: ../components/common/Header로 수정
+import Header from '../components/common/Header'; 
+// Resource 경로 재수정: ../../resources/img/RoutePick.png로 수정
+import RoutePick from "../resources/img/RoutePick.png";
+// CSS 경로 재수정
+import '../resources/css/SignupPage.css'; 
 
 // 비밀번호 표시/숨김 아이콘 (Login.jsx에서 재사용)
 const EyeIcon = (props) => (
@@ -12,8 +15,7 @@ const EyeOffIcon = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.73 0 1.45-.08 2.14-.23"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
 );
 
-
-const SignupPage = () => { 
+const SignupPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -67,6 +69,7 @@ const SignupPage = () => {
         return;
     }
 
+
     // 실제 회원가입 로직이 여기에 들어갑니다.
     console.log('회원가입 시도:', formData);
     console.log('회원가입 성공 (데모)');
@@ -74,23 +77,15 @@ const SignupPage = () => {
 
   return (
     <div className="page-container">
-      
-      {/* 헤더 컴포넌트 없이 직접 구현한 상단 로고 영역을 Link로 감싸서 페이지 이동 가능하게 함 */}
-      <header className="main-header">
-        <div className="header-logo-text">
-            <Link to="/"> 
-                <img src={RoutePick} alt="LOGO" className="header-logo"/>
-            </Link>
-        </div>
-      </header>
-      
-      <div className="login-container signup-container"> {/* signup-container 추가하여 필요 시 개별 스타일 적용 */}
-        {/* 상단 로고 텍스트 (기존 코드를 유지하되, Link는 이미 상단 header에 추가됨) */}
-        {/* <img src={RoutePick} alt="LOGO" className="header-logo"/> */}
+      <Header/>
+      <div className="header-logo-text">
+                  <img src={RoutePick} alt="LOGO" className="header-logo"/>
+              </div>
+      <div className="login-container signup-container">
 
         {/* 회원가입 제목 섹션 */}
         <h2 className="signup-title">
-          회원가입<br />
+          회원가입 <br />
         </h2>
 
         <form onSubmit={handleSignup} style={{ width: '100%' }}>
@@ -137,7 +132,7 @@ const SignupPage = () => {
 
           {/* 4. 생년월일 */}
           <div className="input-group">
-            <label htmlFor="birthdate">생년월일</label>
+            <label htmlFor="birthdate">생년월일 </label>
             <input
               id="birthdate"
               type="date" // 캘린더 대신 date input 사용
@@ -226,10 +221,10 @@ const SignupPage = () => {
           <button 
             type="submit" 
             className="login-button" 
-            disabled={!isFormValid} // 비밀번호 유효성과 일치 여부 모두 확인
+            disabled={!passwordMatch}
             style={{ 
-              backgroundColor: isFormValid ? '#ff8c00' : '#cccccc',
-              cursor: isFormValid ? 'pointer' : 'not-allowed'
+              backgroundColor: passwordMatch ? '#ff8c00' : '#cccccc',
+              cursor: passwordMatch ? 'pointer' : 'not-allowed'
             }}
           >
             회원가입하기

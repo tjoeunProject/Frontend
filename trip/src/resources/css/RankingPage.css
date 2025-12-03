@@ -1,0 +1,19 @@
+/* RankingPage.css */
+
+.ranking-page {
+  width: 100%;
+}
+
+.ranking-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.ranking-list-container {
+  width: 100%;
+  min-height: 400px;
+  border: 2px solid #ffb74d;
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import './App.css'; // 필요하다면 App 전역에 적용할 CSS를 임포트합니다.
+import './resources/css/layout.css'; 
 import AppRouter from './AppRouter.jsx';
 
 function App() {
