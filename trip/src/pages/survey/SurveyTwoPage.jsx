@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from '../../components/common/Header';
+import "../../resources/css/SurveyPage.css";
 import ReactDOM from "react-dom/client";
 import './SurveyFirstPage.jsx';
 import { DateRangePicker } from 'rsuite';
@@ -9,7 +10,7 @@ import 'rsuite/dist/rsuite.min.css';
 function SurveyTwoPage(){
   
     return (
-        <div>
+        <div className="page-with-header">
             <Header />
             <h1>
                 설문조사 2번 들어갈 예쩡

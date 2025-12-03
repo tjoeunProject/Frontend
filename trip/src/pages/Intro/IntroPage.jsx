@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import Header from '../../components/common/Header';
 import { Link, useNavigate } from 'react-router-dom';
+import '../../resources/css/IntroPage.css';
 
 // 이미지 리소스
 import Modal from "react-modal";
@@ -19,7 +21,6 @@ function IntroPage() {
   // 검색 기능
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -29,8 +30,6 @@ function IntroPage() {
     }
     navigate('/map', { state: { searchKeyword: keyword } });
   };
- 
-  
 
   return (
     <div>   

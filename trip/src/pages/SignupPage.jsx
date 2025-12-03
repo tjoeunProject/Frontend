@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 // 경로 재수정: ../components/common/Header로 수정
 import Header from '../components/common/Header'; 
-// Resource 경로 재수정: ../../resources/img/RoutePick.png로 수정
-import RoutePick from "../resources/img/RoutePick.png";
 // CSS 경로 재수정
 import '../resources/css/SignupPage.css'; 
 
@@ -79,7 +77,6 @@ const SignupPage = () => {
     <div className="page-container">
       <Header/>
       <div className="header-logo-text">
-                  <img src={RoutePick} alt="LOGO" className="header-logo"/>
               </div>
       <div className="login-container signup-container">
 
