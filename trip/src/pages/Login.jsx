@@ -44,8 +44,28 @@ const LoginPage = () => {
     console.log("비밀번호 찾기 페이지로 이동합니다.");
   };
 
+  
+
   return (
+    
     <div className="page-container">
+      <div>
+                <Button title="Open dialog" onPress={() => setIsOpen(true)} />
+                <Modal onClose={() => setIsOpen(false)} open={isOpen}>
+                  <div>
+                
+                      <h1>Payment successful</h1>
+                      <div>
+                        <p>
+                          Your payment has been successfully submitted. We’ve sent you an
+                          email with all of the details of your order.
+                        </p>
+                      </div>
+                      <Button title="Got it, thanks!" onPress={() => setIsOpen(false)} />
+                
+                  </div>
+                </Modal>
+              </div>
       <div className="login-container">
         <div className="header-logo-text">
             <img src={RoutePick} alt="LOGO" className="header-logo"/>
@@ -53,6 +73,7 @@ const LoginPage = () => {
 
         {/* 이미지 섹션: 사용자 이미지는 login.png로 가정하고 있습니다. */}
         <div className="login-image-container">
+    
           <img 
             src={LoginImg} 
             alt="여행 친구들과 함께하는 모습" 
