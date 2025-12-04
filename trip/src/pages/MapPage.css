@@ -197,3 +197,12 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+.searchbox-overlay {
+  position:fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;  /* 최상위에 위치 해야함 */
+  width: 350px;
+}

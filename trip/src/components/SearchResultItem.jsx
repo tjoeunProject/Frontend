@@ -13,7 +13,9 @@ const SearchResultItem = ({ place, onAdd }) => {
 
       <div className="result-info">
         <div className="result-title">{place.name}</div>
-        <div className="result-sub">{place.vicinity || '주소 정보 없음'}</div>
+        <div className="result-sub">
+        {place.address || place.formatted_address || place.vicinity || '주소 정보 없음'}
+        </div>
         <div className="result-rating">
           ⭐ {place.rating || '-'} <span>({place.reviews || 0})</span>
         </div>
