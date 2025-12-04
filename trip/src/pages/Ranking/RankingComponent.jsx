@@ -44,7 +44,7 @@ const RankingComponent = () => {
 
   return (
     <div className="ranking-container">
-      <h2 className="ranking-title">"관광지 TOP 10"</h2>
+      <h2 className="ranking-title">"관광지 TOP 10📷"</h2>
 
       {loading && <p className="loading-text">불러오는 중...</p>}
       {error && <p className="error-text">{error}</p>}

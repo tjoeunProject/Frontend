@@ -5,7 +5,7 @@ import SurveyPage from './pages/survey/SurveyFirstPage.jsx';
 import SurveyPage2 from './pages/survey/SurveyTwoPage.jsx';
 import SurveyPage3 from './pages/survey/SurveyThreePage.jsx';
 import HomePage from './pages/Intro/IntroPage.jsx';
-import HistoryPage from './pages/HistoryPage.jsx';
+import HistoryPage from './pages/History/HistoryPage.jsx';
 import RankingPage from './pages/Ranking/RankingPage.jsx';
 import MyTravelPage from './pages/MyTravelPage.jsx';
 import LoginPage from './pages/Login/Login.jsx';
