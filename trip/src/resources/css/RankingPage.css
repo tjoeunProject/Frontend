@@ -9,9 +9,9 @@
 .ranking-title {
   text-align: center;
   font-size: 36px;
-  font-weight: bold;
-  color: #ff8c00;
+  font-weight: 800;
   margin-bottom: 40px;
+  color: #ff8c00;
 }
 
 .loading-text {
