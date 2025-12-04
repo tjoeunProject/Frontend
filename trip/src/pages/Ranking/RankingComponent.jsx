@@ -57,7 +57,7 @@ const RankingComponent = () => {
               <h3 className="ranking-name">
                 {index + 1}. {p.name}
                 <span className="heart">
-                  ⭐{p.rating} ({p.user_ratings_total})
+                  ⭐{p.rating} (📝{p.user_ratings_total})
                 </span>
               </h3>
 
