@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SurveyPage from './pages/survey/SurveyFirstPage.jsx';
 import SurveyPage2 from './pages/survey/SurveyTwoPage.jsx';
 import SurveyPage3 from './pages/survey/SurveyThreePage.jsx';
+import SurveyPage4 from './pages/survey/SurveyFourPage.jsx';
 import HomePage from './pages/Intro/IntroPage.jsx';
 import HistoryPage from './pages/History/HistoryPage.jsx';
 import RankingPage from './pages/Ranking/RankingPage.jsx';
@@ -11,6 +12,7 @@ import MyTravelPage from './pages/MyTravelPage.jsx';
 import LoginPage from './pages/Login/Login.jsx';
 import SignupPage from './pages/SignUp/SignupPage.jsx';
 import MapPage from './map.jsx';
+import TestConnection from './TestConnection.jsx';
 
 function AppRouter() {
   return (
@@ -28,9 +30,11 @@ function AppRouter() {
         <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
         <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
         <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
+        <Route path="/survey/SurveyFourPage" element={<SurveyPage4 />} />
         <Route path="/login" element={<LoginPage />}/>
         <Route path="/signup" element={<SignupPage />}/>
         {/* 404 페이지 (선택 사항) */}
+        <Route path="/test-spring" element={<TestConnection />} />
         <Route path="*" element={<div>404 Not Found</div>}/>
       </Routes>
       {/* Footer 등 기타 공통 컴포넌트 */}
