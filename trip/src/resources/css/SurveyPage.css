@@ -8,3 +8,77 @@
   text-align: center;
   font-family: 'Noto Sans KR', sans-serif;
 }
+
+.survey-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+/* 설문조사 폼 */
+.k1 {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* CTA 버튼 */
+.survey-button {
+  display: block;
+  width: 200px;
+  padding: 18px 0;
+  margin: 20px auto 0;
+  font-size: 22px;
+  font-weight: 900;
+ background-color: #BBBBBB !important; 
+  color: Black;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.survey-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 10px;
+    gap: 5px;
+    align-items: center;
+}
+
+
+.survey-grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin: 20px auto 20px auto;     
+    gap: 20px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/* 뒤로가기 버튼 */
+.back-button {
+  display: block;
+  width: 330px;
+  padding: 15px 0;
+  margin: 20px auto 0;
+  font-size: 22px;
+  font-weight: 900;
+ background-color: #B1A79D !important; 
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* 다음으로 버튼 */
+.next-button2 {
+  display: block;
+  width: 330px;
+  padding: 15px 0;
+  margin: 20px auto 0;
+  font-size: 22px;
+  font-weight: 900;
+ background-color: #FF8000 !important; 
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+}

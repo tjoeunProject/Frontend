@@ -227,7 +227,7 @@ const MapPage = ({
                   <button className="btn-edit" onClick={() => setActiveTab("itinerary")}>
                     🔄 다시 편집하기
                   </button>
-                  <Link to="/home" className="btn-optimize">
+                  <Link to="/" className="btn-optimize">
                     저장하기
                   </Link>
                 </div>
