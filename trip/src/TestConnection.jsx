@@ -5,7 +5,7 @@ function TestConnection() {
   
   // Spring Boot의 "/api/demo-web" 엔드포인트에 요청을 보냅니다.
   useEffect(() => {
-    fetch("sts/api/test") 
+    fetch("/sts/api/test") 
       .then((response) => {
         if (response.ok) {
           // 💡 수정: 응답이 문자열이므로 response.text()를 사용합니다.

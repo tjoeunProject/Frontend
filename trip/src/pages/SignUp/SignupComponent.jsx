@@ -58,6 +58,21 @@ const SignupComponent = () => {
     }
   };
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    axios.post('sts/api/v1/auth/register')
+      .then((response) => {
+        setUser(response.data);
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  }, []);
+
   const isFormValid = formData.password && formData.confirmPassword && passwordMatch && isPasswordValid;
 
   const handleSignup = async (e) => {

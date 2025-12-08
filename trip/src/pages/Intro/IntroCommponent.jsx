@@ -167,9 +167,9 @@ function IntroCommponent() {
               </p>
             </div>
             <div className="experience-card">
-              <h3>
+              <h4>
                 답 없는 장소가 많아지면,<br />“어디부터 가야 하지” 고민하지 마세요!!
-              </h3>
+              </h4>
               <br />
               <p>
                 실제로 걸리거나 이동하는 시간을 기준으로 가장 <br />
