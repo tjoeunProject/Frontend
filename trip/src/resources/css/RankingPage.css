@@ -1,0 +1,78 @@
+.ranking-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 120px;
+  padding-bottom: 60px;
+}
+
+.ranking-title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  color: #ff8c00;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.error-text {
+  text-align: center;
+  color: #ff8c00;
+  font-size: 18px;
+}
+
+.ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
+}
+
+.ranking-card {
+  border: 2px solid #ffb24d;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  background: white;
+}
+
+.ranking-name {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.heart {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #ff7e44;
+}
+
+.ranking-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 10px 0 15px;
+}
+
+.no-img {
+  background: #f0f0f0;
+  line-height: 180px;
+  color: #999;
+  font-size: 14px;
+}
+
+.ranking-location,
+.ranking-tag {
+  background: #f9f9f9;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-top: 8px;
+  border: 1px solid #eee;
+}

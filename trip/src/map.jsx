@@ -41,22 +41,58 @@ const App = () => {
      📍 장소 검색창에서 직접 검색
   ============================================================ */
   const handleManualSearch = (place) => {
-    if (!place.geometry || !place.geometry.location) {
+  console.log("🔥 place 수신:", place);
+  console.log("geometry:", place.geometry);
+  console.log("location:", place.geometry?.location);
+
+    // 좌표를 여러 방식으로 안전하게 꺼내도록 개선함
+    const lat = 
+    place.geometry?.location?.lat?.() ??
+    place.geometry?.location?.lat ??
+    place.lat ??
+    place.latitude ??
+    null;
+
+  const lng =
+    place.geometry?.location?.lng?.() ??
+    place.geometry?.location?.lng ??
+    place.lng ??
+    place.longitude ??
+    null;
+
+    if (lat === null || lng === null) {
+      console.log("지원하지 않는 place 구조:", place);
       alert("장소 정보를 가져올 수 없습니다.");
       return;
     }
+    const photoUrl = 
+      place.photos?.[0]?.getUrl({ maxWidth: 500, maxHeight: 500 }) ?? null;
+     
+      // SearchResultItem.jsx 에 맞춘 photos 배열 강제 통일
+      const photosArray = place.photos
+        ? place.photos
+        : photoUrl
+        ? [
+            {
+              getUrl: () => photoUrl,
+            },
+          ]
+        : [];
 
     const newPlace = {
-      id: place.place_id,
-      name: place.name,
+      id: place.place_id || Date.now().toString(),
+      name: place.name || "이름없음",
+      address: place.formatted_address || "",  // 주소 필드 추가
       rating: place.rating || 0,
       reviews: place.user_ratings_total || 0,
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
+      lat,
+      lng,
+      photos: photosArray,
       type: 'searched'
+      
     };
 
-    setMapCenter({ lat: newPlace.lat, lng: newPlace.lng });
+    setMapCenter({ lat, lng });
     setSearchResults([newPlace]);
     setActiveTab('search');
     setShowButton(false);

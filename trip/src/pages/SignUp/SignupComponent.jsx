@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
+// 경로 재수정: ../components/common/Header로 수정
+// CSS 경로 재수정
+import '../../resources/css/SignupPage.css'; 
 
-// Header 컴포넌트는 프로젝트 구조에 따라 주석 처리합니다.
-import RoutePick from '../assets/RoutePick.png';
 
 // 비밀번호 표시/숨김 아이콘 (Login.jsx에서 재사용)
 const EyeIcon = (props) => (
@@ -11,8 +13,7 @@ const EyeOffIcon = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.73 0 1.45-.08 2.14-.23"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
 );
 
-
-const SignupPage = () => {
+const SignupComponent = () => {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -24,25 +25,45 @@ const SignupPage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // 비밀번호 일치 여부와 8자 이상 여부를 동시에 관리
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true); // 8자 이상 유효성 상태
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
 
-    // 비밀번호 확인 로직
+    let newPassword = formData.password;
+    let newConfirmPassword = formData.confirmPassword;
+
+    if (id === 'password') { // 비밀번호 8개 이상일 때 가능 
+        newPassword = value;
+        setIsPasswordValid(value.length >= 8); // 비밀번호 길이 검사
+    } else if (id === 'confirmPassword') {
+        newConfirmPassword = value;
+    }
+
+    // 비밀번호 일치 검사 (현재 입력된 값과 다른 쪽 값 비교)
     if (id === 'password' || id === 'confirmPassword') {
-        const newPassword = id === 'password' ? value : formData.password;
-        const newConfirmPassword = id === 'confirmPassword' ? value : formData.confirmPassword;
-        setPasswordMatch(newPassword === newConfirmPassword);
+      const p1 = id === 'password' ? value : formData.password;
+      const p2 = id === 'confirmPassword' ? value : formData.confirmPassword;
+      // 두 필드 모두 값이 있을 때만 일치 여부 확인, 아니면 true (오류 메시지 숨김)
+      if (p1 && p2) {
+        setPasswordMatch(p1 === p2);
+      } else {
+        setPasswordMatch(true);
+      }
     }
   };
+
+  const isFormValid = formData.password && formData.confirmPassword && passwordMatch && isPasswordValid;
 
   const handleSignup = (e) => {
     e.preventDefault();
 
-    if (!passwordMatch || formData.password === '') {
-        console.error('오류: 비밀번호가 일치하지 않거나 비어 있습니다.');
+    if (!isFormValid) {
+        console.error('오류: 입력 필드를 확인해 주세요 (비밀번호 불일치 또는 길이 부족).');
         return;
     }
 
@@ -52,18 +73,15 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="header-logo-text">
-                  <img src={RoutePick} alt="LOGO" className="header-logo"/>
-              </div>
-      <div className="login-container signup-container">
+    
+    <div className="center-style">
 
         {/* 회원가입 제목 섹션 */}
         <h2 className="signup-title">
           회원가입 <br />
         </h2>
 
-        <form onSubmit={handleSignup} style={{ width: '100%' }}>
+        <form onSubmit={handleSignup} className="form-style">
           
           {/* 1. 이메일 */}
           <div className="input-group">
@@ -142,7 +160,8 @@ const SignupPage = () => {
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                className="login-input"
+                // 비밀번호가 유효하지 않을 때만 input-error 클래스 적용
+                className={`login-input ${!isPasswordValid ? 'input-error' : ''}`}
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -156,16 +175,21 @@ const SignupPage = () => {
                 {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
               </div>
             </div>
+             {/* 8자 미만일 때 오류 메시지 표시 */}
+            {!isPasswordValid && formData.password.length > 0 && (
+                <p className="error-message">비밀번호는 8자 이상이어야 합니다.</p>
+            )}
           </div>
           
           {/* 7. 비밀번호 확인 */}
           <div className="input-group">
-            <label htmlFor="confirmPassword">비밀번호 확인</label>
+            <label htmlFor="confirmPassword">비밀번호 확인 </label>
             <div className="input-container">
               <input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
-                className={`login-input ${!passwordMatch ? 'input-error' : ''}`}
+                // 비밀번호 불일치 시 input-error 클래스 적용
+                className={`login-input ${!passwordMatch && formData.confirmPassword.length > 0 ? 'input-error' : ''}`}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
@@ -179,7 +203,8 @@ const SignupPage = () => {
                 {showConfirmPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
               </div>
             </div>
-            {!passwordMatch && (
+            {/* 비밀번호가 다르고, 확인 필드에 내용이 있을 때만 오류 메시지 표시 */}
+            {!passwordMatch && formData.confirmPassword.length > 0 && (
                 <p className="error-message">비밀번호가 일치하지 않습니다.</p>
             )}
           </div>
@@ -198,23 +223,9 @@ const SignupPage = () => {
             회원가입하기
           </button>
         </form>
-
-        {/* 하단 푸터 영역 (Login.jsx와 동일) */}
-        <div className="footer-section">
-          <div className="logo-ver">로고 ver.2</div>
-          <div className="footer-links">
-            <a href="#" onClick={(e) => e.preventDefault()}>개인정보 처리방침</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>서비스 이용 약관</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>문의하기 @gmail.com</a>
-          </div>
-          <div className="copyright">
-            Copyright 2025 tjeun proj<br />
-            All right reserved.
-          </div>
-        </div>
       </div>
-    </div>
+  
   );
 };
 
-export default SignupPage;
+export default SignupComponent;

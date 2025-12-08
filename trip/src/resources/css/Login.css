@@ -1,0 +1,185 @@
+/* 후순위로 css 버그찾을때 수정하겠습니다 */
+
+/* 로그인 페이지 전체 컨테이너: 화면 전체를 채우고 내용을 중앙에 배치합니다. */
+.login-container {
+    background-color: white; 
+    width: 100%;
+    max-width: 100%; /* 로그인 폼의 최대 너비 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.header-logo-text .header-logo {
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.login-image-container {
+    margin-bottom: 20px;
+}
+
+.login-image {
+    width: 50%;
+    padding-top: 20px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-message {
+    font-size: 1.1rem;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+/* 입력 필드 그룹 */
+.input-group {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.input-container {
+    position: relative;
+}
+
+.login-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+}
+
+/* 로그인 버튼 */
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+/* 링크 그룹 */
+.link-group {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin-top: 20px;
+    padding: 0 5px;
+    font-size: 0.9rem;
+}
+
+.link-group a {
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.link-group a:hover {
+    text-decoration: underline;
+}
+
+/* SNS 로그인 */
+.sns-login-title {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #777;
+    font-size: 0.9rem;
+    position: relative;
+    width: 80%;
+}
+
+.sns-login-title::before,
+.sns-login-title::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.sns-login-title::before {
+    left: 0;
+}
+
+.sns-login-title::after {
+    right: 0;
+}
+
+.sns-icons {
+    size : 20px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    gap: 50px;
+    margin-bottom: 40px;
+    justify-content: center;
+}
+
+.sns-icon-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    
+}
+
+.sns-icon-button:hover {
+    transform: translateY(-2px);
+}
+
+.sns-icon-naver {
+    background-color: #03c75a; /* 네이버 녹색 */
+}
+
+.sns-icon-kakao {
+    background-color: #fee500; /* 카카오 노란색 */
+    color: #3c1e1e !important;
+}
+
+.sns-icon-google {
+    background-color: #ea4335; /* 구글 빨간색 */
+}
+
+.copyright {
+    margin-top: 10px;
+}

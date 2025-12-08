@@ -1,0 +1,25 @@
+/* layout.css */
+/* 모든 페이지의 공통 레이아웃 스타일 */
+
+.main-content-wrapper {
+  width: 100%;
+  padding-top: 90px; /* Header가 fixed라서 여백 필요 */
+  display: flex;
+  justify-content: center;
+}
+
+/* 페이지 컨텐츠 중앙 정렬 */
+.page-centered-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; 
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+body {
+  display: block !important;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
