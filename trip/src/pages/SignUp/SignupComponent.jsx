@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
+import { Link, useNavigate} from "react-router-dom"; // useNavigate 추가
 // 경로 재수정: ../components/common/Header로 수정
 // CSS 경로 재수정
 import '../../resources/css/SignupPage.css'; 
+import axios from "axios";
 
 
 // 비밀번호 표시/숨김 아이콘 (Login.jsx에서 재사용)
@@ -13,10 +14,10 @@ const EyeOffIcon = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.73 0 1.45-.08 2.14-.23"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
 );
 
+
 const SignupComponent = () => {
   const [formData, setFormData] = useState({
     email: '',
-    name: '',
     nickname: '',
     birthdate: '',
     gender: '',
@@ -59,14 +60,52 @@ const SignupComponent = () => {
 
   const isFormValid = formData.password && formData.confirmPassword && passwordMatch && isPasswordValid;
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+    const navigate = useNavigate();
 
     if (!isFormValid) {
         console.error('오류: 입력 필드를 확인해 주세요 (비밀번호 불일치 또는 길이 부족).');
         return;
     }
 
+    // 2. 백엔드(AuthenticationService)가 기대하는 데이터 구조로 변환
+    const requestBody = {
+        email: formData.email,
+        password: formData.password,
+        nickname: formData.nickname,
+        gender: formData.gender, // 예: "MALE" or "FEMALE"
+    };
+
+    try {
+        // 3. 백엔드로 요청 전송 (포트번호 8080 가정)
+        const response = await fetch('/sts/api/v1/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('회원가입 성공:', data);
+            
+            // (선택) 회원가입 후 바로 로그인 처리를 하려면 여기서 토큰 저장
+            // localStorage.setItem('accessToken', data.access_token);
+            
+            alert("회원가입이 완료되었습니다!");
+            navigate('/login'); // 4. 로그인 페이지로 이동
+        } else {
+            // 서버에서 에러 응답이 온 경우
+            const errorData = await response.json(); // 백엔드 에러 메시지 확인
+            console.error('회원가입 실패:', errorData);
+            alert(`회원가입 실패: ${errorData.message || '알 수 없는 오류'}`);
+        }
+    } catch (error) {
+        console.error('네트워크 오류:', error);
+        alert("서버와 통신 중 오류가 발생했습니다.");
+    }
     // 실제 회원가입 로직이 여기에 들어갑니다.
     console.log('회원가입 시도:', formData);
     console.log('회원가입 성공 (데모)');
@@ -97,18 +136,6 @@ const SignupComponent = () => {
             />
           </div>
           
-          {/* 2. 이름 */}
-          <div className="input-group">
-            <label htmlFor="name">이름</label>
-            <input
-              id="name"
-              type="text"
-              className="login-input"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
           
           {/* 3. 닉네임 */}
           <div className="input-group">
@@ -147,9 +174,8 @@ const SignupComponent = () => {
               required
             >
               <option value="" disabled>선택</option>
-              <option value="male">남성</option>
-              <option value="female">여성</option>
-              <option value="other">기타</option>
+              <option value="M">남성</option>
+              <option value="F">여성</option>
             </select>
           </div>
           

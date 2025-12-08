@@ -9,7 +9,6 @@ import SignupComponent from "./SignupComponent.jsx";
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     email: '',
-    name: '',
     nickname: '',
     birthdate: '',
     gender: '',
