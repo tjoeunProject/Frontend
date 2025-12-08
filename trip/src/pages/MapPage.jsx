@@ -156,7 +156,7 @@ const MapPage = ({
               📅 나의 일정 ({totalItineraryCount})
             </TabButton>
           </div>
-
+s
           {/* 검색 탭 */}
           {activeTab === "search" && (
             <div className="search-tab">

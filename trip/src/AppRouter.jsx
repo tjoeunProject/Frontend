@@ -14,6 +14,11 @@ import SignupPage from './pages/SignUp/SignupPage.jsx';
 import MapPage from './map.jsx';
 import TestConnection from './TestConnection.jsx';
 
+import { AuthProvider } from './member_ex/AuthContext.jsx';
+import TestLoginPage from './member_ex/LoginPage.jsx';
+import DashboardPage from './member_ex/DashboardPage.jsx';
+import PrivateRoute from './member_ex/PrivateRoute.jsx';
+
 function AppRouter() {
   return (
     <BrowserRouter>
@@ -27,7 +32,7 @@ function AppRouter() {
         <Route path="/ranking" element={<RankingPage/>}/>
         <Route path="/mytravel" element={<MyTravelPage/>}/>
         <Route path="/map" element={<MapPage />} />      
-        <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
+        <Route path="/survey/SurveyFirstPage  " element={<SurveyPage />} />
         <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
         <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
         <Route path="/survey/SurveyFourPage" element={<SurveyPage4 />} />
@@ -36,9 +41,21 @@ function AppRouter() {
         {/* 404 페이지 (선택 사항) */}
         <Route path="/test-spring" element={<TestConnection />} />
         <Route path="*" element={<div>404 Not Found</div>}/>
+        <Route path="/login1" element={<TestLoginPage />} />
+          
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<DashboardPage />} />
+          </Route>
+        
       </Routes>
       {/* Footer 등 기타 공통 컴포넌트 */}
+    {/* 2. 그 안에서 인증 관리자가 동작합니다 */}
+      
+
+      
     </BrowserRouter>
+
+    
   );
 }
 
