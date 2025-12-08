@@ -19,8 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      // 만든 api 객체 사용
-      const response = await api.post('/auth/authenticate', { email, password });
+      const response = await api.post('/sts/api/v1/auth/authenticate', { email, password });
       
       const { access_token, refresh_token } = response.data;
       localStorage.setItem('access_token', access_token);
