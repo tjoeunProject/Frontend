@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 // 경로 재수정: ../components/common/Header로 수정
 // CSS 경로 재수정
 import '../../resources/css/SignupPage.css'; 
+import axios from 'axios';
 
 
 // 비밀번호 표시/숨김 아이콘 (Login.jsx에서 재사용)
@@ -56,6 +57,21 @@ const SignupComponent = () => {
       }
     }
   };
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    axios.post('sts/api/v1/auth/register')
+      .then((response) => {
+        setUser(response.data);
+      })
+      .catch((error) => {
+        setError(error);
+      });
+  }, []);
 
   const isFormValid = formData.password && formData.confirmPassword && passwordMatch && isPasswordValid;
 
