@@ -19,31 +19,41 @@ import DashboardPage from './pages/Login/DashboardPage.jsx';
 
 function AppRouter() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/history" element={<HistoryPage />} />
-      <Route path="/ranking" element={<RankingPage />} />
-      <Route path="/mytravel" element={<MyTravelPage />} />
-      <Route path="/map" element={<MapPage />} />
+    <BrowserRouter>
+      {/* 모든 페이지에 공통으로 표시되는 네비게이션 */}
+      
+      {/* 화면별 라우팅 관리 */}
+      <Routes>
+        {/* 소개 (메인 화면) */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/history" element={<HistoryPage/>}/>
+        <Route path="/ranking" element={<RankingPage/>}/>
+        <Route path="/mytravel" element={<MyTravelPage/>}/>
+        <Route path="/map" element={<MapPage />} />      
+        <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
+        <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
+        <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
+        <Route path="/survey/SurveyFourPage" element={<SurveyPage4 />} />
+        <Route path="/login" element={<LoginPage />}/>
+        <Route path="/signup" element={<SignupPage />}/>
+        {/* 404 페이지 (선택 사항) */}
+        <Route path="/test-spring" element={<TestConnection />} />
+        <Route path="*" element={<div>404 Not Found</div>}/>
+        <Route path="/login1" element={<TestLoginPage />} />
+          
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<DashboardPage />} />
+          </Route>
+        
+      </Routes>
+      {/* Footer 등 기타 공통 컴포넌트 */}
+    {/* 2. 그 안에서 인증 관리자가 동작합니다 */}
+      
 
-      <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
-      <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
-      <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
-      <Route path="/survey/SurveyFourPage" element={<SurveyPage4 />} />
+      
+    </BrowserRouter>
 
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-
-      <Route path="/test-spring" element={<TestConnection />} />
-
-      {/* 인증 필요 페이지 */}
-      <Route element={<PrivateRoute />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Route>
-
-      {/* 404 */}
-      <Route path="*" element={<div>404 Not Found</div>} />
-    </Routes>
+    
   );
 }
 

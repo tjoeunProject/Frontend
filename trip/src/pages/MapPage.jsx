@@ -259,9 +259,20 @@ const MapPage = ({
             <HandleMapIdle onIdle={() => setShowButton(true)} />
 
             {showButton && activeTab === "search" && (
-              <div className="reSearch-btn-box">
-                <button className="reSearch-btn">📍 여기에서 다시 검색</button>
-              </div>
+              <div
+                className="reSearch-btn-box"
+                style={{
+                  backgroundColor: '#ffffff',
+                  padding: '8px 8px',
+                  borderRadius: '6px',
+                  display: 'inline-block'
+                }}
+            >
+              <span style={{ fontSize: '12px', color: '#000000ff' }}>
+                Tip. 원하는 장소에 핀트를 찍어서 나의 일정에도 추가할 수 있습니다.
+              </span>
+</div>
+
             )}
 
             {/* 검색 마커 */}

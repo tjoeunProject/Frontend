@@ -16,7 +16,9 @@ const EyeOffIcon = (props) => (
 
 
 const SignupComponent = () => {
+
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     nickname: '',
