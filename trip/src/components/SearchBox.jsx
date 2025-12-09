@@ -106,7 +106,7 @@ const SearchBox = ({ onPlaceSelect }) => {
         className="searchbox-input"
         onKeyDown={handleEnterSearch}
       />
-    </div>
+    </div>    
   );
 };
 

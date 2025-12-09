@@ -32,7 +32,7 @@ function AppRouter() {
         <Route path="/ranking" element={<RankingPage/>}/>
         <Route path="/mytravel" element={<MyTravelPage/>}/>
         <Route path="/map" element={<MapPage />} />      
-        <Route path="/survey/SurveyFirstPage  " element={<SurveyPage />} />
+        <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
         <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
         <Route path="/survey/SurveyThreePage" element={<SurveyPage3 />} />
         <Route path="/survey/SurveyFourPage" element={<SurveyPage4 />} />

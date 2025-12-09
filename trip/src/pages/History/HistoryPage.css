@@ -1,0 +1,39 @@
+/* .custom-modal 클래스에 너비와 높이 지정 */
+.custom-modal2 {
+    /* 기존 스타일 유지 (position, overflow 등) */
+
+    /* 💡 크기 지정 */
+    width: 500px;  /* 원하는 너비로 설정 */
+    height: 200px; /* 원하는 높이로 설정 */
+    
+    /* 화면 중앙에 정확히 배치하기 위한 추가 스타일 (선택 사항) */
+    /* top, left, right, bottom 인라인 스타일을 덮어씁니다. */
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+}
+
+.history-create-card {
+    /* ❗ 크기 설정 (다른 카드와 동일하게) */
+    width: 300px; /* 다른 카드와 동일한 너비 */
+    height: 380px; /* 다른 카드와 동일한 높이 */
+    
+    /* 내부 정중앙 정렬 유지 */
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+
+    /* ... 기타 스타일 (background, box-shadow 등) ... */
+    background: white;
+    padding: 18px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+}
+
+.modal-open {
+    overflow: hidden; /* 스크롤을 숨깁니다 */
+    position: fixed; /* (선택 사항) 내용물이 스크롤되지 않도록 위치를 고정합니다 */
+    width: 100%;     /* (선택 사항) width를 고정하여 화면 떨림(Jitter)을 방지합니다 */
+}

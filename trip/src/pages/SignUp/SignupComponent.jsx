@@ -16,6 +16,9 @@ const EyeOffIcon = (props) => (
 
 
 const SignupComponent = () => {
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     nickname: '',
@@ -58,26 +61,10 @@ const SignupComponent = () => {
     }
   };
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    axios.post('sts/api/v1/auth/register')
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch((error) => {
-        setError(error);
-      });
-  }, []);
-
   const isFormValid = formData.password && formData.confirmPassword && passwordMatch && isPasswordValid;
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const navigate = useNavigate();
 
     if (!isFormValid) {
         console.error('오류: 입력 필드를 확인해 주세요 (비밀번호 불일치 또는 길이 부족).');
