@@ -7,7 +7,7 @@ const PrivateRoute = () => {
   const { isLoggedIn } = useAuth();
   
   // 로그인 안 했으면 로그인 페이지로 쫓아냄
-  return isLoggedIn ? <Outlet /> : <Navigate to="/login1" replace />;
+  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;
