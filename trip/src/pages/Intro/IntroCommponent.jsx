@@ -82,7 +82,7 @@ function IntroCommponent() {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
-            <span className="search-icon" onClick={handleSearch}>🔍</span>
+            <span className="search-icon" onClick={handleSearch}>🔎</span>
           </form>
 
           <Link to="/survey/SurveyFirstPage" className="cta-button">
