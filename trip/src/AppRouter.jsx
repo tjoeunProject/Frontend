@@ -9,15 +9,13 @@ import HomePage from './pages/Intro/IntroPage.jsx';
 import HistoryPage from './pages/History/HistoryPage.jsx';
 import RankingPage from './pages/Ranking/RankingPage.jsx';
 import MyTravelPage from './pages/MyTravelPage.jsx';
-import LoginPage from './pages/Login/Login.jsx';
+import LoginPage from './pages/Login/LoginPage.jsx';
 import SignupPage from './pages/SignUp/SignupPage.jsx';
 import MapPage from './map.jsx';
 import TestConnection from './TestConnection.jsx';
 
-import { AuthProvider } from './member_ex/AuthContext.jsx';
-import TestLoginPage from './member_ex/LoginPage.jsx';
-import DashboardPage from './member_ex/DashboardPage.jsx';
-import PrivateRoute from './member_ex/PrivateRoute.jsx';
+import PrivateRoute from './pages/Login/PrivateRoute.jsx';
+import DashboardPage from './pages/Login/DashboardPage.jsx';
 
 function AppRouter() {
   return (

@@ -41,3 +41,15 @@
   font-size: 17px;
   color: #333;
 }
+
+.logout-button {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.logout-button:hover {
+  text-decoration: underline;
+}
