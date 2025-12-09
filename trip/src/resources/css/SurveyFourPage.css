@@ -1,0 +1,98 @@
+/* 전체 wrapper */
+.survey4-wrapper {
+  padding-top: 120px; /* header 공간 확보 */
+}
+
+/* 내용 영역 */
+.survey4-content {
+  flex: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: left;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* 제목 영역 */
+.survey4-title-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px 0;
+  margin-top: 10px;
+}
+
+/* 태그 구역 제목 */
+.survey4-tag-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+/* 태그들 묶음 */
+.survey4-tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 45px;
+}
+
+/* 태그 버튼 */
+.survey4-tag {
+  padding: 12px 25px;
+  background: #d9d9d9;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  transition: 0.25s;
+}
+
+.survey4-tag:hover {
+  background: #c7c7c7;
+}
+
+.survey4-tag.active {
+  background: #6c8bc7;
+  color: white;
+}
+
+/* 버튼 영역 */
+.survey4-btn-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin: 20px auto 20px auto;     
+    gap: 20px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/* 이전 버튼 */
+.survey4-back-btn {
+  display: block;
+  width: 330px;
+  padding: 15px 0;
+  margin: 20px auto 0;
+  font-size: 22px;
+  font-weight: 900;
+ background-color: #B1A79D !important; 
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* 완료 버튼 */
+.survey4-next-btn {
+  display: block;
+  width: 330px;
+  padding: 15px 0;
+  margin: 20px auto 0;
+  font-size: 22px;
+  font-weight: 900;
+ background-color: #FF8000 !important; 
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+}
+
+
