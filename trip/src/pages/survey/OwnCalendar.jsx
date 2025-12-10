@@ -7,7 +7,7 @@ import {
 } from "./CalendarStyle";
 import moment from 'moment';
 
-const OwnCalendar = () => {
+const OwnCalendar = ({onDateSelectComplete}) => {
   // 1. 상태를 기간 선택 [시작일, 종료일] 배열로 변경
   // 초기값은 현재 날짜 (today)를 포함한 배열로 설정하거나, [null, null]로 설정할 수 있습니다.
   const today = new Date();
@@ -24,7 +24,7 @@ const OwnCalendar = () => {
        
     // 만약 기간 선택이 완료되면 (배열 길이가 2이면)
     // 부모 컴포넌트에 기간을 전달하는 로직을 여기에 추가할 수 있습니다.
-    if (newDateRange && newDateRange.length === 2 && newDateRange[1]) {
+    if (newDateRange && newDateRange.length === 2 && newDateRange[1] ) {
         console.log(moment(newDateRange[0]).format('YYYY-MM-DD'));
         console.log(moment(newDateRange[1]).format('YYYY-MM-DD'));
         
@@ -32,10 +32,13 @@ const OwnCalendar = () => {
         console.log(daysDifference);
         if(daysDifference > MAX_DAY){
           alert("최대 5일까지만 선택이 가능해요");
+          onDateSelectComplete(false);
           return;
         }
+        onDateSelectComplete(true);
+    } else {
+      onDateSelectComplete(false);
     }
-
     // newDateRange는 [Date, Date] 형태의 배열입니다.
     setDateRange(newDateRange);
   };
