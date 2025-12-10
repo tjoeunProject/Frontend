@@ -179,6 +179,7 @@ const useRouteLogic = () => {
     // data -> route 
       .then((data) => {
         // 백엔드에서 받은 데이터를 State에 세팅
+        // Route 테이블을 가져온거임 
         setCurrentRoute(data);
         setTitle(data.title);
         setStartDate(data.startDate);

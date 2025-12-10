@@ -18,6 +18,7 @@ const App = () => {
   const searchKeyword = location.state?.searchKeyword; // "부산" 같은 글자가 여기 들어옴
 
 
+
   /** Day별 일정 구조 */
   const [itineraryByDay, setItineraryByDay] = useState({
     day1: [],
@@ -123,28 +124,7 @@ const App = () => {
   };
 
 
-  /* ============================================================
-     📍 지도 클릭 → 커스텀 장소 추가 (Day1에 추가)
-  ============================================================ */
-  const handleMapClick = (e) => {
-    if (e.detail.latLng) {
-      const lat = e.detail.latLng.lat;
-      const lng = e.detail.latLng.lng;
-      const name = prompt("이 장소 이름 입력");
-
-      if (name) {
-        const newPlace = {
-          id: Date.now().toString(),
-          name,
-          lat,
-          lng,
-          type: 'custom'
-        };
-
-        addToItinerary(newPlace);
-      }
-    }
-  };
+  
 
 
   /* ============================================================
@@ -306,7 +286,6 @@ const handleOptimize = async () => {
 
       handleManualSearch={handleManualSearch}
       addToItinerary={addToItinerary}
-      handleMapClick={handleMapClick}
 
       handleOnDragEnd={handleOnDragEnd}
       handleOptimize={handleOptimize}

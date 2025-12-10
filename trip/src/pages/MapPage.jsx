@@ -16,6 +16,8 @@ import ItineraryListOptimized from '../components/ItineraryListOptimized';
 
 import DirectionsPolyline from '../components/DirectionsPolyline';
 
+
+import MapClickHandler from '../components/MapClickHandler';
 import './MapPage.css';
 
 
@@ -248,6 +250,8 @@ const MapPage = ({
             mapTypeControl={false}        // 왼쪽 위 '지도/위성' 버튼 숨김
             streetViewControl={false}     // 오른쪽 아래 '페그맨' 숨김
           >
+            {/* 12/10 수정  */}
+            <MapClickHandler onPlaceSelect={addToItinerary} />
 
             {/* 🔥 Intro → MapPage 이동 시 자동 검색 */}
             {initialSearchKeyword && (
