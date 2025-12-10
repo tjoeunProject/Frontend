@@ -1,12 +1,18 @@
 import Header from '../../components/common/Header';
 import "../../resources/css/SurveyPage.css";
-import './SurveyTwoPage';
 import {Link} from 'react-router-dom';
 import survey from './../../resources/img/welcome.png';
 import Footer from '../../components/common/Footer';
 
 function SurveyFirstPage() {
-
+    
+    // 유효성 검사 등 필요한 로직
+    const handleNextClick = () => {
+    
+    // 핵심: 다음 페이지 접근 허용 플래그 저장
+    localStorage.setItem('survey_step_1_completed', 'true');
+};
+    
     return (
         <div className="page-with-header">
         <Header/>
@@ -23,7 +29,9 @@ function SurveyFirstPage() {
             </h3>
 
             <br/>
-            <Link to="/survey/SurveyTwoPage" className="cta-button">
+            <Link to="/survey/SurveyTwoPage" 
+            className="cta-button"
+            onClick={handleNextClick}>
                 START!
             </Link>
             <br/>       

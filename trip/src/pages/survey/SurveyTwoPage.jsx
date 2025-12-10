@@ -1,13 +1,57 @@
 import Header from '../../components/common/Header';
 import "../../resources/css/SurveyPage.css";
-import './SurveyFirstPage.jsx';
+import React, { useState, useEffect } from 'react';
 import 'rsuite/dist/rsuite.min.css';
 import Footer from '../../components/common/Footer.jsx'
 import survey1 from './../../resources/img/survey1.png';
-import { Link } from 'react-router-dom'; // Link 임포트 띄어쓰기 수정
+import { Link, Navigate } from 'react-router-dom'; // Link 임포트 띄어쓰기 수정
+import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyTwoPage() {
     
+    const [selectedTags, setSelectedTags] = useState([]);
+
+    useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
+
+    // 유효성 검사 등 필요한 로직
+    const handleNextClick = () => {
+    
+    // 핵심: 다음 페이지 접근 허용 플래그 저장
+    localStorage.setItem('survey_step_1_completed', 'true');
+    };
+
+    // 최대 선택 갯수
+    const MAX_SELECTION = 2;
+
+      const toggleTag = (tag) => {
+        setSelectedTags((prev) =>{
+            if (prev.includes(tag)){
+                return prev.filter((t) => t !== tag);
+            }
+            // 만약 2개 이상이면 선택 XX
+            else{
+                if (prev.length < MAX_SELECTION){
+                    return [...prev, tag];
+                }
+                else {
+                    alert(`최대 : ${MAX_SELECTION}개 까지만 선택 가능해요`);
+                    return prev;
+                }
+            }
+        }
+        );
+      };
+    
+      const renderTag = (label) => (
+        <button
+          className={`survey4-tag ${selectedTags.includes(label) ? "active" : ""}`}
+          onClick={() => toggleTag(label)
+          }
+        >
+          {label}
+        </button>
+      );
+
     return (
         <div className="page-with-header">
             <Header />
@@ -28,27 +72,28 @@ function SurveyTwoPage() {
                     </div>
                 </div>
                 <div className='survey-grid'>
-                    <button className='survey-button'>서울</button>
-                    <button className='survey-button'>부산</button>
-                    <button className='survey-button'>대구</button>
-                    <button className='survey-button'>인천</button>
-                    <button className='survey-button'>광주</button>
-                    <button className='survey-button'>대전</button>
-                    <button className='survey-button'>울산</button>
-                    <button className='survey-button'>충북</button>
-                    <button className='survey-button'>충남</button>
-                    <button className='survey-button'>전북</button>
-                    <button className='survey-button'>전남</button>
-                    <button className='survey-button'>경북</button>
-                    <button className='survey-button'>경남</button>
-                    <button className='survey-button'>제주</button>
+                    {renderTag("서울")}
+                    {renderTag("부산")}
+                    {renderTag("대구")}
+                    {renderTag("인천")}
+                    {renderTag("광주")}
+                    {renderTag("대전")}
+                    {renderTag("울산")}
+                    {renderTag("충북")}
+                    {renderTag("충남")}
+                    {renderTag("전북")}
+                    {renderTag("전남")}
+                    {renderTag("경북")}
+                    {renderTag("경남")}
+                    {renderTag("제주")}
                 </div>
 
                 <div className='survey-grid2'>
                     <Link to="/survey/SurveyFirstPage" className="back-button">
                         뒤로가기
                     </Link>
-                    <Link to="/survey/SurveyThreePage" className="next-button2">
+                    <Link to="/survey/SurveyThreePage" className="next-button2"
+                    onClick={handleNextClick}>
                         다음으로
                     </Link>
                 </div>
