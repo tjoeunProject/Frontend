@@ -4,8 +4,18 @@ import "../../resources/css/SurveyFourPage.css"; // 🔥 전용 CSS
 import Footer from '../../components/common/Footer.jsx';
 import survey3 from './../../resources/img/survey3.png';
 import { Link } from 'react-router-dom';
+import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyFourPage() {
+
+    useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
+
+    // 유효성 검사 등 필요한 로직
+    const handleNextClick = () => {
+    
+    // 핵심: 다음 페이지 접근 허용 플래그 저장
+    localStorage.setItem('survey_step_1_completed', 'true');
+    };
 
   const [selectedTags, setSelectedTags] = useState([]);
 
@@ -32,7 +42,7 @@ function SurveyFourPage() {
 
         <div className="survey4-title-box">
           <div>
-            <h3>마지막으로 이번 여행의 테마를 정해볼까요?</h3>
+            <h3>마지막으로<br/> 이번 여행의 테마를 정해볼까요?</h3>
             <h4> <br/>
               여행의 <b>태그를 </b>선택해주세요.
             </h4>
@@ -79,13 +89,18 @@ function SurveyFourPage() {
           </div>
         </div>
 
+        <Link to="/map" className="survey4-next-btn">
+            건너 뛰기 
+        </Link>
         {/* 버튼 영역 */}
         <div className="survey4-btn-box">
-          <Link to="/survey/SurveyThreePage" className="survey4-back-btn">
+          <Link to="/survey/SurveyThreePage" className="survey4-back-btn"
+          onClick={handleNextClick}>
             이전으로
           </Link>
 
-          <Link to="/" className="survey4-next-btn">
+          <Link to="/map" className="survey4-next-btn"
+          onClick={handleNextClick}>
             완료하기
           </Link>
         </div>

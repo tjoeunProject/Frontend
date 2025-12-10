@@ -4,10 +4,20 @@ import Footer from '../../components/common/Footer.jsx'
 import survey2 from './../../resources/img/survey2.png';
 import {Link} from 'react-router-dom';
 import OwnCalendar from './OwnCalendar.jsx'; 
+import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyThreePage(){
     
     // ... 이 컴포넌트에서 날짜 상태를 관리할 수도 있습니다. ...
+
+    useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
+
+    // 유효성 검사 등 필요한 로직
+    const handleNextClick = () => {
+    
+    // 핵심: 다음 페이지 접근 허용 플래그 저장
+    localStorage.setItem('survey_step_1_completed', 'true');
+    };
 
     return (
         <div className="page-with-header">
@@ -30,10 +40,12 @@ function SurveyThreePage(){
                 <OwnCalendar/> 
                 
                 <div className='survey-grid2'>
-                    <Link to="/survey/SurveyTwoPage" className="back-button">
+                    <Link to="/survey/SurveyTwoPage" className="back-button"
+                    onClick={handleNextClick}>
                         뒤로가기
                     </Link>
-                    <Link to="/survey/SurveyFourPage" className="next-button2">
+                    <Link to="/survey/SurveyFourPage" className="next-button2"
+                    onClick={handleNextClick}>
                         다음으로
                     </Link>
                 </div>

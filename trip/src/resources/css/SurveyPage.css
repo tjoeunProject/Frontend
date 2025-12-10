@@ -40,8 +40,8 @@
 .survey-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    margin: 10px;
-    gap: 5px;
+    margin: 50px 100px;
+    gap: 30px;
     align-items: center;
 }
 
