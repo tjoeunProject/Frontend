@@ -245,6 +245,8 @@ const MapPage = ({
             gestureHandling="greedy"
             disableDefaultUI={false}
             onClick={handleMapClick}
+            mapTypeControl={false}        // 왼쪽 위 '지도/위성' 버튼 숨김
+            streetViewControl={false}     // 오른쪽 아래 '페그맨' 숨김
           >
 
             {/* 🔥 Intro → MapPage 이동 시 자동 검색 */}
