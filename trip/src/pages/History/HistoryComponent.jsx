@@ -42,6 +42,27 @@ const HistoryComponent = () => {
     }
   };
 
+  const [isDateSelected, setIsDateSelected] = useState(false); 
+
+    // 🚨 OwnCalendar에서 호출될 콜백 함수
+    const handleDateSelectComplete = (isValid) => {
+        setIsDateSelected(isValid);
+    };
+
+    // '확인하기' 링크 클릭 핸들러 (선택 사항: alert 제거 및 모달 닫기)
+    const handleMapCheck = (e) => {
+        // isDateSelected가 false인 경우 클릭을 막기 위해 이미 CSS로 막았지만,
+        // 혹시 모를 상황을 대비해 추가적인 확인 로직을 둘 수 있습니다.
+        if (!isDateSelected) {
+            e.preventDefault(); // 기본 이동 방지
+            alert("여행 기간을 먼저 선택해 주세요.");
+            return;
+        }
+        // setIsOpen(false); // 모달 닫기 (고객님 코드에 있던 로직)
+        
+        // 유효하면 정상적으로 to="/map"으로 이동합니다.
+    };
+
   return (
     <div className="history-wrapper">
       <div
@@ -178,22 +199,28 @@ const HistoryComponent = () => {
                       언제 떠나시나요?
                     </div>
 
-                    <OwnCalendar />
+                    <OwnCalendar onDateSelectComplete={handleDateSelectComplete} />
 
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                       <Link
                         to="/map"
-                        onClick={() => {
-                          alert('지도 페이지로 이동');
-                          setIsOpen(false);
-                        }}
+                        onClick={handleMapCheck}
                         style={{
                           display: 'inline-block',
                           padding: '8px 14px',
-                          background: '#007bff',
-                          color: '#fff',
                           borderRadius: '6px',
                           textDecoration: 'none',
+
+                          // 1. 배경색 (활성화/비활성화)
+                          background: isDateSelected ? '#ff8c00' : '#cccccc', // 주황색(활성) 또는 회색(비활성)
+                          // 2. 글자색 (대비 강조)
+                          color: isDateSelected ? '#ffffff' : '#666666', // 흰색(활성) 또는 어두운 회색(비활성)
+                          // 3. 마우스 커서 (클릭 가능/불가 시각화)
+                          cursor: isDateSelected ? 'pointer' : 'not-allowed',
+                          // 4. 투명도 (선택 사항: 비활성 시 더 흐리게)
+                          opacity: isDateSelected ? 1 : 0.6,
+                          // 5. 클릭 이벤트 차단 (기능적 비활성화)
+                          pointerEvents: isDateSelected ? 'auto' : 'none',
                         }}
                       >
                         확인하기
