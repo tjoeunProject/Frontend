@@ -12,6 +12,15 @@ function Header() {
     logout();           
     navigate("/");
   };
+
+  const handleClick = (e) => {
+        if (!isLoggedIn) {
+            e.preventDefault(); // 기본 Link 동작 (이동) 방지 (선택 사항)
+            alert("로그인 후 이용 가능합니다.");
+            navigate("/");
+            return;
+        }
+    };
 console.log("HEADER isLoggedIn =", isLoggedIn);
 
   return (
@@ -21,9 +30,13 @@ console.log("HEADER isLoggedIn =", isLoggedIn);
           <img src={RoutePick} alt="LOGO" className="header-logo"/>
         </Link>
         <Link to="/">소개</Link>
-        <Link to="/history">히스토리</Link>
+        <Link to={isLoggedIn ? "/history" : "#"} // 로그인 시 /history, 아니면 현재 페이지 '#'
+              onClick={handleClick} // 이 핸들러에서 이동을 막을지 결정
+        >히스토리
+        </Link>
         <Link to="/ranking">랭킹</Link>
-        <Link to="/mytravel">나의 여행지</Link>
+        <Link to={isLoggedIn ? "/mytravel" : "#"} 
+          onClick={handleClick}>나의 여행지</Link>
       </nav>
 
       <nav className="header-nav-right">
