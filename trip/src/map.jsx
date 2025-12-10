@@ -113,6 +113,7 @@ const App = () => {
     }
 
     // 일단 최적화 전에는 Day1에만 추가
+    // 12/10 나중에 일정을 받을떄에는 일정에 맞게 하는것이 좋은듯 ex) 12/10 ~ 12/12 면 3일로 되도록 
     setItineraryByDay({
       ...itineraryByDay,
       day1: [...itineraryByDay.day1, place]

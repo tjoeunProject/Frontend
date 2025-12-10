@@ -1,5 +1,6 @@
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import SearchResultItem from "./SearchResultItem"; // 🔥 import
 
 const ItineraryListOptimized = ({
   itineraryByDay,
@@ -84,14 +85,14 @@ const ItineraryListOptimized = ({
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        {index + 1}. {place.name}
-
-                        <button
-                          className="delete-btn"
-                          onClick={() => removeFromItinerary(place.id)}
-                        >
-                          ❌
-                        </button>
+                        {/* 🔥 여기도 SearchResultItem 재사용 */}
+                        {/* 12/10 추가 */}
+                        <SearchResultItem 
+                          place={place}
+                          index={index + 1}
+                          indexColor={DAY_COLORS[dayIndex]} // 🔥 요일별 색상 전달
+                          onDelete={removeFromItinerary}
+                        />
                       </div>
                     )}
                   </Draggable>
