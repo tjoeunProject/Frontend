@@ -9,6 +9,9 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    /* Header Footer 와 겹치기 않게 수정  */
+    padding-top: 120px;
+    padding-bottom: 60px;
 }
 
 .header-logo-text .header-logo {
@@ -22,7 +25,7 @@
 
 .login-image {
     width: 50%;
-    padding-top: 20px;
+    /* padding-top: 20px;  이상하게 보여서 수정 */
     height: auto;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

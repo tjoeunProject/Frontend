@@ -25,6 +25,8 @@ const api = {
   // [POST] 일정 생성: 데이터(DTO)를 body에 담아 보냄 -> 생성된 ID 반환
   createRoute: (data) => simpleAxios.post('', data).then(res => res.data),
 
+  // data 형태 -> createPayload 임(객체)
+
   // [GET] 일정 상세 조회: ID로 특정 여행 일정을 가져옴
   getRouteDetail: (id) => simpleAxios.get(`/${id}`).then(res => res.data),
 
