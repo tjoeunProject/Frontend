@@ -18,25 +18,26 @@ const OwnCalendar = () => {
   
   // 특정 날짜 예시는 그대로 유지
   const attendDay = ["2024-09-06", "2024-09-17"]; 
-
+  const MAX_DAY = 4;
   // 2. onChange 핸들러를 기간 배열을 받도록 수정
   const handleDateChange = (newDateRange) => {
-    // newDateRange는 [Date, Date] 형태의 배열입니다.
-    setDateRange(newDateRange);
-    
+       
     // 만약 기간 선택이 완료되면 (배열 길이가 2이면)
     // 부모 컴포넌트에 기간을 전달하는 로직을 여기에 추가할 수 있습니다.
     if (newDateRange && newDateRange.length === 2 && newDateRange[1]) {
-        console.log(moment(newDateRange[0]).format('YYYY-MM-DD'), moment(newDateRange[1]).format('YYYY-MM-DD'));
+        console.log(moment(newDateRange[0]).format('YYYY-MM-DD'));
+        console.log(moment(newDateRange[1]).format('YYYY-MM-DD'));
+        
+        const daysDifference = moment(newDateRange[1]).diff(moment(newDateRange[0]), 'days');
+        console.log(daysDifference);
+        if(daysDifference > MAX_DAY){
+          alert("최대 5일까지만 선택이 가능해요");
+          return;
+        }
     }
-  };
 
-  // "Today" 버튼 클릭 로직 (포커스를 오늘 날짜가 있는 월로 이동)
-  const handleTodayClick = () => {
-    const today = new Date();
-    setActiveStartDate(today);
-    // 선택된 날짜도 오늘로 변경 (단일 날짜를 기간의 시작/끝으로 설정)
-    setDateRange([today, today]); 
+    // newDateRange는 [Date, Date] 형태의 배열입니다.
+    setDateRange(newDateRange);
   };
 
   return (

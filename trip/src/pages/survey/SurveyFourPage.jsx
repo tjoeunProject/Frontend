@@ -99,8 +99,7 @@ function SurveyFourPage() {
             이전으로
           </Link>
 
-          <Link to="/map" className="survey4-next-btn"
-          onClick={handleNextClick}>
+          <Link to="/map" className="survey4-next-btn">
             완료하기
           </Link>
         </div>
