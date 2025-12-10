@@ -75,7 +75,7 @@ const useRouteLogic = () => {
   // -------------------------------------------------------------------
   
   // [추가] 날짜가 변경되면 자동으로 schedule 배열 길이를 맞추는 로직
-    useEffect(() => {
+  useEffect(() => {
     if (!startDate || !endDate) return;
 
     const start = new Date(startDate);
@@ -105,7 +105,7 @@ const useRouteLogic = () => {
         return prevSchedule;
         });
     }
-    }, [startDate, endDate]); // 시작일이나 종료일이 바뀔 때마다 실행됨
+  }, [startDate, endDate]); // 시작일이나 종료일이 바뀔 때마다 실행됨
 
 
   // Day 추가 버튼 클릭 시: 빈 배열을 하나 더 추가하여 날짜를 늘림 / 사용안할거같아서 주석처리 
@@ -143,6 +143,7 @@ const useRouteLogic = () => {
       )
     };
   };
+  // 데이터 받고 저장할 준비하는 객체
 
   // -------------------------------------------------------------------
   // [Event Handlers] 실제 기능 동작 함수들
@@ -207,6 +208,8 @@ const useRouteLogic = () => {
       })
       .catch((err) => console.error("상세 정보 조회 실패", err));
   };
+// 데이터를 받아 지도에 띄우는 함수 
+
 
 
   // 3. [Read - List] 내 여행 목록 조회
@@ -215,6 +218,8 @@ const useRouteLogic = () => {
       .then((list) => setMyRoutes(list)) // 리스트 상태 업데이트
       .catch((err) => console.error("목록 조회 실패", err));
   };
+
+  
 
   // 4. [Delete] 일정 삭제
   const handleDeleteRoute = (routeId) => {
@@ -241,7 +246,7 @@ const useRouteLogic = () => {
     currentRoute,   // 상세 조회된 원본 데이터
 
     // Helper 함수들 (UI 조작용)
-    addDay,
+    // addDay,
     addPlaceToDay,
 
     // API 연동 함수들 (이벤트 핸들러용)

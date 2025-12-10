@@ -1,6 +1,7 @@
 // ItineraryListNormal.jsx
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import SearchResultItem from "./SearchResultItem"; // 🔥 컴포넌트 import 12.10 추가
 
 const ItineraryListNormal = ({ list, handleOnDragEnd, removeFromItinerary }) => {
   return (
@@ -21,14 +22,14 @@ const ItineraryListNormal = ({ list, handleOnDragEnd, removeFromItinerary }) => 
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    {index + 1}. {place.name}
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => removeFromItinerary(place.id)}
-                    >
-                      ❌
-                    </button>
+                    
+                    {/* 🔥 복잡한 HTML 대신 이거 하나면 끝! */}
+                    {/* 12/10 추가 */}
+                    <SearchResultItem 
+                      place={place} 
+                      index={index + 1}          // 순서 전달
+                      onDelete={removeFromItinerary} // 삭제 함수 전달 (이게 있으면 삭제버튼 뜸)
+                    />
                   </div>
                 )}
               </Draggable>
