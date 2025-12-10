@@ -36,7 +36,7 @@ function SurveyFirstPage() {
             </Link>
             <br/>       
             </div>  
-            <Footer/>
+        <Footer/>
         </div>       
     )
 }

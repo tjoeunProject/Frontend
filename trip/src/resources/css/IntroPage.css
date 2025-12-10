@@ -231,3 +231,11 @@
   text-align: center;
   color: #555;
 }
+/* Header 와 페이지의 겹침을 방지하기 위한 css 코드  */
+.page-container{
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 120px;
+  padding-bottom: 60px;
+}
