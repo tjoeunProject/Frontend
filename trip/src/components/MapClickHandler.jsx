@@ -38,7 +38,8 @@ const MapClickHandler = ({ onPlaceSelect }) => {
                 lng: place.geometry.location.lng(),
                 formatted_address: place.formatted_address,
                 rating: place.rating || 0,
-                user_ratings_total: place.user_ratings_total || 0,
+               reviews: place.user_ratings_total || 0,
+                //  user_ratings_total 로 하다가 리뷰수 안받아져서 확인결과 key 값 잘못되어 reviews 로 변경 
                 photos: place.photos,
                 types: place.types,
                 isPOI: true
