@@ -286,7 +286,72 @@ const handleOptimize = async () => {
   console.log("🔥 handleOptimize 끝까지 실행됨");
 };
 
+// 12/11 
+const handleNearby = async () => {
+  console.log("🍽️ handleNearby 실행 시작");
 
+  // 1. 현재 일정이 있는지 확인
+  if (!itineraryByDay || Object.keys(itineraryByDay).length === 0) {
+    alert("최적화된 일정이 없습니다. 먼저 일정을 최적화해주세요.");
+    return;
+  }
+
+  // 2. 데이터 전처리 (이중 리스트 구조 유지 [[Day1], [Day2]...])
+  // 백엔드에서 enumerate로 요일별 구분을 하므로 이중 배열로 보내야 합니다.
+  const formattedPlaces = Object.values(itineraryByDay).map((dayPlaces) => {
+    return dayPlaces.map((place) => {
+      // --- 이미지 URL 문자열 변환 로직 (handleOptimize와 동일) ---
+      let finalUrl = place.photoUrl;
+
+      // 구글맵 객체(함수)가 살아있는 경우 -> 실행해서 문자열로 변환
+      if (
+        !finalUrl &&
+        place.photos &&
+        place.photos.length > 0 &&
+        typeof place.photos[0].getUrl === "function"
+      ) {
+        finalUrl = place.photos[0].getUrl({ maxWidth: 500, maxHeight: 500 });
+      }
+
+      return {
+        ...place,
+        photoUrl: finalUrl, // 문자열로 박제
+        // photos: [] // 필요 시 원본 객체 제거
+      };
+    });
+  });
+
+  try {
+    console.log("📤 백엔드로 보내는 데이터(formattedPlaces):", formattedPlaces);
+
+    // 3. API 호출
+    const response = await axios.post("/py/nearby", {
+      places: formattedPlaces, // [[...], [...]] 형태
+    });
+
+    console.log("📡 백엔드 응답 도착(맛집):", response.data);
+
+    // 4. 결과 처리
+    const recommendations = response.data?.recommendations || [];
+    console.log("😋 추천 맛집 리스트:", recommendations);
+
+    // 5. 상태 업데이트 (맛집 리스트를 저장할 state가 있다고 가정)
+    // 예: const [recommendations, setRecommendations] = useState([]);
+    setSearchResults(recommendations); 
+    
+    if (recommendations.length > 0) {
+      alert(`주변 맛집 ${recommendations.length}곳을 찾았습니다!`);
+    } else {
+      alert("주변에 추천할만한 맛집을 찾지 못했습니다.");
+    }
+
+  } catch (err) {
+    console.error("❌ 맛집 검색 중 오류 발생:", err);
+    alert("맛집 추천 기능을 수행하는 중 오류가 발생했습니다.");
+  }
+
+  console.log("🍽️ handleNearby 끝까지 실행됨");
+};
 
   /* ============================================================
      📍 일정 삭제 (Day 안에서 삭제)
@@ -311,6 +376,8 @@ const handleOptimize = async () => {
       initialSearchKeyword={searchKeyword} 
       // 12-11 수정 
       scheduleData={scheduleData} // 하고 MapPage에서 useLocation 쓰지 않도록 설정 
+      handleNearby={handleNearby}
+
 
       activeTab={activeTab}
       setActiveTab={setActiveTab}

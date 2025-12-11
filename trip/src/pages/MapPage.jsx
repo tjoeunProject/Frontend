@@ -103,6 +103,9 @@ const MapPage = ({
   scheduleData,
   initialSearchKeyword,
 
+  //12/11 추가 
+  handleNearby,
+
   activeTab,
   setActiveTab,
   searchResults,
@@ -300,8 +303,8 @@ const MapPage = ({
 
                   {/* 3. 메뉴 아이템 */}
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => setActiveTab("itinerary")}>
-                      🔄 다시 편집하기
+                    <Dropdown.Item onClick={handleNearby}>
+                      🔄 ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
                     </Dropdown.Item>
                   </Dropdown.Menu>
                   
