@@ -30,6 +30,7 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
   const placesLib = useMapsLibrary("places");
   const hasSearched = useRef(false);
 
+
   useEffect(() => {
     if (!map || !placesLib || !keyword) return;
     if (hasSearched.current) return;
@@ -94,6 +95,7 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
    📍 MapPage 컴포넌트
 ============================================================ */
 const MapPage = ({
+  scheduleData,
   initialSearchKeyword,
 
   activeTab,
@@ -119,18 +121,49 @@ const MapPage = ({
   API_KEY
 }) => {
 
-  const DAY_KEYS = ["day1", "day2", "day3"];
+  // 12/11 추가 날짜를 받기 위한 설정 
 
-  const totalItineraryCount =
-    (itineraryByDay.day1.length || 0) +
-    (itineraryByDay.day2.length || 0) +
-    (itineraryByDay.day3.length || 0);
+  // 3️⃣ 데이터 확인용 (개발자 도구 콘솔 확인)
+  useEffect(() => {
+    if (scheduleData && itineraryByDay) {
+    const requiredDays = scheduleData.diffDays + 1;
+    // 기존 데이터 초기화 혹은 리사이징 로직 필요
+    // 주의: setItineraryByDay는 부모의 state를 바꾸므로 신중해야 함
+    
+    // 예: 부모 컴포넌트가 이 로직을 처리하는 것이 가장 좋음
+    // 여기서는 단순히 콘솔로 확인만 하거나, 부모에게 "날짜 바뀌었으니 초기화해줘"라고 요청하는 함수가 있으면 좋음
+  }
+    if (scheduleData) {
+      console.log("📦 전달받은 여행 일정:", scheduleData);
+      // 예: { startDate: "2025-03-12", endDate: "2025-03-15", diffDays: 3, ... }
+    }else {
+       // 아마 이쪽으로 빠지고 있었을 겁니다.
+       console.log("데이터가 없습니다."); 
+    }
+  }, [scheduleData]);
 
-  const mergedBeforeOptimize = [
-    ...itineraryByDay.day1,
-    ...itineraryByDay.day2,
-    ...itineraryByDay.day3
-  ];
+  // 2️⃣ 디폴트 설정 (데이터가 없으면 이 값을 씀)
+  // 예: 오늘부터 시작, 기간은 2(2박3일)
+  const defaultSchedule = {
+    startDate: new Date().toISOString().split('T')[0], // 오늘 날짜 "2025-XX-XX"
+    endDate: new Date().toISOString().split('T')[0],   // (필요 시 계산)
+    diffDays: 2 // 기본값: 2박 3일 (0, 1, 2)
+  };
+
+  // 3️⃣ 최종 사용할 스케줄 결정 (OR 연산자 || 사용)
+  const schedule = scheduleData || defaultSchedule;
+
+
+// 12/11 날짜가 변경되었으므로 넘어온 날짜만큼 DAY_KEYS 생성 (예: 2박3일이면 day1~day3)
+  const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3; 
+  const DAY_KEYS = Array.from({ length: dayCount }, (_, i) => `day${i + 1}`);
+
+  const totalItineraryCount = DAY_KEYS.reduce((acc, key) => {
+    return acc + (itineraryByDay[key]?.length || 0);
+  }, 0);
+
+  // 병합 로직도 동적으로 변경
+  const mergedBeforeOptimize = DAY_KEYS.flatMap(key => itineraryByDay[key] || []);
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -222,7 +255,7 @@ const MapPage = ({
 
               {!isOptimized ? (
                 <button className="btn-optimize" onClick={handleOptimize}>
-                  🚀 3일 코스로 최적화하기
+                  🚀 {dayCount}일 코스로 최적화하기
                 </button>
               ) : (
                 <div>

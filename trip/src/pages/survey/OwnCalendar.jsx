@@ -27,7 +27,10 @@ const OwnCalendar = ({onDateSelectComplete}) => {
     if (newDateRange && newDateRange.length === 2 && newDateRange[1] ) {
         console.log(moment(newDateRange[0]).format('YYYY-MM-DD'));
         console.log(moment(newDateRange[1]).format('YYYY-MM-DD'));
-        
+        const start = moment(newDateRange[0]);
+        const end = moment(newDateRange[1]);
+
+
         const daysDifference = moment(newDateRange[1]).diff(moment(newDateRange[0]), 'days');
         console.log(daysDifference);
         if(daysDifference > MAX_DAY){
@@ -35,7 +38,15 @@ const OwnCalendar = ({onDateSelectComplete}) => {
           onDateSelectComplete(false);
           return;
         }
-        onDateSelectComplete(true);
+
+        // 12/11 '데이터 객체(시작일 종료일 )'를 전달
+        onDateSelectComplete({
+            startDate: start.format('YYYY-MM-DD'),
+            endDate: end.format('YYYY-MM-DD'),
+            diffDays: daysDifference, // 예: 0이면 당일치기, 1이면 1박2일
+            text: `${daysDifference}박 ${daysDifference + 1}일` // 화면 표시용 텍스트 예시
+        });
+        
     } else {
       onDateSelectComplete(false);
     }
