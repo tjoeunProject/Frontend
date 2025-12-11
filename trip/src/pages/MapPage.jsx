@@ -266,7 +266,7 @@ const MapPage = ({
                 
              
 
-              {isOptimized ? (
+              {!isOptimized ? (
                 /* 최적화 전 버튼 (동일한 색상 적용) */
                 <Button 
                   className="btn-optimize"
