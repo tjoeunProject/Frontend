@@ -4,7 +4,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FaCloud } from "react-icons/fa6";
 import Modal from 'react-modal';
 import OwnCalendar from './../survey/OwnCalendar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // 일단 mockData로 넣어둠 추후에 변경하기
 const mockData = Array.from({ length: 5 }).map((_, idx) => ({
@@ -26,6 +26,10 @@ const HistoryComponent = () => {
   const copyLinkRef = useRef(null);
   const [modalType, setModalType] = useState(null);
 
+  const navigate = useNavigate(); // 훅 선언
+
+
+
   // ❤️ 좋아요 토글 기능
   const toggleLike = (id) => {
     setCards((prev) =>
@@ -43,10 +47,19 @@ const HistoryComponent = () => {
   };
 
   const [isDateSelected, setIsDateSelected] = useState(false); 
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+
 
     // 🚨 OwnCalendar에서 호출될 콜백 함수
-    const handleDateSelectComplete = (isValid) => {
-        setIsDateSelected(isValid);
+    const handleDateSelectComplete = (dateData) => {
+        if (dateData) {
+      // 데이터가 들어오면 유효한 것으로 간주
+      setIsDateSelected(true);
+      setSelectedSchedule(dateData); // 데이터를 state에 저장
+    } else {
+      setIsDateSelected(false);
+      setSelectedSchedule(null);
+    }
     };
 
     // '확인하기' 링크 클릭 핸들러 (선택 사항: alert 제거 및 모달 닫기)
@@ -58,9 +71,12 @@ const HistoryComponent = () => {
             alert("여행 기간을 먼저 선택해 주세요.");
             return;
         }
-        // setIsOpen(false); // 모달 닫기 (고객님 코드에 있던 로직)
-        
-        // 유효하면 정상적으로 to="/map"으로 이동합니다.
+        // 🔥 여기서 navigate로 이동하며 state를 전달합니다.
+        navigate('/map', { 
+          state: { 
+            schedule: selectedSchedule 
+          } 
+        });
     };
 
   return (
@@ -202,7 +218,7 @@ const HistoryComponent = () => {
                     <OwnCalendar onDateSelectComplete={handleDateSelectComplete} />
 
                     <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                      <Link
+                      <button
                         to="/map"
                         onClick={handleMapCheck}
                         style={{
@@ -224,7 +240,7 @@ const HistoryComponent = () => {
                         }}
                       >
                         확인하기
-                      </Link>
+                      </button>
 
                       &emsp;&emsp;&emsp;
 

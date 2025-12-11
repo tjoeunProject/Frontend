@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import MapPage from './pages/MapPage.jsx';
-
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // 1. useLocation 추가 12-2
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -17,14 +17,35 @@ const App = () => {
   const location = useLocation();
   const searchKeyword = location.state?.searchKeyword; // "부산" 같은 글자가 여기 들어옴
 
+  // 12/11 수정 - 기존것들 다 3일로 고정되어 받는중 날짜를 받을때 그 날짜대로 하게끔 수정작업 
+  // 🔥 [핵심 수정 1] 넘어온 일정 데이터(schedule) 꺼내기
+  const scheduleData = location.state?.schedule; 
 
+  // 🔥 [핵심 수정 2] 동적으로 초기 State 생성 함수
+  // scheduleData가 있으면 그 기간만큼, 없으면 기본 3일치 생성
+  const initializeItinerary = () => {
+    const days = scheduleData ? scheduleData.diffDays + 1 : 3; // 기본값 3
+    const initialState = {};
+    for (let i = 1; i <= days; i++) {
+      initialState[`day${i}`] = [];
+    }
+    return initialState;
+  };
 
-  /** Day별 일정 구조 */
-  const [itineraryByDay, setItineraryByDay] = useState({
-    day1: [],
-    day2: [],
-    day3: []
-  });
+  // State 초기값으로 함수(initializeItinerary)를 넣어주면 최초 1회 실행됨
+  const [itineraryByDay, setItineraryByDay] = useState(initializeItinerary);
+
+  /* 혹시 페이지 이동 없이 날짜만 바뀌는 경우를 대비해 useEffect 추가 (선택 사항)
+     만약 App 컴포넌트가 아예 새로 마운트된다면 위의 useState 초기화로 충분합니다.
+  */
+  useEffect(() => {
+     if (scheduleData) {
+        console.log("📅 App.jsx: 일정 데이터 수신", scheduleData);
+        // 필요하다면 여기서 setItineraryByDay를 다시 호출해 리셋할 수도 있음
+        // setItineraryByDay(initializeItinerary()); 
+     }
+  }, [scheduleData]);
+
 
   const [isOptimized, setIsOptimized] = useState(false);
 
@@ -197,21 +218,19 @@ const App = () => {
 
 
  /* ============================================================
-   📍 3일코스 최적화 요청 → Day별로 자동 배분된 결과 생성
+   📍 n일코스 최적화 요청 → Day별로 자동 배분된 결과 생성
 ============================================================ */
 const handleOptimize = async () => {
   console.log("🔥 handleOptimize 실행됨 시작");
 
-  const totalPlaces = [
-    ...itineraryByDay.day1,
-    ...itineraryByDay.day2,
-    ...itineraryByDay.day3
-  ];
+  // 전체 장소 합치기 (동적 처리)
+    const totalPlaces = Object.values(itineraryByDay).flat();
+    const currentDays = Object.keys(itineraryByDay).length; // 현재 일수 (예: 5)
 
   try {
     const response = await axios.post("http://127.0.0.1:8000/optimize", {
       places: totalPlaces,
-      days: 3
+      days: currentDays
     });
 
     console.log("📡 백엔드 응답 도착:", response.data);
@@ -219,28 +238,21 @@ const handleOptimize = async () => {
     const result = response.data?.optimized_places;
     console.log("📦 optimized_places(result):", result);
 
+    const newItinerary = {};
+
     // 🔥 백엔드 구조가 [ [..], [..], [..] ] 이므로 이렇게 처리해야 함
-    const getDayPlaces = (index) => {
-      const dayArr = result?.[index];
-      return Array.isArray(dayArr) ? dayArr : [];
-    };
+    // const getDayPlaces = (index) => {
+    //   const dayArr = result?.[index];
+    //   return Array.isArray(dayArr) ? dayArr : [];
+    // };
 
-    const day1 = getDayPlaces(0);
-    const day2 = getDayPlaces(1);
-    const day3 = getDayPlaces(2);
+    for (let i = 0; i < currentDays; i++) {
+      newItinerary[`day${i+1}`] = result?.[i] || [];
+    }
 
-    console.log("📌 day1 파싱 결과:", day1);
-    console.log("📌 day2 파싱 결과:", day2);
-    console.log("📌 day3 파싱 결과:", day3);
-
-    setItineraryByDay({
-      day1,
-      day2,
-      day3,
-    });
-
+    setItineraryByDay(newItinerary);
     setIsOptimized(true);
-    alert("3일 코스로 최적화 완료!");
+    alert(`${currentDays}일 코스로 최적화 완료!`);
 
   } catch (err) {
     console.log("❌ 최적화 중 오류 발생:", err);
@@ -256,11 +268,10 @@ const handleOptimize = async () => {
      📍 일정 삭제 (Day 안에서 삭제)
   ============================================================ */
   const removeFromItinerary = (id) => {
-    const updated = {
-      day1: itineraryByDay.day1.filter(item => item.id !== id),
-      day2: itineraryByDay.day2.filter(item => item.id !== id),
-      day3: itineraryByDay.day3.filter(item => item.id !== id),
-    };
+    const updated = {};
+    Object.keys(itineraryByDay).forEach(dayKey => {
+       updated[dayKey] = itineraryByDay[dayKey].filter(item => item.id !== id);
+    });
     setItineraryByDay(updated);
     setIsOptimized(false);
   };
@@ -274,6 +285,8 @@ const handleOptimize = async () => {
       // ★ 3. MapPage에게 검색어 전달 (props로 넘겨줌)
       //  12 -2 수정 
       initialSearchKeyword={searchKeyword} 
+      // 12-11 수정 
+      scheduleData={scheduleData} // 하고 MapPage에서 useLocation 쓰지 않도록 설정 
 
       activeTab={activeTab}
       setActiveTab={setActiveTab}
