@@ -224,16 +224,40 @@ const handleOptimize = async () => {
   console.log("🔥 handleOptimize 실행됨 시작");
 
   // 전체 장소 합치기 (동적 처리)
-    const totalPlaces = Object.values(itineraryByDay).flat();
+    const rawPlaces = Object.values(itineraryByDay).flat();
     const currentDays = Object.keys(itineraryByDay).length; // 현재 일수 (예: 5)
+
+    // 🔥 [핵심 수정] 백엔드로 보내기 전에 '함수'를 '문자열'로 변환 (Pre-processing)
+    const totalPlaces = rawPlaces.map(place => {
+    // 1) 이미 문자열 URL이 있는 경우 (재편집 등)
+    let finalUrl = place.photoUrl;
+
+    // 2) 구글맵 객체(함수)가 살아있는 경우 -> 실행해서 문자열로 변환
+    if (!finalUrl && place.photos && place.photos.length > 0 && typeof place.photos[0].getUrl === 'function') {
+      finalUrl = place.photos[0].getUrl({ maxWidth: 500, maxHeight: 500 });
+    }
+
+    // 3) 둘 다 없으면 null (나중에 프론트에서 기본이미지 처리)
+    
+    return {
+      ...place,       // 기존 정보 유지
+      photoUrl: finalUrl, // 🔥 이미지 주소를 문자열로 박제해서 보냄!
+      // photos: []   // (선택사항) 용량을 줄이려면 원본 객체는 지워도 됨 (필수는 아님)
+    };
+  });
+
+
 
   try {
     const response = await axios.post("/py/optimize", {
       places: totalPlaces,
       days: currentDays
+      
     });
+    console.log(totalPlaces);
 
     console.log("📡 백엔드 응답 도착:", response.data);
+    console.log("🔥 handleOptimize 실행됨 시작");
 
     const result = response.data?.optimized_places;
     console.log("📦 optimized_places(result):", result);

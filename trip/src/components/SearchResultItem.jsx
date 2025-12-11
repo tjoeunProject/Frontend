@@ -12,9 +12,10 @@ const SearchResultItem = ({ place, onAdd ,
 }) => {
   // 12/11 추가 - photos 가 있으면 photo 활용 없으면 url 조회 후 url 있으면 사용하고 없으면 default 이미지로 설정
   const photoUrl =
-    place.photos && place.photos.length > 0
+    place.photos && place.photos.length > 0 && typeof place.photos[0].getUrl === 'function'
       ? place.photos[0].getUrl({ maxWidth: 300, maxHeight: 300 })
-        : place.url && place.url.length > 0 ? place.url :  '/noimage.png';
+        : place.photoUrl && place.photoUrl.length > 0 ? place.photoUrl :  '/noimage.png';
+
 
   return (
     <li className="result-card">
