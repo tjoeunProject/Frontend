@@ -20,6 +20,11 @@ import DirectionsPolyline from '../components/DirectionsPolyline';
 import MapClickHandler from '../components/MapClickHandler';
 import './MapPage.css';
 
+// 12/11 
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import SplitButton from 'react-bootstrap/SplitButton';
 
 
 /* ============================================================
@@ -165,6 +170,11 @@ const MapPage = ({
   // 병합 로직도 동적으로 변경
   const mergedBeforeOptimize = DAY_KEYS.flatMap(key => itineraryByDay[key] || []);
 
+  //  {/* 임의의 색상 지정 (원하는 색상 코드로 변경 가능) */}
+            const CUSTOM_COLOR = "#6C5CE7"; 
+
+
+
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
       <div className="mappage-container">
@@ -253,19 +263,49 @@ const MapPage = ({
                 )}
               </div>
 
-              {!isOptimized ? (
-                <button className="btn-optimize" onClick={handleOptimize}>
+                
+             
+
+              {isOptimized ? (
+                /* 최적화 전 버튼 (동일한 색상 적용) */
+                <Button 
+                  className="btn-optimize"
+                  style={{ 
+                    backgroundColor: CUSTOM_COLOR, 
+                    borderColor: CUSTOM_COLOR, 
+                    fontWeight: 'bold' 
+                  }}
+                  onClick={handleOptimize}
+                >
                   🚀 {dayCount}일 코스로 최적화하기
-                </button>
+                </Button>
               ) : (
-                <div>
-                  <button className="btn-edit" onClick={() => setActiveTab("itinerary")}>
-                    🔄 다시 편집하기
-                  </button>
-                  <Link to="/" className="btn-optimize">
-                    저장하기
-                  </Link>
-                </div>
+                /* 최적화 후: Split Button (Drop Up) */
+                <Dropdown as={ButtonGroup} drop="up" className="btn-optimize">
+                  
+                  {/* 1. 메인 버튼 (꽉 차게 설정: flex: 1) */}
+                  <Button 
+                    as={Link} 
+                    to="/" 
+                  >
+                    💾 저장하기
+                  </Button>
+
+                  {/* 2. 화살표 버튼 (작게 설정: flex: 0 0 auto) */}
+                  <Dropdown.Toggle 
+                    split 
+                    id="dropdown-split-basic" 
+
+                  />
+
+                  {/* 3. 메뉴 아이템 */}
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => setActiveTab("itinerary")}>
+                      🔄 다시 편집하기
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                  
+                </Dropdown>
               )}
             </div>
           )}
