@@ -228,7 +228,7 @@ const handleOptimize = async () => {
     const currentDays = Object.keys(itineraryByDay).length; // 현재 일수 (예: 5)
 
   try {
-    const response = await axios.post("http://127.0.0.1:8000/optimize", {
+    const response = await axios.post("/py/optimize", {
       places: totalPlaces,
       days: currentDays
     });

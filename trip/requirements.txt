@@ -4,3 +4,4 @@ react-modal
 react-calendar
 
 npm install react-icons moment react-modal react-calendar
+npm install react-bootstrap bootstrap
