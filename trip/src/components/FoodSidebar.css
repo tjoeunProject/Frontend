@@ -1,0 +1,69 @@
+/* components/FoodSidebar.css */
+.food-sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 320px;
+  height: 100%;
+  background: #ffffff;
+  border-left: 1px solid #ddd;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.food-sidebar-header {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.food-base-place {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.food-close-btn {
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.food-radius-box {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.food-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.food-item {
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.food-item:hover {
+  background: #f5f7ff;
+}
+
+.food-item-title {
+  font-weight: bold;
+}
+
+.food-item-sub {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.food-empty {
+  text-align: center;
+  color: #999;
+  margin-top: 20px;
+}
