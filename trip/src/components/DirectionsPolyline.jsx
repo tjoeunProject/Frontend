@@ -1,9 +1,18 @@
 // components/DirectionsPolyline.jsx
-import { calcDistance } from "../utils/calcDistance";
-import { getRoutePath } from "../utils/getRoutePath";
+
 import { useEffect } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
+import { getRoutePath } from "../utils/getRoutePath";
+import { resolveEndpoint } from "../utils/resolveEndpoint";
 
+/**
+ * DirectionsPolyline (Hybrid A)
+ *
+ * - "의미상 도보 이동"
+ * - "경로 생성은 TRANSIT 사용"
+ * - 버스/정류장 튀는 문제 제거
+ * - WALKING ZERO_RESULTS 문제 제거
+ */
 const DirectionsPolyline = ({ origin, destination, color }) => {
   const map = useMap();
 
@@ -12,48 +21,47 @@ const DirectionsPolyline = ({ origin, destination, color }) => {
 
     let polylineInstance = null;
 
-    const fetchRoute = async () => {
+    const drawRoute = async () => {
       try {
-        // 1) 거리 계산
-        const distance = calcDistance(
-          origin.lat, origin.lng,
-          destination.lat, destination.lng
-        );
+        // 1️⃣ 내부 마커 보정
+        const o = resolveEndpoint(origin, destination).point;
+        const d = resolveEndpoint(destination, origin).point;
 
-        console.log("📏 거리(m):", Math.round(distance));
+        // 2️⃣ TRANSIT으로 경로 요청 (길 생성용)
+        const result = await getRoutePath(o, d, "TRANSIT");
 
-        // 2) 거리 기반 이동 방식 선택
-        let mode;
-        if (distance <= 500) {
-          mode = "WALKING";
-        } else {
-          mode = "TRANSIT"; // 대중교통
-        }
+        if (!result || !result.path || result.path.length === 0) {
+          console.warn("Transit route not found, fallback to straight line");
 
-        console.log("🚶 이동 방식:", mode);
-
-        // 3) 실제 경로 요청
-        const path = await getRoutePath(origin, destination, mode);
-
-        if (!path || path.length === 0) {
-          console.warn("⚠️ 경로가 존재하지 않음");
+          // 최후 fallback (거의 안 탐)
+          polylineInstance = new window.google.maps.Polyline({
+            path: [
+              { lat: o.lat, lng: o.lng },
+              { lat: d.lat, lng: d.lng },
+            ],
+            strokeColor: color || "#999999",
+            strokeOpacity: 0.6,
+            strokeWeight: 3,
+            map,
+          });
           return;
         }
 
-        // 4) Polyline 그리기
+        // 3️⃣ Polyline (도보 의미)
         polylineInstance = new window.google.maps.Polyline({
-          path,
-          strokeColor: color,
+          path: result.path,
+          strokeColor: color || "#FF7A00", // 주황 추천 (도보 느낌)
           strokeOpacity: 1.0,
           strokeWeight: 4,
           map,
         });
+
       } catch (err) {
-        console.error("경로 생성 실패:", err);
+        console.error("Hybrid route draw failed:", err);
       }
     };
 
-    fetchRoute();
+    drawRoute();
 
     return () => {
       if (polylineInstance) polylineInstance.setMap(null);
