@@ -21,7 +21,8 @@ const useSurveyGuard = (requiredStepKey, redirectToPath) => {
         } else {
             // ✅ 조건 충족: 페이지 접근 허가 및 플래그 파괴
             console.log("✅ [ACCESS GRANTED] 조건 충족. 플래그 즉시 삭제.");
-            localStorage.removeItem(requiredStepKey); // 🚨 여기서 플래그를 지웁니다!
+            // 12/12 접속이 안됨 
+            // localStorage.removeItem(requiredStepKey); // 🚨 여기서 플래그를 지웁니다!
             setIsLoading(false); // 로딩 완료
         }
     }, [requiredStepKey, redirectToPath, navigate]);

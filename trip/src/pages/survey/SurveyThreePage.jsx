@@ -5,6 +5,7 @@ import survey2 from './../../resources/img/survey2.png';
 import {Link} from 'react-router-dom';
 import OwnCalendar from './OwnCalendar.jsx'; 
 import useSurveyGuard from './useSurveyGuard.jsx';
+import { useState } from 'react';
 
 function SurveyThreePage(){
     
@@ -12,11 +13,26 @@ function SurveyThreePage(){
 
     useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
 
-    // 유효성 검사 등 필요한 로직
-    const handleNextClick = () => {
+    // [추가] 캘린더 데이터를 담을 State
+    const [scheduleData, setScheduleData] = useState(null);
+
+    // [추가] OwnCalendar에서 데이터를 받아오는 콜백 함수
+    const handleDateSelect = (data) => {
+        console.log("캘린더 선택 데이터:", data); // 확인용 로그
+        setScheduleData(data);
+    };
+
+    // 유효성 검사 및 저장 로직
+    const handleNextClick = (e) => {
+        if (!scheduleData) {
+            e.preventDefault(); // 페이지 이동 막기
+            alert("여행 기간을 선택해주세요!");
+            return;
+        }
     
-    // 핵심: 다음 페이지 접근 허용 플래그 저장
-    localStorage.setItem('survey_step_1_completed', 'true');
+        // 데이터 저장
+        localStorage.setItem('survey_schedule', JSON.stringify(scheduleData));
+        localStorage.setItem('survey_step_1_completed', 'true');
     };
 
     return (
@@ -37,7 +53,7 @@ function SurveyThreePage(){
                     </div>
                 </div>
                 
-                <OwnCalendar/> 
+                <OwnCalendar onDateSelectComplete={handleDateSelect}/>
                 
                 <div className='survey-grid2'>
                     <Link to="/survey/SurveyTwoPage" className="back-button"

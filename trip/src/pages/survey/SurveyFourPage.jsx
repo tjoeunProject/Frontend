@@ -1,23 +1,54 @@
 import React, { useState } from 'react';
 import Header from '../../components/common/Header';
-import "../../resources/css/SurveyFourPage.css"; // 🔥 전용 CSS
+import "../../resources/css/SurveyFourPage.css"; 
 import Footer from '../../components/common/Footer.jsx';
 import survey3 from './../../resources/img/survey3.png';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // 🚨 Link 추가!
 import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyFourPage() {
+  const navigate = useNavigate();
 
-    useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
+  // 페이지 진입 권한 체크
+  useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
+  
+  const [selectedTags, setSelectedTags] = useState([]);
 
-    // 유효성 검사 등 필요한 로직
-    const handleNextClick = () => {
-    
-    // 핵심: 다음 페이지 접근 허용 플래그 저장
-    localStorage.setItem('survey_step_1_completed', 'true');
+  // 12/12 수정 [핵심] 완료 버튼 핸들러
+  const handleComplete = () => {
+    // 1. 로컬 스토리지 데이터 가져오기
+    const destRaw = localStorage.getItem('survey_destination');
+    const schedRaw = localStorage.getItem('survey_schedule');
+
+    if (!destRaw || !schedRaw) {
+      alert("이전 단계의 선택 정보가 없습니다. 처음부터 다시 시도해주세요.");
+      navigate('/survey/SurveyFirstPage');
+      return;
+    }
+
+    const destination = JSON.parse(destRaw);
+    const schedule = JSON.parse(schedRaw);
+
+    // 2. 데이터 구성 (서버로 보낼 준비)
+    const generateRequest = {
+      destination: destination, // ["Jeju", "서울"]
+      days: schedule.diffDays + 1, // 박(night) + 1 = 일(day)
+      tags: selectedTags // 현재 페이지에서 선택한 태그들
     };
 
-  const [selectedTags, setSelectedTags] = useState([]);
+    // 3. Map 페이지로 이동하며 데이터 전달
+    navigate('/map', {
+      state: {
+        generateRequest: generateRequest, // AI 생성 요청 데이터
+        schedule: schedule             // MapPage에서 날짜 표시용
+      }
+    });
+
+    // 4. 사용한 플래그 및 임시 데이터 청소
+    localStorage.removeItem('survey_step_1_completed');
+    localStorage.removeItem('survey_destination');
+    localStorage.removeItem('survey_schedule');
+  };
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -102,20 +133,23 @@ function SurveyFourPage() {
           </div>
         </div>
 
-        <Link to="/map" className="survey4-next-btn">
+        {/* '건너 뛰기'는 태그 선택 없이 바로 완료하는 것과 같으므로 handleComplete 호출 */}
+        {/* 필요 없다면 지우셔도 됩니다. */}
+        <button className="survey4-next-btn" onClick={handleComplete} style={{marginBottom: '10px', background: '#ccc'}}>
             건너 뛰기 
-        </Link>
+        </button>
+
         {/* 버튼 영역 */}
         <div className="survey4-btn-box">
-          <Link to="/survey/SurveyThreePage" className="survey4-back-btn"
-          onClick={handleNextClick}>
+          {/* 🚨 Back 버튼: handleNextClick 제거 (정의되지 않음) */}
+          <Link to="/survey/SurveyThreePage" className="survey4-back-btn">
             이전으로
           </Link>
 
-          <Link to="/map" className="survey4-next-btn"
-          onClick={TagsNextClick}>
+          {/* 🚨 완료 버튼: Link 대신 button 사용 -> onClick 핸들러 연결 */}
+          <button className="survey4-next-btn" onClick={handleComplete}>
             완료하기
-          </Link>
+          </button>
         </div>
 
       </section>
