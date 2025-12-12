@@ -33,6 +33,8 @@ const OwnCalendar = ({onDateSelectComplete}) => {
 
         const daysDifference = moment(newDateRange[1]).diff(moment(newDateRange[0]), 'days');
         console.log(daysDifference);
+        localStorage.setItem('total-date', daysDifference+1);
+
         if(daysDifference > MAX_DAY){
           alert("최대 5일까지만 선택이 가능해요");
           onDateSelectComplete(false);

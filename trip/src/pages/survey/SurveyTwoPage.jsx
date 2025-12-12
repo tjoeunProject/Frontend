@@ -9,7 +9,8 @@ import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyTwoPage() {
     
-    const [selectedTags, setSelectedTags] = useState([]);
+    // 1. 상태 통일: 선택된 지역을 관리하는 단일 State
+    const [selectedRegions, setSelectedRegions] = useState([]);
 
     useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
 
@@ -72,7 +73,7 @@ function SurveyTwoPage() {
                         <br/>
                         <h4>
                             <b>여행을 떠나고 싶은 지역을</b> <br/>
-                            선택해주세요.
+                            선택해주세요. (최대 {MAX_SELECTION}개)
                         </h4>
                     </div>
                     <div>
@@ -100,8 +101,11 @@ function SurveyTwoPage() {
                     <Link to="/survey/SurveyFirstPage" className="back-button">
                         뒤로가기
                     </Link>
-                    <Link to="/survey/SurveyThreePage" className="next-button2"
-                    onClick={handleNextClick}>
+                    <Link 
+                        to="/survey/SurveyThreePage" 
+                        className="next-button2"
+                        onClick={handleNextClick} // Link가 이동하기 전에 클릭 이벤트 처리
+                    >
                         다음으로
                     </Link>
                 </div>

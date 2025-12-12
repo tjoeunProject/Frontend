@@ -26,12 +26,14 @@ const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor }) => {
 
       {/* 🔥 1. 순서 번호 (일정 모드일 때만 표시) */}
       {index !== undefined && (
-        <div style={{ 
-          fontWeight: "bold", 
-          fontSize: "1.2rem", 
-          marginRight: "10px", 
-          color: indexColor || "#1976d2" 
-        }}>
+        <div
+          style={{
+            fontWeight: 'bold',
+            fontSize: '1.2rem',
+            marginRight: '10px',
+            color: indexColor || '#1976d2',
+          }}
+        >
           {index}
         </div>
       )}
@@ -107,7 +109,13 @@ const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor }) => {
           ❌
         </button>
       ) : (
-        <button className="result-add-btn" onClick={() => onAdd(place)}>
+        <button
+          className="result-add-btn"
+          onClick={(e) => {
+            e.stopPropagation(); // 🔥 카드 클릭 방지
+            onAdd(place);
+          }}
+        >
           추가
         </button>
       )}

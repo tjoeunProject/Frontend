@@ -16,11 +16,13 @@ import ItineraryListOptimized from '../components/ItineraryListOptimized';
 
 import DirectionsPolyline from '../components/DirectionsPolyline';
 
+import FoodSidebar from '../components/FoodSidebar';
+import NearbyFoodController from '../components/NearbyFoodController';
 
 import MapClickHandler from '../components/MapClickHandler';
 import './MapPage.css';
 
-// 12/11 
+// 12/11
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -28,13 +30,12 @@ import SplitButton from 'react-bootstrap/SplitButton';
 
 
 /* ============================================================
-   🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
+    🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
 ============================================================ */
 const AutoSearcher = ({ keyword, onPlaceFound }) => {
   const map = useMap();
   const placesLib = useMapsLibrary("places");
   const hasSearched = useRef(false);
-
 
   useEffect(() => {
     if (!map || !placesLib || !keyword) return;
@@ -95,9 +96,8 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
 
 
 
-
 /* ============================================================
-   📍 MapPage 컴포넌트
+    📍 MapPage 컴포넌트
 ============================================================ */
 const MapPage = ({
   scheduleData,
@@ -128,25 +128,55 @@ const MapPage = ({
   DAY_COLORS,
   API_KEY
 }) => {
+  /* ===============================
+    🍜 근처 음식점 상태
+  =============================== */
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
+  const [showFoodPanel, setShowFoodPanel] = useState(false);
+  const [foodRadius, setFoodRadius] = useState(700); // 기본 700m
 
-  // 12/11 추가 날짜를 받기 위한 설정 
+  const FOOD_MARKER_ICON = {
+    url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+  };
+
+  /* ===============================
+    🍜 장소 클릭 → 음식점 패널 오픈
+  =============================== */
+  const handleSelectPlaceForFood = (place) => {
+    setSelectedPlace(place);
+    setShowFoodPanel(true);
+  };
+
+  const handleSelectDayForFood = (dayKey) => {
+  const dayPlaces = itineraryByDay[dayKey];
+  if (!dayPlaces || dayPlaces.length === 0) return;
+
+  const basePlace = dayPlaces[0]; // Day 대표 장소
+  setSelectedPlace(basePlace);
+  setShowFoodPanel(true);
+};
+
+
+
+  // 12/11 추가 날짜를 받기 위한 설정
 
   // 3️⃣ 데이터 확인용 (개발자 도구 콘솔 확인)
   useEffect(() => {
     if (scheduleData && itineraryByDay) {
-    const requiredDays = scheduleData.diffDays + 1;
-    // 기존 데이터 초기화 혹은 리사이징 로직 필요
-    // 주의: setItineraryByDay는 부모의 state를 바꾸므로 신중해야 함
-    
-    // 예: 부모 컴포넌트가 이 로직을 처리하는 것이 가장 좋음
-    // 여기서는 단순히 콘솔로 확인만 하거나, 부모에게 "날짜 바뀌었으니 초기화해줘"라고 요청하는 함수가 있으면 좋음
-  }
+      const requiredDays = scheduleData.diffDays + 1;
+      // 기존 데이터 초기화 혹은 리사이징 로직 필요
+      // 주의: setItineraryByDay는 부모의 state를 바꾸므로 신중해야 함
+
+      // 예: 부모 컴포넌트가 이 로직을 처리하는 것이 가장 좋음
+      // 여기서는 단순히 콘솔로 확인만 하거나, 부모에게 "날짜 바뀌었으니 초기화해줘"라고 요청하는 함수가 있으면 좋음
+    }
     if (scheduleData) {
       console.log("📦 전달받은 여행 일정:", scheduleData);
       // 예: { startDate: "2025-03-12", endDate: "2025-03-15", diffDays: 3, ... }
-    }else {
-       // 아마 이쪽으로 빠지고 있었을 겁니다.
-       console.log("데이터가 없습니다."); 
+    } else {
+      // 아마 이쪽으로 빠지고 있었을 겁니다.
+      console.log("데이터가 없습니다.");
     }
   }, [scheduleData]);
 
@@ -161,9 +191,8 @@ const MapPage = ({
   // 3️⃣ 최종 사용할 스케줄 결정 (OR 연산자 || 사용)
   const schedule = scheduleData || defaultSchedule;
 
-
-// 12/11 날짜가 변경되었으므로 넘어온 날짜만큼 DAY_KEYS 생성 (예: 2박3일이면 day1~day3)
-  const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3; 
+  // 12/11 날짜가 변경되었으므로 넘어온 날짜만큼 DAY_KEYS 생성 (예: 2박3일이면 day1~day3)
+  const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3;
   const DAY_KEYS = Array.from({ length: dayCount }, (_, i) => `day${i + 1}`);
 
   const totalItineraryCount = DAY_KEYS.reduce((acc, key) => {
@@ -174,7 +203,7 @@ const MapPage = ({
   const mergedBeforeOptimize = DAY_KEYS.flatMap(key => itineraryByDay[key] || []);
 
   //  {/* 임의의 색상 지정 (원하는 색상 코드로 변경 가능) */}
-            const CUSTOM_COLOR = "#6C5CE7"; 
+  const CUSTOM_COLOR = "#6C5CE7";
 
 
 
@@ -253,6 +282,7 @@ const MapPage = ({
                         list={mergedBeforeOptimize}
                         handleOnDragEnd={handleOnDragEnd}
                         removeFromItinerary={removeFromItinerary}
+                        onSelectPlace={handleSelectPlaceForFood}
                       />
                     ) : (
                       <ItineraryListOptimized
@@ -260,23 +290,24 @@ const MapPage = ({
                         setItineraryByDay={setItineraryByDay}
                         removeFromItinerary={removeFromItinerary}
                         DAY_COLORS={DAY_COLORS}
+                        onSelectDay={handleSelectDayForFood}
+                        onSelectPlace={handleSelectPlaceForFood}
                       />
                     )}
                   </>
                 )}
               </div>
 
-                
-             
+
 
               {!isOptimized ? (
                 /* 최적화 전 버튼 (동일한 색상 적용) */
-                <Button 
+                <Button
                   className="btn-optimize"
-                  style={{ 
-                    backgroundColor: CUSTOM_COLOR, 
-                    borderColor: CUSTOM_COLOR, 
-                    fontWeight: 'bold' 
+                  style={{
+                    backgroundColor: CUSTOM_COLOR,
+                    borderColor: CUSTOM_COLOR,
+                    fontWeight: 'bold'
                   }}
                   onClick={handleOptimize}
                 >
@@ -285,20 +316,19 @@ const MapPage = ({
               ) : (
                 /* 최적화 후: Split Button (Drop Up) */
                 <Dropdown as={ButtonGroup} drop="up" className="btn-optimize">
-                  
+
                   {/* 1. 메인 버튼 (꽉 차게 설정: flex: 1) */}
-                  <Button 
-                    as={Link} 
-                    to="/" 
+                  <Button
+                    as={Link}
+                    to="/"
                   >
                     💾 저장하기
                   </Button>
 
                   {/* 2. 화살표 버튼 (작게 설정: flex: 0 0 auto) */}
-                  <Dropdown.Toggle 
-                    split 
-                    id="dropdown-split-basic" 
-
+                  <Dropdown.Toggle
+                    split
+                    id="dropdown-split-basic"
                   />
 
                   {/* 3. 메뉴 아이템 */}
@@ -307,7 +337,7 @@ const MapPage = ({
                       🔄 ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
                     </Dropdown.Item>
                   </Dropdown.Menu>
-                  
+
                 </Dropdown>
               )}
             </div>
@@ -337,6 +367,28 @@ const MapPage = ({
               />
             )}
 
+            {showFoodPanel && (
+              <FoodSidebar
+              basePlace={selectedPlace}
+              restaurants={nearbyRestaurants}
+              radius={foodRadius}
+              onRadiusChange={setFoodRadius}
+              onClose={() => setShowFoodPanel(false)}
+              onSelectRestaurant={(r) => {
+              console.log("선택한 음식점:", r);
+            }}
+            />
+            )}
+
+
+            {showFoodPanel && selectedPlace && (
+              <NearbyFoodController
+                selectedPlace={selectedPlace}
+                radius={foodRadius}
+                onResults={setNearbyRestaurants}
+              />
+            )}
+
             <MapRecenter center={mapCenter} />
             <HandleMapIdle onIdle={() => setShowButton(true)} />
 
@@ -349,12 +401,11 @@ const MapPage = ({
                   borderRadius: '6px',
                   display: 'inline-block'
                 }}
-            >
-              <span style={{ fontSize: '12px', color: '#000000ff' }}>
-                Tip. 원하는 장소에 핀트를 찍어서 나의 일정에도 추가할 수 있습니다.
-              </span>
-</div>
-
+              >
+                <span style={{ fontSize: '12px', color: '#000000ff' }}>
+                  Tip. 원하는 장소에 핀트를 찍어서 나의 일정에도 추가할 수 있습니다.
+                </span>
+              </div>
             )}
 
             {/* 검색 마커 */}
@@ -375,6 +426,7 @@ const MapPage = ({
                   key={place.id}
                   position={{ lat: place.lat, lng: place.lng }}
                   label={{ text: String(index + 1), color: "#fff" }}
+                  onClick={() => handleSelectPlaceForFood(place)}
                 />
               ))}
 
@@ -397,6 +449,7 @@ const MapPage = ({
                           fontSize: "11px",
                           fontWeight: "bold",
                         }}
+                        onClick={() => handleSelectPlaceForFood(place)}
                       />
                     ))}
 
@@ -415,6 +468,17 @@ const MapPage = ({
                   </React.Fragment>
                 );
               })}
+
+            {/* 🍜 근처 음식점 마커 */}
+            {showFoodPanel &&
+              nearbyRestaurants.map((r) => (
+                <Marker
+                  key={r.id}
+                  position={{ lat: r.lat, lng: r.lng }}
+                  icon={FOOD_MARKER_ICON}
+                />
+              ))}
+
           </Map>
         </div>
 
