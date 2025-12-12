@@ -21,11 +21,24 @@ const App = () => {
   // 🔥 [핵심 수정 1] 넘어온 일정 데이터(schedule) 꺼내기
   const scheduleData = location.state?.schedule; 
 
+
+  // 12/12 수정 
+  // 1. SurveyFourPage에서 보낸 데이터 수신
+  const generateRequest = location.state?.generateRequest;
+
+
+// 상태 관리
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+
+
+
   // 🔥 [핵심 수정 2] 동적으로 초기 State 생성 함수
-  // scheduleData가 있으면 그 기간만큼, 없으면 기본 3일치 생성
+  // generateRequest 있으면 그 기간만큼 없을때 scheduleData가 있으면 그 기간만큼, 없으면 기본 3일치 생성
   const initializeItinerary = () => {
-    const days = scheduleData ? scheduleData.diffDays + 1 : 3; // 기본값 3
-    const initialState = {};
+  const days = generateRequest ? generateRequest.days : 
+        (scheduleData ? scheduleData.diffDays + 1 : 3);    
+
+        const initialState = {};
     for (let i = 1; i <= days; i++) {
       initialState[`day${i}`] = [];
     }
@@ -364,6 +377,61 @@ const handleNearby = async () => {
     setItineraryByDay(updated);
     setIsOptimized(false);
   };
+
+  //12/12 수정 설문 작성 시 
+  /* ============================================================
+     🔥 [NEW] 페이지 진입 시 AI 코스 자동 생성
+  ============================================================ */
+  useEffect(() => {
+    if (generateRequest) {
+      fetchGeneratedCourse();
+    }
+  }, []); // 마운트 시 1회만 실행 (generateRequest가 있을 때만)
+
+  const fetchGeneratedCourse = async () => {
+    setIsLoading(true);
+    try {
+      console.log("1",generateRequest);
+      // 1. 백엔드 요청 (/generate)
+      const response = await axios.post("/py/generate", generateRequest);
+      const result = response.data?.optimized_places; // [[Day1], [Day2]...]
+      
+      console.log("2",generateRequest);
+      // 2. 결과 매핑
+      const newItinerary = {};
+      const days = generateRequest.days;
+      
+      for (let i = 0; i < days; i++) {
+        newItinerary[`day${i+1}`] = result?.[i] || [];
+      }
+      console.log("3",generateRequest);
+      
+      setItineraryByDay(newItinerary);
+      setIsOptimized(true);
+      setActiveTab('itinerary'); // '나의 일정' 탭 활성화
+      
+    } catch (err) {
+      console.error(err);
+      alert("AI 코스 생성 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /* ... handleManualSearch, handleOptimize 등 기존 함수들 유지 ... */
+
+
+  // [로딩 화면] AI가 생성하는 동안 보여줄 간단한 UI
+  if (isLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
+        <h2 style={{color: '#333'}}>🤖 AI가 여행 코스를 만들고 있어요!</h2>
+        <p>맛집과 관광지를 최적의 동선으로 배치 중입니다... (최대 30초 소요)</p>
+        <div className="loading-spinner" style={{ marginTop: '20px', width: '50px', height: '50px', border: '5px solid #e0e0e0', borderTop: '5px solid #7C97FE', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
 
   /* ============================================================

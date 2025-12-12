@@ -1,10 +1,10 @@
 import Header from '../../components/common/Header';
 import "../../resources/css/SurveyPage.css";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; // useEffect는 안쓰면 지워도 됨
 import 'rsuite/dist/rsuite.min.css';
 import Footer from '../../components/common/Footer.jsx'
 import survey1 from './../../resources/img/survey1.png';
-import { Link, Navigate } from 'react-router-dom'; // Link 임포트 띄어쓰기 수정
+import { Link } from 'react-router-dom'; 
 import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyTwoPage() {
@@ -13,44 +13,52 @@ function SurveyTwoPage() {
 
     useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
 
-    // 유효성 검사 등 필요한 로직
-    const handleNextClick = () => {
-    
-    // 핵심: 다음 페이지 접근 허용 플래그 저장
-    localStorage.setItem('survey_step_1_completed', 'true');
+    // ✅ [수정 완료] 지역 선택용 핸들러로 변경
+    const handleNextClick = (e) => {
+        // 지역이 하나도 선택되지 않았을 때 방어
+        if (selectedTags.length === 0) {
+            e.preventDefault(); // 이동 막기
+            alert("여행할 지역을 최소 1곳 선택해주세요!");
+            return;
+        }
+
+        // 1. 지역 데이터 저장 (키값: survey_destination)
+        console.log("📍 저장되는 지역 데이터:", selectedTags);
+        localStorage.setItem('survey_destination', JSON.stringify(selectedTags));
+
+        // 2. 가드 플래그 저장
+        localStorage.setItem('survey_step_1_completed', 'true');
     };
 
     // 최대 선택 갯수
     const MAX_SELECTION = 2;
 
-      const toggleTag = (tag) => {
-        setSelectedTags((prev) =>{
-            if (prev.includes(tag)){
+    const toggleTag = (tag) => {
+        setSelectedTags((prev) => {
+            if (prev.includes(tag)) {
                 return prev.filter((t) => t !== tag);
             }
             // 만약 2개 이상이면 선택 XX
-            else{
-                if (prev.length < MAX_SELECTION){
+            else {
+                // (기존 코드의 +1 로직은 3개까지 선택될 수 있어 수정함: < MAX_SELECTION 이 맞음)
+                if (prev.length < MAX_SELECTION) {
                     return [...prev, tag];
-                }
-                else {
-                    alert(`최대 : ${MAX_SELECTION}개 까지만 선택 가능해요`);
+                } else {
+                    alert(`최대 ${MAX_SELECTION}개 까지만 선택 가능해요`);
                     return prev;
                 }
             }
-        }
-        );
-      };
+        });
+    };
     
-      const renderTag = (label) => (
+    const renderTag = (label) => (
         <button
-          className={`survey4-tag ${selectedTags.includes(label) ? "active" : ""}`}
-          onClick={() => toggleTag(label)
-          }
+            className={`survey4-tag ${selectedTags.includes(label) ? "active" : ""}`}
+            onClick={() => toggleTag(label)}
         >
-          {label}
+            {label}
         </button>
-      );
+    );
 
     return (
         <div className="page-with-header">
@@ -68,7 +76,7 @@ function SurveyTwoPage() {
                         </h4>
                     </div>
                     <div>
-                        <img src={survey1} width={250} />
+                        <img src={survey1} width={250} alt="설문 이미지"/>
                     </div>
                 </div>
                 <div className='survey-grid'>
