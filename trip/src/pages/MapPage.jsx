@@ -43,11 +43,10 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
 
     const service = new placesLib.PlacesService(map);
 
-    // 1) findPlaceFromQuery로 place_id만 가져오기
     service.findPlaceFromQuery(
       {
         query: keyword,
-        fields: ["place_id"], // place_id만 필요함
+        fields: ["place_id"],
       },
       (results, status) => {
         if (
@@ -61,7 +60,6 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
 
         const placeId = results[0].place_id;
 
-        // 2) getDetails로 모든 정보를 가져오기
         service.getDetails(
           {
             placeId,
@@ -95,7 +93,6 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
 };
 
 
-
 /* ============================================================
     📍 MapPage 컴포넌트
 ============================================================ */
@@ -103,7 +100,7 @@ const MapPage = ({
   scheduleData,
   initialSearchKeyword,
 
-  //12/11 추가 
+  //12/11 추가
   handleNearby,
 
   activeTab,
@@ -134,64 +131,94 @@ const MapPage = ({
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
   const [showFoodPanel, setShowFoodPanel] = useState(false);
-  const [foodRadius, setFoodRadius] = useState(700); // 기본 700m
+  const [foodRadius, setFoodRadius] = useState(700);
+
+  // 🔥 어떤 Day의 어떤 index 아래에 넣을지 저장
+  const [foodInsertTarget, setFoodInsertTarget] = useState(null);
+  // { dayKey: "day2", index: 0 }
 
   const FOOD_MARKER_ICON = {
     url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
   };
 
   /* ===============================
+    ✅ (핵심) 음식점 사진 URL 만들기
+    - 관광지: photos[0].getUrl() 있을 수도 있음
+    - 음식점(nearbySearch): photos[0].photo_reference 형태일 수 있음
+  =============================== */
+  const getPhotoUrlFromPlace = (place, maxWidth = 500) => {
+    if (!place?.photos || place.photos.length === 0) return null;
+
+    const photo = place.photos[0];
+
+    // 1) getUrl 함수가 있으면 그대로 사용 (관광지/상세정보)
+    if (typeof photo.getUrl === "function") {
+      try {
+        return photo.getUrl({ maxWidth, maxHeight: maxWidth });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // 2) nearbySearch 결과 (photo_reference)
+    if (photo.photo_reference && API_KEY) {
+      return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxWidth}&photoreference=${photo.photo_reference}&key=${API_KEY}`;
+    }
+
+    return null;
+  };
+
+  /* ===============================
     🍜 장소 클릭 → 음식점 패널 오픈
   =============================== */
-  const handleSelectPlaceForFood = (place) => {
+  const handleSelectPlaceForFood = (place, dayKey = null, index = null) => {
     setSelectedPlace(place);
+    setFoodInsertTarget(
+      dayKey !== null && index !== null ? { dayKey, index } : null
+    );
     setShowFoodPanel(true);
   };
 
   const handleSelectDayForFood = (dayKey) => {
-  const dayPlaces = itineraryByDay[dayKey];
-  if (!dayPlaces || dayPlaces.length === 0) return;
+    const dayPlaces = itineraryByDay[dayKey];
+    if (!dayPlaces || dayPlaces.length === 0) return;
 
-  const basePlace = dayPlaces[0]; // Day 대표 장소
-  setSelectedPlace(basePlace);
-  setShowFoodPanel(true);
-};
+    const basePlace = dayPlaces[0];
+    setSelectedPlace(basePlace);
 
+    // Day 클릭은 기준만 바뀌는거라 삽입 타겟은 비움
+    setFoodInsertTarget(null);
 
+    setShowFoodPanel(true);
+  };
+
+  // 🔥 (추가) place가 itineraryByDay의 어디에 있는지 찾아서 dayKey/index 반환
+  const findPlacePosition = (place) => {
+    if (!place?.id || !itineraryByDay) return null;
+
+    for (const [dayKey, places] of Object.entries(itineraryByDay)) {
+      const idx = (places || []).findIndex((p) => p.id === place.id);
+      if (idx !== -1) return { dayKey, index: idx };
+    }
+    return null;
+  };
 
   // 12/11 추가 날짜를 받기 위한 설정
-
-  // 3️⃣ 데이터 확인용 (개발자 도구 콘솔 확인)
   useEffect(() => {
-    if (scheduleData && itineraryByDay) {
-      const requiredDays = scheduleData.diffDays + 1;
-      // 기존 데이터 초기화 혹은 리사이징 로직 필요
-      // 주의: setItineraryByDay는 부모의 state를 바꾸므로 신중해야 함
-
-      // 예: 부모 컴포넌트가 이 로직을 처리하는 것이 가장 좋음
-      // 여기서는 단순히 콘솔로 확인만 하거나, 부모에게 "날짜 바뀌었으니 초기화해줘"라고 요청하는 함수가 있으면 좋음
-    }
     if (scheduleData) {
       console.log("📦 전달받은 여행 일정:", scheduleData);
-      // 예: { startDate: "2025-03-12", endDate: "2025-03-15", diffDays: 3, ... }
     } else {
-      // 아마 이쪽으로 빠지고 있었을 겁니다.
       console.log("데이터가 없습니다.");
     }
   }, [scheduleData]);
 
-  // 2️⃣ 디폴트 설정 (데이터가 없으면 이 값을 씀)
-  // 예: 오늘부터 시작, 기간은 2(2박3일)
   const defaultSchedule = {
-    startDate: new Date().toISOString().split('T')[0], // 오늘 날짜 "2025-XX-XX"
-    endDate: new Date().toISOString().split('T')[0],   // (필요 시 계산)
-    diffDays: 2 // 기본값: 2박 3일 (0, 1, 2)
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
+    diffDays: 2
   };
 
-  // 3️⃣ 최종 사용할 스케줄 결정 (OR 연산자 || 사용)
   const schedule = scheduleData || defaultSchedule;
-
-  // 12/11 날짜가 변경되었으므로 넘어온 날짜만큼 DAY_KEYS 생성 (예: 2박3일이면 day1~day3)
   const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3;
   const DAY_KEYS = Array.from({ length: dayCount }, (_, i) => `day${i + 1}`);
 
@@ -199,13 +226,8 @@ const MapPage = ({
     return acc + (itineraryByDay[key]?.length || 0);
   }, 0);
 
-  // 병합 로직도 동적으로 변경
   const mergedBeforeOptimize = DAY_KEYS.flatMap(key => itineraryByDay[key] || []);
-
-  //  {/* 임의의 색상 지정 (원하는 색상 코드로 변경 가능) */}
   const CUSTOM_COLOR = "#6C5CE7";
-
-
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -272,7 +294,6 @@ const MapPage = ({
           {activeTab === "itinerary" && (
             <div className="itinerary-tab">
               <div className="itinerary-scroll">
-
                 {totalItineraryCount === 0 ? (
                   <p className="itinerary-empty">장소를 추가하세요!</p>
                 ) : (
@@ -298,10 +319,7 @@ const MapPage = ({
                 )}
               </div>
 
-
-
               {!isOptimized ? (
-                /* 최적화 전 버튼 (동일한 색상 적용) */
                 <Button
                   className="btn-optimize"
                   style={{
@@ -314,30 +332,18 @@ const MapPage = ({
                   🚀 {dayCount}일 코스로 최적화하기
                 </Button>
               ) : (
-                /* 최적화 후: Split Button (Drop Up) */
                 <Dropdown as={ButtonGroup} drop="up" className="btn-optimize">
-
-                  {/* 1. 메인 버튼 (꽉 차게 설정: flex: 1) */}
-                  <Button
-                    as={Link}
-                    to="/"
-                  >
+                  <Button as={Link} to="/">
                     💾 저장하기
                   </Button>
 
-                  {/* 2. 화살표 버튼 (작게 설정: flex: 0 0 auto) */}
-                  <Dropdown.Toggle
-                    split
-                    id="dropdown-split-basic"
-                  />
+                  <Dropdown.Toggle split id="dropdown-split-basic" />
 
-                  {/* 3. 메뉴 아이템 */}
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={handleNearby}>
                       🔄 ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
                     </Dropdown.Item>
                   </Dropdown.Menu>
-
                 </Dropdown>
               )}
             </div>
@@ -346,20 +352,17 @@ const MapPage = ({
 
         {/* ===== 오른쪽 지도 ===== */}
         <div className="map-container">
-
           <Map
             defaultCenter={{ lat: 37.5551, lng: 126.9707 }}
             defaultZoom={13}
             gestureHandling="greedy"
             disableDefaultUI={false}
             onClick={handleMapClick}
-            mapTypeControl={false}        // 왼쪽 위 '지도/위성' 버튼 숨김
-            streetViewControl={false}     // 오른쪽 아래 '페그맨' 숨김
+            mapTypeControl={false}
+            streetViewControl={false}
           >
-            {/* 12/10 수정  */}
             <MapClickHandler onPlaceSelect={addToItinerary} />
 
-            {/* 🔥 Intro → MapPage 이동 시 자동 검색 */}
             {initialSearchKeyword && (
               <AutoSearcher
                 keyword={initialSearchKeyword}
@@ -367,19 +370,61 @@ const MapPage = ({
               />
             )}
 
+            {/* 🔥 음식점 패널 */}
             {showFoodPanel && (
               <FoodSidebar
-              basePlace={selectedPlace}
-              restaurants={nearbyRestaurants}
-              radius={foodRadius}
-              onRadiusChange={setFoodRadius}
-              onClose={() => setShowFoodPanel(false)}
-              onSelectRestaurant={(r) => {
-              console.log("선택한 음식점:", r);
-            }}
-            />
-            )}
+                basePlace={selectedPlace}
+                restaurants={nearbyRestaurants}
+                radius={foodRadius}
+                onRadiusChange={setFoodRadius}
+                onClose={() => setShowFoodPanel(false)}
+                onAddRestaurant={(restaurant) => {
+              if (!foodInsertTarget) {
+                alert("추가할 위치를 정하려면 일정에서 관광지를 먼저 클릭해주세요!");
+                return;
+              }
 
+              const { dayKey, index } = foodInsertTarget;
+
+              // ⭐ 사진 URL 생성
+              const photoUrl = getPhotoUrlFromPlace(restaurant);
+
+              const newItem = {
+                id: restaurant.id || Date.now().toString(),
+                placeId: restaurant.placeId,
+                name: restaurant.name,
+                rating: restaurant.rating,
+                reviews: restaurant.reviews,
+                lat: restaurant.lat,
+                lng: restaurant.lng,
+                vicinity: restaurant.vicinity,
+
+                // ⭐ 반드시 photoUrl 저장해야 함
+                photoUrl: photoUrl,
+
+                type: "restaurant",
+              };
+
+              // 중복 방지
+              const exists = Object.values(itineraryByDay).some((dayList) =>
+                (dayList || []).some((p) => p.id === newItem.id)
+              );
+              if (exists) {
+                alert("이미 일정에 추가된 음식점입니다.");
+                return;
+              }
+
+              const updatedDay = [...(itineraryByDay[dayKey] || [])];
+              updatedDay.splice(index + 1, 0, newItem);
+
+              setItineraryByDay({
+                ...itineraryByDay,
+                [dayKey]: updatedDay,
+              });
+            }}
+
+              />
+            )}
 
             {showFoodPanel && selectedPlace && (
               <NearbyFoodController
@@ -418,7 +463,7 @@ const MapPage = ({
                 />
               ))}
 
-            {/* 일정 마커 */}
+            {/* 일정 마커 (최적화 전) */}
             {activeTab === "itinerary" &&
               !isOptimized &&
               mergedBeforeOptimize.map((place, index) => (
@@ -435,7 +480,7 @@ const MapPage = ({
               isOptimized &&
               DAY_KEYS.map((dayKey, dayIndex) => {
                 const dayPlaces = itineraryByDay[dayKey];
-                if (dayPlaces.length === 0) return null;
+                if (!dayPlaces || dayPlaces.length === 0) return null;
 
                 return (
                   <React.Fragment key={dayKey}>
@@ -449,7 +494,11 @@ const MapPage = ({
                           fontSize: "11px",
                           fontWeight: "bold",
                         }}
-                        onClick={() => handleSelectPlaceForFood(place)}
+                        onClick={() => {
+                          const pos = findPlacePosition(place);
+                          if (pos) handleSelectPlaceForFood(place, pos.dayKey, pos.index);
+                          else handleSelectPlaceForFood(place);
+                        }}
                       />
                     ))}
 
@@ -473,15 +522,13 @@ const MapPage = ({
             {showFoodPanel &&
               nearbyRestaurants.map((r) => (
                 <Marker
-                  key={r.id}
+                  key={r.id || r.place_id}
                   position={{ lat: r.lat, lng: r.lng }}
                   icon={FOOD_MARKER_ICON}
                 />
               ))}
-
           </Map>
         </div>
-
       </div>
     </APIProvider>
   );

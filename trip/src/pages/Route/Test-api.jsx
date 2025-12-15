@@ -29,8 +29,8 @@ export default function RouteTestPage() {
     // schedule[0]이 없을 수도 있으니 안전하게
     const dayIndex = 0;
     addPlaceToDay(dayIndex, {
-      place_id: "ChIJc-9ZJjSifDURK8X4a1gY1Z0", // ✅ 실제 구글 place_id로 바꿔야 PlaceDetails가 안 비어있음
-      name: "서울시청",
+      place_id: "ChIJUdzNjHWZfDURZSiQiKlP98Y", // ✅ 실제 구글 place_id로 바꿔야 PlaceDetails가 안 비어있음
+      name: "홍제천 인공폭포",
     });
   };
 

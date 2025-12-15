@@ -3,13 +3,27 @@ import './SearchResultItem.css';
 
 const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor, isToggleOptimized }) => {
   
-  // 1. 이미지 URL 처리
-  const photoUrl =
-    place.photos && place.photos.length > 0 && typeof place.photos[0].getUrl === 'function'
-      ? place.photos[0].getUrl({ maxWidth: 300, maxHeight: 300 })
-      : place.photoUrl && place.photoUrl.length > 0 
-        ? place.photoUrl 
-        : '/noimage.png';
+  // 1. 이미지 URL 처리 (완전 안전한 버전)
+let photoUrl = '/noimage.png';
+
+// 1) itinerary에 저장된 photoUrl 우선 사용
+if (place.photoUrl) {
+  photoUrl = place.photoUrl;
+}
+
+// 2) 검색 결과(place.photos)가 있을 때 getUrl() 사용
+if (
+  place.photos &&
+  place.photos.length > 0 &&
+  typeof place.photos[0].getUrl === "function"
+) {
+  try {
+    photoUrl = place.photos[0].getUrl({
+      maxWidth: 300,
+      maxHeight: 300,
+    });
+  } catch {}
+}
 
   // 2. 뱃지 스타일 (점심: 주황, 저녁: 보라, 기타: 회색)
   const getBadgeStyle = (type) => {
