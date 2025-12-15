@@ -1,6 +1,6 @@
 import Header from '../../components/common/Header';
 import "../../resources/css/SurveyPage.css";
-import React, { useState } from 'react'; // useEffect는 안쓰면 지워도 됨
+import React, { useState } from 'react'; // useEffect는 안 써서 제거함
 import 'rsuite/dist/rsuite.min.css';
 import Footer from '../../components/common/Footer.jsx'
 import survey1 from './../../resources/img/survey1.png';
@@ -9,8 +9,9 @@ import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyTwoPage() {
     
-    // 1. 상태 통일: 선택된 지역을 관리하는 단일 State
-    const [selectedRegions, setSelectedRegions] = useState([]);
+    // 🔥 [수정 포인트] 변수명을 selectedTags로 통일했습니다.
+    // 기존: const [selectedRegions, setSelectedRegions] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
 
     useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
 
@@ -35,13 +36,13 @@ function SurveyTwoPage() {
     const MAX_SELECTION = 2;
 
     const toggleTag = (tag) => {
+        // 🔥 [수정 포인트] setSelectedRegions -> setSelectedTags 로 변경됨 (위에서 이름을 바꿨으므로 자동 해결)
         setSelectedTags((prev) => {
             if (prev.includes(tag)) {
                 return prev.filter((t) => t !== tag);
             }
             // 만약 2개 이상이면 선택 XX
             else {
-                // (기존 코드의 +1 로직은 3개까지 선택될 수 있어 수정함: < MAX_SELECTION 이 맞음)
                 if (prev.length < MAX_SELECTION) {
                     return [...prev, tag];
                 } else {
@@ -54,6 +55,7 @@ function SurveyTwoPage() {
     
     const renderTag = (label) => (
         <button
+            // 🔥 [수정 포인트] selectedTags 사용 가능해짐
             className={`survey4-tag ${selectedTags.includes(label) ? "active" : ""}`}
             onClick={() => toggleTag(label)}
         >

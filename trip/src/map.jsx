@@ -118,7 +118,7 @@ const App = () => {
     const newPlace = {
       id: place.place_id || Date.now().toString(),
       name: place.name || "이름없음",
-      address: place.formatted_address || "",  // 주소 필드 추가
+      formatted_address: place.formatted_address || "",  // 주소 필드 추가
       rating: place.rating || 0,
       reviews: place.user_ratings_total || 0,
       lat,
