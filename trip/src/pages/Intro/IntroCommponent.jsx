@@ -8,16 +8,18 @@ import Modal from "react-modal";
 import './Intro.css';
 import '../../resources/css/IntroPage.css';
 
+// 12.14
+import { FaSearch } from "react-icons/fa";
 
 // 이미지 리소스
-import MapImage from '../../resources/img/map.png';                   
-import PhoneTapImage from '../../resources/img/Intro1.png';        
-import HotelRoomsPreview from '../../resources/img/Intro2.png'; 
-import FatiguePerson from '../../resources/img/Intro3.png';   
-import SolutionBackground from '../../resources/img/Intro4.png'; 
-import HowToMapIcon from '../../resources/img/Intro5.png';    
-import RoadMapInfographic from '../../resources/img/Intro6.png'; 
-import LoginV2Users from '../../resources/img/Intro7.png';   
+import MapImage from '../../resources/img/map.png';
+import PhoneTapImage from '../../resources/img/Intro1.png';
+import HotelRoomsPreview from '../../resources/img/Intro2.png';
+import FatiguePerson from '../../resources/img/Intro3.png';
+import SolutionBackground from '../../resources/img/Intro4.png';
+import HowToMapIcon from '../../resources/img/Intro5.png';
+import RoadMapInfographic from '../../resources/img/Intro6.png';
+import LoginV2Users from '../../resources/img/Intro7.png';
 
 
 function IntroCommponent() {
@@ -49,27 +51,25 @@ function IntroCommponent() {
         <h2>🤖 AI 톡톡 플래너란 ❓</h2><br />
         <h4>AI가 여행 고민 대신 해결하는 스마트 도우미</h4><br />
         <p>
-        <ul style={{ marginLeft: '26px' }}>
-          <li>AI가 여행 고민 대신 해결! 간단한 설문만으로 최적 동선 자동 생성</li><br />
-          <li>숙소·맛집·관광지 정보(사진, 평점, 영업시간) 한눈에 ❗❗</li><br />
-          <li>단톡방 혼란, 사이트 무한탐색 → 1분 맞춤 코스 완성</li><br />
-          <li>이제 설렘만 챙기고, 귀찮음은 AI에게 맡기세요! ✨</li><br />
-        </ul>
+          <ul style={{ marginLeft: '26px' }}>
+            <li>AI가 여행 고민 대신 해결! 간단한 설문만으로 최적 동선 자동 생성</li><br />
+            <li>숙소·맛집·관광지 정보(사진, 평점, 영업시간) 한눈에 ❗❗</li><br />
+            <li>단톡방 혼란, 사이트 무한탐색 → 1분 맞춤 코스 완성</li><br />
+            <li>이제 설렘만 챙기고, 귀찮음은 AI에게 맡기세요! ✨</li><br />
+          </ul>
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
           <button onClick={() => setIsOpen(false)}>닫기</button>
         </div>
       </Modal>
-      
+
       {/* 그림 1들어갈 예정 */}
       <div>
-        <section className="section-base experience-section">
-          <div
-            className="map-placeholder"
-            style={{ backgroundImage: `url(${MapImage})` }}
-          >
-          </div>
-        </section>
+        <br /><br />
+        <h1>RoutePick과 함께<br />
+          여행 일정 고민을 끝내세요</h1><br /><br /><br />
+        <h4>AI가 이동 시간과 취향을 분석해<br />
+          최적의 여행 동선을 설계합니다</h4>
 
         <section className="search-cta-section">
           {/* 🚨 오류 수정 1 & 2: 검색 기능을 <form>으로 감싸고 닫는 태그를 명확히 함 */}
@@ -77,16 +77,16 @@ function IntroCommponent() {
           <form onSubmit={handleSearch} className="search-bar-container">
             <input
               type="text"
-              placeholder="가시고 싶으신 여행지 혹은 맛집 있으세요??"
+              placeholder="어디로 떠나고 싶으세요? (여행지 · 맛집)"
               className="search-input"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
-            <span className="search-icon" onClick={handleSearch}>🔎</span>
+            <span className="search-icon" onClick={handleSearch}><FaSearch /></span>
           </form>
-
+          <br />
           <Link to="/survey/SurveyFirstPage" className="cta-button">
-            AI 콕콕 플래너 - 코스 만들기 !!!
+            AI 일정 설계 시작하기
           </Link>
 
           <a
@@ -97,12 +97,12 @@ function IntroCommponent() {
               setIsOpen(true);
             }}
           >
-            AI 콕콕 플래너란??
-          </a>
+            AI 일정 설계는 어떻게 동작하나요?
+          </a><br />
         </section>
         {/* 아래다 그리드로 묶음 */}
         <section className="section-base experience-section">
-          <u><h2>여행 준비 할 때, 이런 경험 없으셨나요?</h2></u>
+          <h2>여행 준비 할 때, 이런 경험 없으셨나요?</h2>
           <br />
           <div className="experience-grid">
 
@@ -143,7 +143,7 @@ function IntroCommponent() {
             </div>
           </div>
 
-          <br/>
+          <br />
           <h2>여행 준비, 설렘보다 피곤함이 앞선다면?</h2>
 
           <section
@@ -152,7 +152,7 @@ function IntroCommponent() {
           >
           </section>
 
-          <br/>
+          <br />
 
           <div className="experience-grid">
             <div className="experience-card">
