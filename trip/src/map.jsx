@@ -376,7 +376,7 @@ const handleNearby = async () => {
        updated[dayKey] = itineraryByDay[dayKey].filter(item => item.id !== id);
     });
     setItineraryByDay(updated);
-    setIsOptimized(false);
+    // setIsOptimized(false);
   };
 
   //12/12 수정 설문 작성 시 
