@@ -79,6 +79,10 @@ const HistoryComponent = () => {
         });
     };
 
+    const handleDetail = (e) =>{
+      navigate('/mapdetail')
+    }
+
   return (
     <div className="history-wrapper">
       <div
@@ -140,7 +144,9 @@ const HistoryComponent = () => {
 
             {/* 버튼 */}
             <div className="history-btn-area">
-              <button className="btn-detail">자세히 보기</button>
+              <button className="btn-detail"
+              onClick={handleDetail}
+              >자세히 보기</button>
 
               <button
                 className="btn-share"
