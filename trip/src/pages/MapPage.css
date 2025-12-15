@@ -215,3 +215,23 @@
   justify-content: space-between;
   align-items: center;
 }
+/* 최적화 이후 Day 섹션 */
+.day-box {
+  padding-top: 8px;
+  margin-bottom: 24px;
+}
+
+/* Day 헤더 */
+.day-header {
+  padding: 12px 4px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 12px;
+}
+
+/* Day 제목 */
+.day-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
