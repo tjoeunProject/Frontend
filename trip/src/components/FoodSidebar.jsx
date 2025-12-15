@@ -1,4 +1,3 @@
-// components/FoodSidebar.jsx
 import React from "react";
 import "./FoodSidebar.css";
 
@@ -8,7 +7,7 @@ const FoodSidebar = ({
   radius,
   onClose,
   onRadiusChange,
-  onSelectRestaurant, // (다음 단계 대비)
+  onAddRestaurant,
 }) => {
   if (!basePlace) return null;
 
@@ -17,7 +16,7 @@ const FoodSidebar = ({
       {/* 헤더 */}
       <div className="food-sidebar-header">
         <div>
-          <h3>🍜 근처 음식점</h3>
+          <h5>🍽️ 근처 음식점</h5>
           <p className="food-base-place">
             기준: <strong>{basePlace.name}</strong>
           </p>
@@ -28,7 +27,7 @@ const FoodSidebar = ({
         </button>
       </div>
 
-      {/* 반경 조절 */}
+      {/* 반경 */}
       <div className="food-radius-box">
         <label>
           검색 반경: <strong>{radius}m</strong>
@@ -49,12 +48,33 @@ const FoodSidebar = ({
           <p className="food-empty">근처에 음식점이 없습니다.</p>
         ) : (
           restaurants.map((r) => (
-            <div
-              key={r.id}
-              className="food-item"
-              onClick={() => onSelectRestaurant?.(r)}
-            >
-              <div className="food-item-title">{r.name}</div>
+            <div key={r.id} className="food-item">
+              {/* 🔥 이미지 */}
+              {r.photoUrl ? (
+                <img
+                  src={r.photoUrl}
+                  alt={r.name}
+                  className="food-item-image"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="food-item-image food-image-empty">
+                  이미지 없음
+                </div>
+              )}
+
+              {/* 이름 + 추가 */}
+              <div className="food-item-top">
+                <div className="food-item-title">{r.name}</div>
+                <button
+                  className="food-add-icon"
+                  onClick={() => onAddRestaurant(r)}
+                  title="일정에 추가"
+                >
+                  +
+                </button>
+              </div>
+
               <div className="food-item-sub">
                 ⭐ {r.rating || "-"} · 리뷰 {r.reviews || 0}
               </div>
