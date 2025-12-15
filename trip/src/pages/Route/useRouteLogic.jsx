@@ -8,11 +8,18 @@ import { useEffect } from 'react'; // import 추가 필요
 // 1. [Axios 인스턴스 설정]
 // =====================================================================
 // 반복되는 서버 URL과 헤더 설정을 미리 정의해두는 곳입니다.
+
+// 12/12 수정
+const token = localStorage.getItem("access_token"); 
+
 const simpleAxios = axios.create({
   baseURL: '/sts/api/route', 
   
   // JSON 형식으로 데이터를 주고받겠다는 약속
-  headers: { 'Content-Type': 'application/json' }
+  headers: { 'Content-Type': 'application/json', 
+    // 12/12 수정
+    'Authorization' : `Bearer ${token}`, // ✅ 철자 정확히
+  }
 });
 
 // =====================================================================
