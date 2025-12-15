@@ -123,11 +123,21 @@ const useRouteLogic = () => {
   // 특정 Day에 장소 추가:
   // dayIndex: 몇 번째 날인지 (0부터 시작)
   // googlePlace: 구글 지도 API에서 선택한 장소 객체 (전체 정보 포함)
-  const addPlaceToDay = (dayIndex, googlePlace) => {
-    const newSchedule = [...schedule]; // 불변성 유지를 위해 복사
-    newSchedule[dayIndex] = [...newSchedule[dayIndex], googlePlace]; // 해당 날짜 배열에 장소 추가
-    setSchedule(newSchedule); // 상태 업데이트
-  };
+  const addPlaceToDay = (dayIndex, place) => {
+  if (!place.place_id && place.googlePlaceId) {
+    place.place_id = place.googlePlaceId; // 🔥 핵심 보정
+  }
+
+  if (!place.place_id) {
+    console.error("place_id가 없는 장소입니다", place);
+    return;
+  }
+
+  const newSchedule = [...schedule];
+  newSchedule[dayIndex] = [...newSchedule[dayIndex], place];
+  setSchedule(newSchedule);
+};
+
 
   // -------------------------------------------------------------------
   // [Data Transformation Helper] ★ 프론트엔드 -> 백엔드 변환
@@ -135,23 +145,27 @@ const useRouteLogic = () => {
   // 백엔드 API(DTO) 스펙에 맞춰 데이터를 가공하는 함수입니다.
   // 프론트엔드의 googlePlace 객체는 너무 방대하므로, DB 저장에 필요한 핵심만 추립니다.
   const createPayload = () => {
-    return {
-      memberId,
-      title,
-      startDate,
-      endDate,
-      // 2차원 배열 구조(Day -> Place)를 유지하면서 매핑
-      places: schedule.map(dayList => 
-        dayList.map(place => ({
-          // ★ Google Place 객체에서 필요한 정보만 추출
-          // 백엔드 Entity의 필드명과 일치시켜야 함
-          placeId: place.place_id, // 구글 고유 ID (가장 중요)
-          placeName: place.name    // 장소 이름
-          // 필요하다면 lat, lng, address 등도 여기서 추가해서 보냄
+  return {
+    memberId,
+    title,
+    startDate,
+    endDate,
+
+    // 2차원 배열 유지 (Day → Place)
+    places: schedule.map(dayList =>
+      dayList
+        // 1️⃣ place_id 없는 데이터 제거
+        .filter(place => place.place_id)
+
+        // 2️⃣ 백엔드 DTO 형태로 변환
+        .map(place => ({
+          placeId: place.place_id,
+          placeName: place.name
         }))
-      )
-    };
+    )
   };
+};
+
   // 데이터 받고 저장할 준비하는 객체
 
   // -------------------------------------------------------------------
