@@ -206,3 +206,12 @@
   z-index: 9999;  /* 최상위에 위치 해야함 */
   width: 350px;
 }
+
+/* test */
+.test-tab {
+  display: flex;        /* flex 컨테이너로 변경 */
+  flex-direction: row;  /* 가로 정렬 (기본값이라 생략 가능) */
+  /* 필요하면 정렬 옵션 추가 */
+  justify-content: space-between;
+  align-items: center;
+}
