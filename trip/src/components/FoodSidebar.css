@@ -43,27 +43,74 @@
   padding: 8px 12px;
 }
 
+/* 음식점 아이템 */
 .food-item {
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
+  padding: 10px 12px;   /* 전체 높이 살짝 줄임 */
 }
 
-.food-item:hover {
-  background: #f5f7ff;
+/* 상단: 이름 + 플러스 */
+.food-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2px;   /* 이름 ↔ 평점 간격 축소 */
 }
 
+/* 음식점 이름 */
 .food-item-title {
   font-weight: bold;
+  font-size: 0.95rem;
+  color: #222;
+  line-height: 1.2;     
+  margin: 0;           
 }
 
+/* ⭐ 평점 / 리뷰 */
 .food-item-sub {
   font-size: 0.85rem;
   color: #666;
+  margin-top: 0;        
+  line-height: 1.2;     
 }
 
-.food-empty {
-  text-align: center;
+/* + 버튼 */
+.food-add-icon {
+  border: none;
+  background: none;
+  color: #1976d2;
+
+  font-size: 26px;
+  font-weight: bold;
+
+  cursor: pointer;
+  padding: 2px 4px;     
+  margin-top: 4px;      /* 살짝만 아래 */
+  line-height: 1;
+}
+
+/* 음식점 hover 효과 */
+.food-item {
+  transition: background-color 0.15s ease;
+}
+
+.food-item:hover {
+  background-color: #f3f8ff;   /* 연한 파란색 */
+  border-radius: 8px;
+}
+
+.food-item-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.food-image-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f2f2;
   color: #999;
-  margin-top: 20px;
+  font-size: 12px;
 }

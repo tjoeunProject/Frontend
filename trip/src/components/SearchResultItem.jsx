@@ -1,15 +1,29 @@
 import React from 'react';
 import './SearchResultItem.css';
 
-const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor }) => {
+const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor, isToggleOptimized }) => {
   
-  // 1. 이미지 URL 처리
-  const photoUrl =
-    place.photos && place.photos.length > 0 && typeof place.photos[0].getUrl === 'function'
-      ? place.photos[0].getUrl({ maxWidth: 300, maxHeight: 300 })
-      : place.photoUrl && place.photoUrl.length > 0 
-        ? place.photoUrl 
-        : '/noimage.png';
+  // 1. 이미지 URL 처리 (완전 안전한 버전)
+let photoUrl = '/noimage.png';
+
+// 1) itinerary에 저장된 photoUrl 우선 사용
+if (place.photoUrl) {
+  photoUrl = place.photoUrl;
+}
+
+// 2) 검색 결과(place.photos)가 있을 때 getUrl() 사용
+if (
+  place.photos &&
+  place.photos.length > 0 &&
+  typeof place.photos[0].getUrl === "function"
+) {
+  try {
+    photoUrl = place.photos[0].getUrl({
+      maxWidth: 300,
+      maxHeight: 300,
+    });
+  } catch {}
+}
 
   // 2. 뱃지 스타일 (점심: 주황, 저녁: 보라, 기타: 회색)
   const getBadgeStyle = (type) => {
@@ -20,6 +34,43 @@ const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor }) => {
 
   // 3. 일정 모드 여부 (onDelete가 있으면 일정 모드)
   const isItineraryMode = !!onDelete;
+
+  let actionButton = null; 
+
+    // isToggleOptimized가 false일 때만 (버튼이 필요할 때만) 할당합니다.
+    if (!isToggleOptimized) { 
+        console.log(`[SearchResultItem] isToggleOptimized: ${isToggleOptimized} (버튼 렌더링)`);
+
+        // 1. onDelete 프롭스가 있으면 => 삭제 버튼 (일정 목록)
+        if (onDelete) {
+            actionButton = (
+                <button 
+                    className="result-add-btn" 
+                    style={{ backgroundColor: '#ffebee', color: '#c62828' }} 
+                    onClick={() => onDelete(place.id || place.place_id)}
+                >
+                    ❌
+                </button>
+            );
+        } 
+        
+        // 2. onAdd 프롭스가 있으면 => 추가 버튼 (검색 목록)
+        else if (onAdd) { 
+        	 actionButton = (
+                <button
+                    className="result-add-btn"
+                    onClick={(e) => {
+                        e.stopPropagation(); 
+                        onAdd(place);
+                    }}
+                >
+                    추가
+                </button>
+            );
+        }
+    } else {
+        console.log(`[SearchResultItem] isToggleOptimized: ${isToggleOptimized} (버튼 숨김)`);
+    }
 
   return (
     <li className="result-card">
@@ -98,28 +149,10 @@ const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor }) => {
           </div>
         )}
       </div>
+      
+      {actionButton}
+      </li>
 
-      {/* 🔥 2. 버튼 분기 처리 */}
-      {onDelete ? (
-        <button 
-          className="result-add-btn" 
-          style={{ backgroundColor: '#ffebee', color: '#c62828' }} 
-          onClick={() => onDelete(place.id || place.place_id)} // place_id 대응 추가
-        >
-          ❌
-        </button>
-      ) : (
-        <button
-          className="result-add-btn"
-          onClick={(e) => {
-            e.stopPropagation(); // 🔥 카드 클릭 방지
-            onAdd(place);
-          }}
-        >
-          추가
-        </button>
-      )}
-    </li>
   );
 };
 

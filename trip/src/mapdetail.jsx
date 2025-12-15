@@ -1,17 +1,18 @@
 // App.jsx (수정 완료 버전)
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import MapPage from './pages/MapPage.jsx';
+// 12.15 수정
+import MapDetailPage from './pages/MapDetailPage.jsx'; 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // 1. useLocation 추가 12-2
+
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('search');
   const [searchResults, setSearchResults] = useState([]);
-  const hasFetched = useRef(false);
 
   // 12-02 이정민 수정  - 검색어 기반 검색
   // 2. 받아온 데이터 꾸러미(location) 풀기
@@ -118,7 +119,7 @@ const App = () => {
     const newPlace = {
       id: place.place_id || Date.now().toString(),
       name: place.name || "이름없음",
-      formatted_address: place.formatted_address || "",  // 주소 필드 추가
+      address: place.formatted_address || "",  // 주소 필드 추가
       rating: place.rating || 0,
       reviews: place.user_ratings_total || 0,
       lat,
@@ -383,59 +384,63 @@ const handleNearby = async () => {
   /* ============================================================
      🔥 [NEW] 페이지 진입 시 AI 코스 자동 생성
   ============================================================ */
-
   useEffect(() => {
-    // 1. 데이터가 있고(generateRequest)
-    // 2. 아직 데이터를 가져온 적이 없을 때(!hasFetched.current)만 실행
-    if (generateRequest && !hasFetched.current) {
-      hasFetched.current = true; // "나 이제 가져온다!"라고 깃발 꽂기
+    if (generateRequest) {
       fetchGeneratedCourse();
     }
-  }, []); // 🔥 핵심: 의존성 배열을 비워서 '마운트 시 1회'만 실행하게 함
+  }, []); // 마운트 시 1회만 실행 (generateRequest가 있을 때만)
 
   const fetchGeneratedCourse = async () => {
-    setIsLoading(true); // 로딩 시작
+    setIsLoading(true);
     try {
-      console.log("🚀 1. 요청 시작:", generateRequest);
-      
-      // 반드시 post 요청
+      console.log("1",generateRequest);
+      // 1. 백엔드 요청 (/generate)
       const response = await axios.post("/py/generate", generateRequest);
-      const result = response.data?.optimized_places; 
+      const result = response.data?.optimized_places; // [[Day1], [Day2]...]
       
-      console.log("✅ 2. 응답 도착:", response);
-
+      console.log("2",generateRequest);
+      // 2. 결과 매핑
       const newItinerary = {};
       const days = generateRequest.days;
       
       for (let i = 0; i < days; i++) {
         newItinerary[`day${i+1}`] = result?.[i] || [];
       }
-      
-      console.log("📦 3. 데이터 매핑 완료");
+      console.log("3",generateRequest);
       
       setItineraryByDay(newItinerary);
       setIsOptimized(true);
-      setActiveTab('itinerary'); 
+      setActiveTab('itinerary'); // '나의 일정' 탭 활성화
       
     } catch (err) {
-      console.error("❌ 에러 발생:", err);
-      alert("AI 코스 생성 중 오류가 발생했습니다."); 
+      console.error(err);
+      alert("AI 코스 생성 중 오류가 발생했습니다.");
     } finally {
-      setIsLoading(false); // 로딩 끝
+      setIsLoading(false);
     }
   };
+
   /* ... handleManualSearch, handleOptimize 등 기존 함수들 유지 ... */
 
 
   // [로딩 화면] AI가 생성하는 동안 보여줄 간단한 UI
-
+  if (isLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
+        <h2 style={{color: '#333'}}>🤖 AI가 여행 코스를 만들고 있어요!</h2>
+        <p>맛집과 관광지를 최적의 동선으로 배치 중입니다... (최대 30초 소요)</p>
+        <div className="loading-spinner" style={{ marginTop: '20px', width: '50px', height: '50px', border: '5px solid #e0e0e0', borderTop: '5px solid #7C97FE', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
 
   /* ============================================================
      📍 화면 렌더링 (MapPage로 props 전달)
   ============================================================ */
   return (
-    <MapPage
+    <MapDetailPage
       // ★ 3. MapPage에게 검색어 전달 (props로 넘겨줌)
       //  12 -2 수정 
       initialSearchKeyword={searchKeyword} 

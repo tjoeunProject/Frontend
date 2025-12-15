@@ -3,7 +3,12 @@ import React from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import SearchResultItem from "./SearchResultItem"; // 🔥 컴포넌트 import 12.10 추가
 
-const ItineraryListNormal = ({ list, handleOnDragEnd, removeFromItinerary, onSelectPlace }) => {
+const ItineraryListNormal = ({ list, handleOnDragEnd, removeFromItinerary, onSelectPlace, isToggleOptimized }) => {
+
+  if (isToggleOptimized) {
+        return null;
+    }
+    
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <Droppable droppableId="normal-list">
@@ -30,6 +35,7 @@ const ItineraryListNormal = ({ list, handleOnDragEnd, removeFromItinerary, onSel
                       index={index + 1}          // 순서 전달
                       onDelete={removeFromItinerary} // 삭제 함수 전달 (이게 있으면 삭제버튼 뜸)
                       onClick={() => onSelectPlace(place)}
+                      isToggleOptimized={isToggleOptimized}
                     />
                   </div>
                 )}
