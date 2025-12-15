@@ -12,6 +12,7 @@ import MyTravelPage from './pages/MyTravelPage.jsx';
 import LoginPage from './pages/Login/LoginPage.jsx';
 import SignupPage from './pages/SignUp/SignupPage.jsx';
 import MapPage from './map.jsx';
+import MapDetailPage from './mapdetail.jsx';
 //
 import TestConnection from './TestConnection.jsx';
 import TestPage from './pages/Route/Test-api.jsx';
@@ -36,6 +37,7 @@ function AppRouter() {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/mapdetail" element={<MapDetailPage />} />
 
       <Route path="/test-spring" element={<TestConnection />} />
       <Route path="/test-page" element={<TestPage/>} />

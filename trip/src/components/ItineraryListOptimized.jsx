@@ -9,6 +9,7 @@ const ItineraryListOptimized = ({
   DAY_COLORS,
   onSelectDay,
   onSelectPlace,
+  isToggleOptimized
 }) => {
   // 1) 방어 코드
   if (!itineraryByDay) return null;
@@ -77,6 +78,7 @@ const ItineraryListOptimized = ({
                             place={place}
                             index={index + 1}
                             onDelete={removeFromItinerary}
+                            isToggleOptimized={isToggleOptimized}
                           />
                         </div>
                       )}
