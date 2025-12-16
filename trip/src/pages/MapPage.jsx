@@ -30,7 +30,6 @@ import SplitButton from 'react-bootstrap/SplitButton';
 
 // 12/16
 import useRouteLogic from './../pages/Route/useRouteLogic';
-import useRouteLogic from './Route/useRouteLogic';
 
 /* ============================================================
     🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
@@ -150,18 +149,6 @@ const MapPage = ({
     url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
   };
 
-  
-
-    // 🔍 1️⃣ MapPage에서 payload 확인
-    console.log("🟢 [MapPage] schedulePayload", schedulePayload);
-
-    setSchedule(schedulePayload);
-
-    // 🔍 2️⃣ setSchedule 직후 (주의: 아직 반영 안 됐을 수 있음)
-    console.log("🟡 [MapPage] setSchedule 호출 완료");
-
-    handleCreateRoute();
-  };
   // ✅ (추가) "나의 일정 옆" 추천 패널 표시 여부
   const [showNearbyResult, setShowNearbyResult] = useState(false);
 
@@ -654,5 +641,5 @@ const MapPage = ({
       </div>
     </APIProvider>
   );
-
+};
 export default MapPage;
