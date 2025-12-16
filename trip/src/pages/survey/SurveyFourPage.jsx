@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../components/common/Header';
-import "../../resources/css/SurveyFourPage.css"; 
+import "../../resources/css/SurveyFourPage.css";
 import Footer from '../../components/common/Footer.jsx';
 import survey3 from './../../resources/img/survey3.png';
 import { useNavigate, Link } from 'react-router-dom'; // 🚨 Link 추가!
@@ -11,7 +11,7 @@ function SurveyFourPage() {
 
   // 페이지 진입 권한 체크
   useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
-  
+
   const [selectedTags, setSelectedTags] = useState([]);
 
   // 12/12 수정 [핵심] 완료 버튼 핸들러
@@ -66,28 +66,28 @@ function SurveyFourPage() {
   );
 
   const TagsNextClick = () => {
-        console.log("최종 선택된 태그들:", selectedTags); 
-        
-        // **********************************************
-        // TODO: 유효성 검사 추가 (선택된 지역이 최소 1개 이상인지 등)
-        // **********************************************
-        console.log("최종 선택된 태그들:", selectedTags);
-        // 핵심: 다음 페이지 접근 허용 플래그 저장 및 이동 준비
-        localStorage.setItem('tags', JSON.stringify(selectedTags));
-        localStorage.setItem('survey_step_1_completed', 'true');
-        // 참고: Link 컴포넌트가 이동을 처리하므로 별도 Navigate는 필요 없습니다.
-    };
+    console.log("최종 선택된 태그들:", selectedTags);
+
+    // **********************************************
+    // TODO: 유효성 검사 추가 (선택된 지역이 최소 1개 이상인지 등)
+    // **********************************************
+    console.log("최종 선택된 태그들:", selectedTags);
+    // 핵심: 다음 페이지 접근 허용 플래그 저장 및 이동 준비
+    localStorage.setItem('tags', JSON.stringify(selectedTags));
+    localStorage.setItem('survey_step_1_completed', 'true');
+    // 참고: Link 컴포넌트가 이동을 처리하므로 별도 Navigate는 필요 없습니다.
+  };
 
   return (
     <div className="survey4-wrapper">
       <Header />
 
-      <section className="survey4-content">
+      <section className="k2">
 
         <div className="survey4-title-box">
           <div>
-            <h3>마지막으로<br/> 이번 여행의 테마를 정해볼까요?</h3>
-            <h4> <br/>
+            <h3>마지막으로<br /> 이번 여행의 테마를 정해볼까요?</h3>
+            <h4> <br />
               여행의 <b>태그를 </b>선택해주세요.
             </h4>
           </div>
@@ -135,12 +135,12 @@ function SurveyFourPage() {
 
         {/* '건너 뛰기'는 태그 선택 없이 바로 완료하는 것과 같으므로 handleComplete 호출 */}
         {/* 필요 없다면 지우셔도 됩니다. */}
-        <button className="survey4-next-btn" onClick={handleComplete} style={{marginBottom: '10px', background: '#ccc'}}>
-            건너 뛰기 
+        <button className="survey4-next-btn" onClick={handleComplete} style={{ marginBottom: '10px', background: '#ccc' }}>
+          건너 뛰기
         </button>
 
         {/* 버튼 영역 */}
-        <div className="survey4-btn-box">
+        <div className='survey-grid2'>
           {/* 🚨 Back 버튼: handleNextClick 제거 (정의되지 않음) */}
           <Link to="/survey/SurveyThreePage" className="survey4-back-btn">
             이전으로

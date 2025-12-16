@@ -430,6 +430,24 @@ const handleNearby = async () => {
   // [로딩 화면] AI가 생성하는 동안 보여줄 간단한 UI
 
 
+  // 저장하기 누르면 POST 동작하는지 확인할려고 만든 함수
+  const handlePost = (e) => {
+    axios
+    .post('/sts/api/route', formToJSON)
+    .then((result) => {
+      if (result.data == '일정생성 성공'){
+        alert('일정이 히스토리에 저장되었습니다!');
+      }
+      const routeInfo = {
+        Id : form.id,
+        Day_index : form.Day_index,
+        Order_index : form.Order_ondex, 
+        Place_name : form.Place_name,
+        Place_id : form.Place_id
+      }
+      sessionStorage.setItem()
+    })
+  }
 
   /* ============================================================
      📍 화면 렌더링 (MapPage로 props 전달)
