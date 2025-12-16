@@ -1,10 +1,8 @@
 // MapPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Map, Marker, APIProvider, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 
-import SearchBox from '../components/SearchBox';
 import MapRecenter from '../components/MapRecenter';
 import HandleMapIdle from '../components/HandleMapIdle';
 import SearchPlaceButton from '../components/SearchPlaceButton';
@@ -12,99 +10,23 @@ import SearchPlaceButton from '../components/SearchPlaceButton';
 import TabButton from '../components/TabButton';
 import SearchResultItem from '../components/SearchResultItem';
 
-import ItineraryListNormal from '../components/ItineraryListNormal';
 import ItineraryListOptimized from '../components/ItineraryListOptimized';
 
 import DirectionsPolyline from '../components/DirectionsPolyline';
 
-import FoodSidebar from '../components/FoodSidebar';
-import NearbyFoodController from '../components/NearbyFoodController';
 
 import MapClickHandler from '../components/MapClickHandler';
 import './MapPage.css';
 
 // 12/11
 import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
-import SplitButton from 'react-bootstrap/SplitButton';
 
 // 12/15
 import Header from './../components/common/Header';
 import Modal from 'react-modal';
 
-/* ============================================================
-    🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
-============================================================ */
-const AutoSearcher = ({ keyword, onPlaceFound }) => {
-  const map = useMap();
-  const placesLib = useMapsLibrary("places");
-  const hasSearched = useRef(false);
 
-  
-
-  useEffect(() => {
-    if (!map || !placesLib || !keyword) return;
-    if (hasSearched.current) return;
-
-    const service = new placesLib.PlacesService(map);
-
-    // 1) findPlaceFromQuery로 place_id만 가져오기
-    service.findPlaceFromQuery(
-      {
-        query: keyword,
-        fields: ["place_id"], // place_id만 필요함
-      },
-      (results, status) => {
-        if (
-          status !== placesLib.PlacesServiceStatus.OK ||
-          !results ||
-          results.length === 0
-        ) {
-          console.log("❌ AutoSearcher: 검색 실패:", keyword);
-          return;
-        }
-
-        const placeId = results[0].place_id;
-
-        // 2) getDetails로 모든 정보를 가져오기
-        service.getDetails(
-          {
-            placeId,
-            fields: [
-              "name",
-              "geometry",
-              "formatted_address",
-              "place_id",
-              "rating",
-              "user_ratings_total",
-              "photos",
-            ],
-          },
-          (detail, detailStatus) => {
-            if (
-              detailStatus === placesLib.PlacesServiceStatus.OK &&
-              detail
-            ) {
-              onPlaceFound(detail);
-              hasSearched.current = true;
-            } else {
-              console.log("❌ AutoSearcher: getDetails 실패");
-            }
-          }
-        );
-      }
-    );
-  }, [map, placesLib, keyword, onPlaceFound]);
-
-  return null;
-};
-
-
-
-/* ============================================================
-    📍 MapPage 컴포넌트
-============================================================ */
 const MapPage = ({
   scheduleData,
   initialSearchKeyword,
@@ -134,15 +56,7 @@ const MapPage = ({
   DAY_COLORS,
   API_KEY
 }) => {
-  /* ===============================
-    🍜 근처 음식점 상태
-  =============================== */
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
-  const [showFoodPanel, setShowFoodPanel] = useState(false);
-  const [foodRadius, setFoodRadius] = useState(700); // 기본 700m
   const [isToggleOptimized, setIsToggleOptimized] = useState(false);
-
 
 
   const isTogglehandleOptimize = () => {
@@ -162,29 +76,11 @@ useEffect(() => {
     url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
   };
 
-  /* ===============================
-    🍜 장소 클릭 → 음식점 패널 오픈
-  =============================== */
-  const handleSelectPlaceForFood = (place) => {
-    setSelectedPlace(place);
-    setShowFoodPanel(true);
-  };
-
-  const handleSelectDayForFood = (dayKey) => {
-  const dayPlaces = itineraryByDay[dayKey];
-  if (!dayPlaces || dayPlaces.length === 0) return;
-
-  const basePlace = dayPlaces[0]; // Day 대표 장소
-  setSelectedPlace(basePlace);
-  setShowFoodPanel(true);
-};
 
 // 12/15 은섭 수정
   const navigate = useNavigate();
 // 12/15 공유하기
 const handleShareClick = () => {
-  
-
         alert("저장이 완료되었습니다. 히스토리 페이지로 이동합니다.");
         navigate("/history"); // 경로를 '/history'로 수정
     };
@@ -210,29 +106,10 @@ const handleShareClick = () => {
     }
   }, [scheduleData]);
 
-  // 2️⃣ 디폴트 설정 (데이터가 없으면 이 값을 씀)
-  // 예: 오늘부터 시작, 기간은 2(2박3일)
-  const defaultSchedule = {
-    startDate: new Date().toISOString().split('T')[0], // 오늘 날짜 "2025-XX-XX"
-    endDate: new Date().toISOString().split('T')[0],   // (필요 시 계산)
-    diffDays: 2 // 기본값: 2박 3일 (0, 1, 2)
-  };
 
   // 3️⃣ 최종 사용할 스케줄 결정 (OR 연산자 || 사용)
-  const schedule = scheduleData || defaultSchedule;
+  const schedule = scheduleData ;
 
-  // 12/11 날짜가 변경되었으므로 넘어온 날짜만큼 DAY_KEYS 생성 (예: 2박3일이면 day1~day3)
-  const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3;
-  const DAY_KEYS = Array.from({ length: dayCount }, (_, i) => `day${i + 1}`);
-
-  const totalItineraryCount = DAY_KEYS.reduce((acc, key) => {
-    return acc + (itineraryByDay[key]?.length || 0);
-  }, 0);
-
-  // 병합 로직도 동적으로 변경
-  const mergedBeforeOptimize = DAY_KEYS.flatMap(key => itineraryByDay[key] || []);
-
-  //  {/* 임의의 색상 지정 (원하는 색상 코드로 변경 가능) */}
   const CUSTOM_COLOR = "#6C5CE7";
 
 
@@ -246,14 +123,6 @@ const handleShareClick = () => {
     
       <div className="mappage-container">
 
-
-        
-        {/* 🔍 검색창 */}
-        <div className="searchbox-overlay">
-          <SearchBox onPlaceSelect={handleManualSearch} />
-        </div>
-
-        {/* ===== 왼쪽 사이드바 ===== */}
         <div className="sidebar">
           <div className="sidebar-tabs">
            
@@ -262,41 +131,17 @@ const handleShareClick = () => {
               isActive={activeTab === "itinerary"}
               onClick={() => setActiveTab("itinerary")}
             >
-              📅 나의 일정 ({totalItineraryCount})
+              📅 나의 일정 
             </TabButton>
           </div>
 
-          {/* 검색 탭 */}
-          {activeTab === "search" && (
-            <div className="search-tab">
-              
-
-              
-              <div className="search-results-box">
-                {searchResults.length === 0 ? (
-                  <p className="search-empty">검색 결과가 여기에 표시됩니다.</p>
-                ) : (
-                  <ul className="search-results-list">
-                    {searchResults.map((place) => (
-                      <SearchResultItem key={place.id} place={place} onAdd={addToItinerary}
-                      isToggleOptimized={isToggleOptimized} />
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* 일정 탭 */}
           {activeTab === "itinerary" && (
             <div className="itinerary-tab">
               <div className="itinerary-scroll">
-
-                {totalItineraryCount === 0 ? (
-                  <p className="itinerary-empty">비어있지 않고 일정 보여질 예정이고</p>
-                ) : (
                   <>
-                    {!isOptimized ? (
+                     (
                       <ItineraryListOptimized
                         itineraryByDay={itineraryByDay}
                         setItineraryByDay={setItineraryByDay}
@@ -306,17 +151,9 @@ const handleShareClick = () => {
                         onSelectPlace={handleSelectPlaceForFood}
                         isToggleOptimized={isToggleOptimized}
                       />
-                    ) : (
-                      <ItineraryListNormal
-                        list={mergedBeforeOptimize}
-                        handleOnDragEnd={handleOnDragEnd}
-                        removeFromItinerary={removeFromItinerary}
-                        onSelectPlace={handleSelectPlaceForFood}
-                        isToggleOptimized={isToggleOptimized}
-                      />
-                    )}
+                    ) 
                   </>
-                )}
+        
               </div>
 
 
@@ -375,7 +212,6 @@ const handleShareClick = () => {
             </div>
           )}
         </div>
-
         {/* ===== 오른쪽 지도 ===== */}
         <div className="map-container">
       
@@ -399,46 +235,9 @@ const handleShareClick = () => {
               />
             )}
 
-            {showFoodPanel && (
-              <FoodSidebar
-              basePlace={selectedPlace}
-              restaurants={nearbyRestaurants}
-              radius={foodRadius}
-              onRadiusChange={setFoodRadius}
-              onClose={() => setShowFoodPanel(false)}
-              onSelectRestaurant={(r) => {
-              console.log("선택한 음식점:", r);
-            }}
-            />
-            )}
-
-
-            {showFoodPanel && selectedPlace && (
-              <NearbyFoodController
-                selectedPlace={selectedPlace}
-                radius={foodRadius}
-                onResults={setNearbyRestaurants}
-              />
-            )}
-
             <MapRecenter center={mapCenter} />
             <HandleMapIdle onIdle={() => setShowButton(true)} />
 
-            {showButton && activeTab === "search" && (
-              <div
-                className="reSearch-btn-box"
-                style={{
-                  backgroundColor: '#ffffff',
-                  padding: '8px 8px',
-                  borderRadius: '6px',
-                  display: 'inline-block'
-                }}
-              >
-                <span style={{ fontSize: '12px', color: '#000000ff' }}>
-                  Tip. 원하는 장소에 핀트를 찍어서 나의 일정에도 추가할 수 있습니다.
-                </span>
-              </div>
-            )}
 
             {/* 검색 마커 */}
             {activeTab === "search" &&
@@ -501,24 +300,9 @@ const handleShareClick = () => {
                 );
               })}
 
-            {/* 근처 음식점을 클릭하면, 일정에 추가하는 방향으로*/}
-            {/* 🍜 근처 음식점 마커 */}
-            {showFoodPanel &&
-              nearbyRestaurants.map((r) => (
-                <Marker
-                  key={r.id}
-                  position={{ lat: r.lat, lng: r.lng }}
-                  icon={FOOD_MARKER_ICON}
-                />
-              ))}
-
           </Map>
-
         </div>
-            
-
       </div>
-      
     </APIProvider>
    
   );
