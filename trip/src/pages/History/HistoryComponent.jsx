@@ -32,6 +32,9 @@ const HistoryComponent = () => {
 
   const [detailId, setDetailId] = useState("");
 
+  // 12.16
+  const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const width = 200;
   const mockRoute = {
     route_id: 999,
     name: "예시 여행 일정",
@@ -43,23 +46,23 @@ const HistoryComponent = () => {
       : [mockRoute];
 
 
+
   // 일단 mockData로 넣어둠 추후에 변경하기
   const cards = routesForView.map((item, idx) => ({
     id: idx + 1,
     
-    title: item.name,
+    title: item.title,
     placeId: item.place_id,
     routeId: item.routeId, // 라우트 아이디
-  detailId: item.route_id, // ✅ 추가
+    detailId: item.route_id, // ✅ 추가
     date: item.startDate, // 시작데이트
     time: item.endDate, // 끝나는데이트
-    temp: item.name, // 제목들어갈예정
-    distance: "7km",
+    temp: item.title, // 제목들어갈예정
+    distance: item.place_name,
     region: "대구",
     tags: ["실내여행지", "바다"],
     liked: idx % 2 === 1, // 일부는 기본 좋아요 상태
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=60",
+    image: `https://places.googleapis.com/v1/${item.photo_reference}/media?maxWidthPx=200&key=${API_KEY}`
   }));
 
   // ❤️ 좋아요 토글 기능
@@ -108,6 +111,7 @@ const HistoryComponent = () => {
       alert("여행 기간을 먼저 선택해 주세요.");
       return;
     }
+    
     // 🔥 여기서 navigate로 이동하며 state를 전달합니다.
     navigate('/map', {
       state: {
@@ -134,12 +138,13 @@ const HistoryComponent = () => {
         <br />
         <h4>새로운 여행 일정 만들기</h4>
       </div>
-
+            
       {cards.map((item) => (
         <div key={item.id} className="history-card">
           {/* 이미지 영역 */}
           <div className="history-img-box">
             <img src={item.image} alt="trip" />
+
 
             {/* <div className="history-like-icon" onClick={() => toggleLike(item.id)}>
               {item.liked ? <FaHeart size={22} color="red" /> : <FaRegHeart size={22} color="#555" />}

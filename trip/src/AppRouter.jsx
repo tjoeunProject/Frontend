@@ -37,7 +37,7 @@ function AppRouter() {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/mapdetail" element={<MapDetailPage />} />
+      <Route path="/mapdetail/:route_id" element={<MapDetailPage />} />
 
       <Route path="/test-spring" element={<TestConnection />} />
       <Route path="/test-page" element={<TestPage/>} />

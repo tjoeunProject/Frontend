@@ -1,97 +1,137 @@
 import React, { useState } from 'react';
 import Header from '../../components/common/Header';
-import "../../resources/css/SurveyFourPage.css";
 import Footer from '../../components/common/Footer.jsx';
+import "../../resources/css/SurveyFourPage.css";
+import '../../resources/css/LoadingModal.css';
 import survey3 from './../../resources/img/survey3.png';
-import { useNavigate, Link } from 'react-router-dom'; // 🚨 Link 추가!
+import { useNavigate, Link } from 'react-router-dom';
 import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyFourPage() {
   const navigate = useNavigate();
 
-  // 페이지 진입 권한 체크
+  // 설문 접근 가드
   useSurveyGuard('survey_step_1_completed', '/survey/SurveyFirstPage');
 
+  // 태그 상태
   const [selectedTags, setSelectedTags] = useState([]);
 
-  // 12/12 수정 [핵심] 완료 버튼 핸들러
-  const handleComplete = () => {
-    // 1. 로컬 스토리지 데이터 가져오기
-    const destRaw = localStorage.getItem('survey_destination');
-    const schedRaw = localStorage.getItem('survey_schedule');
+  // 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
 
-    if (!destRaw || !schedRaw) {
-      alert("이전 단계의 선택 정보가 없습니다. 처음부터 다시 시도해주세요.");
-      navigate('/survey/SurveyFirstPage');
-      return;
-    }
-
-    const destination = JSON.parse(destRaw);
-    const schedule = JSON.parse(schedRaw);
-
-    // 2. 데이터 구성 (서버로 보낼 준비)
-    const generateRequest = {
-      destination: destination, // ["Jeju", "서울"]
-      days: schedule.diffDays + 1, // 박(night) + 1 = 일(day)
-      tags: selectedTags // 현재 페이지에서 선택한 태그들
-    };
-
-    // 3. Map 페이지로 이동하며 데이터 전달
-    navigate('/map', {
-      state: {
-        generateRequest: generateRequest, // AI 생성 요청 데이터
-        schedule: schedule             // MapPage에서 날짜 표시용
-      }
-    });
-
-    // 4. 사용한 플래그 및 임시 데이터 청소
-    localStorage.removeItem('survey_step_1_completed');
-    localStorage.removeItem('survey_destination');
-    localStorage.removeItem('survey_schedule');
-  };
-
+  // 태그 토글
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag)
+        ? prev.filter((t) => t !== tag)
+        : [...prev, tag]
     );
   };
 
   const renderTag = (label) => (
     <button
-      className={`survey4-tag ${selectedTags.includes(label) ? "active" : ""}`}
+      type="button"
+      className={`survey4-tag ${selectedTags.includes(label) ? 'active' : ''}`}
       onClick={() => toggleTag(label)}
     >
       {label}
     </button>
   );
 
-  const TagsNextClick = () => {
-    console.log("최종 선택된 태그들:", selectedTags);
+  /**
+   * ✅ 완료 버튼 클릭 시 실행되는 핵심 로직
+   * 1. 로딩 모달 표시
+   * 2. 설문 데이터 조합
+   * 3. AI 생성 요청
+   * 4. 완료 시 MapPage로 자동 이동
+   */
+  const handleComplete = async () => {
+    setIsLoading(true); // 🔥 로딩 시작
 
-    // **********************************************
-    // TODO: 유효성 검사 추가 (선택된 지역이 최소 1개 이상인지 등)
-    // **********************************************
-    console.log("최종 선택된 태그들:", selectedTags);
-    // 핵심: 다음 페이지 접근 허용 플래그 저장 및 이동 준비
-    localStorage.setItem('tags', JSON.stringify(selectedTags));
-    localStorage.setItem('survey_step_1_completed', 'true');
-    // 참고: Link 컴포넌트가 이동을 처리하므로 별도 Navigate는 필요 없습니다.
+    try {
+      // 1. 이전 설문 데이터 가져오기
+      const destRaw = localStorage.getItem('survey_destination');
+      const schedRaw = localStorage.getItem('survey_schedule');
+
+      if (!destRaw || !schedRaw) {
+        alert("이전 단계 정보가 없습니다. 처음부터 다시 진행해주세요.");
+        navigate('/survey/SurveyFirstPage');
+        return;
+      }
+
+      const destination = JSON.parse(destRaw);
+      const schedule = JSON.parse(schedRaw);
+
+      // 2. AI 요청 데이터 구성
+      const generateRequest = {
+        destination,
+        days: schedule.diffDays + 1,
+        tags: selectedTags
+      };
+
+      // 3. 🔥 AI 일정 생성 요청
+      const response = await fetch('/py/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(generateRequest)
+      });
+
+      if (!response.ok) {
+        throw new Error('AI 일정 생성 실패');
+      }
+
+      const aiResult = await response.json();
+
+      // 4. 🔥 결과를 들고 Map 페이지로 이동
+      navigate('/map', {
+        state: {
+          generateRequest,
+          schedule,
+          aiResult
+        }
+      });
+
+      // 5. 임시 설문 데이터 정리
+      localStorage.removeItem('survey_step_1_completed');
+      localStorage.removeItem('survey_destination');
+      localStorage.removeItem('survey_schedule');
+
+    } catch (error) {
+      console.error(error);
+      alert("일정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false); // 페이지 이동 후에는 의미 없지만 안전하게
+    }
   };
 
   return (
     <div className="survey4-wrapper">
       <Header />
 
-      <section className="k2">
+      {/* 🔄 로딩 모달 */}
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-modal">
+            <h3>AI가 여행 일정을 만들고 있어요 🤖</h3>
+            <p>잠시만 기다려 주세요...</p>
+            <div className="spinner" />
+          </div>
+        </div>
+      )}
 
+      <section className="survey4-content">
         <div className="survey4-title-box">
           <div>
-            <h3>마지막으로<br /> 이번 여행의 테마를 정해볼까요?</h3>
-            <h4> <br />
-              여행의 <b>태그를 </b>선택해주세요.
+            <h3>
+              마지막으로<br />
+              이번 여행의 테마를 정해볼까요?
+            </h3>
+            <h4>
+              <br />
+              여행의 <b>태그</b>를 선택해주세요.
             </h4>
           </div>
-          <img src={survey3} width={250} alt="Survey 3" />
+          <img src={survey3} width={250} alt="Survey 4" />
         </div>
 
         {/* 동행 타입 */}
@@ -120,7 +160,7 @@ function SurveyFourPage() {
 
         {/* 활동 타입 */}
         <div className="survey4-tag-section">
-          <h4 className="survey4-tag-title"> 🚗 활동 타입</h4>
+          <h4 className="survey4-tag-title">🚗 활동 타입</h4>
           <div className="survey4-tag-grid">
             {renderTag("🍽️ 맛집 탐방")}
             {renderTag("🏕️ 캠핑 / 글램핑 가능")}
@@ -133,25 +173,20 @@ function SurveyFourPage() {
           </div>
         </div>
 
-        {/* '건너 뛰기'는 태그 선택 없이 바로 완료하는 것과 같으므로 handleComplete 호출 */}
-        {/* 필요 없다면 지우셔도 됩니다. */}
-        <button className="survey4-next-btn" onClick={handleComplete} style={{ marginBottom: '10px', background: '#ccc' }}>
-          건너 뛰기
-        </button>
-
         {/* 버튼 영역 */}
-        <div className='survey-grid2'>
-          {/* 🚨 Back 버튼: handleNextClick 제거 (정의되지 않음) */}
+        <div className="survey4-btn-box">
           <Link to="/survey/SurveyThreePage" className="survey4-back-btn">
             이전으로
           </Link>
 
-          {/* 🚨 완료 버튼: Link 대신 button 사용 -> onClick 핸들러 연결 */}
-          <button className="survey4-next-btn" onClick={handleComplete}>
+          <button
+            className="survey4-next-btn"
+            onClick={handleComplete}
+            disabled={isLoading}
+          >
             완료하기
           </button>
         </div>
-
       </section>
 
       <Footer />
