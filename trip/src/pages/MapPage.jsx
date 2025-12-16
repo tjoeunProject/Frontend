@@ -30,7 +30,6 @@ import SplitButton from 'react-bootstrap/SplitButton';
 
 // 12/16
 import useRouteLogic from './../pages/Route/useRouteLogic';
-import useRouteLogic from './Route/useRouteLogic';
 
 /* ============================================================
     🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
@@ -420,23 +419,6 @@ const MapPage = ({
             )}
           </div>
 
-              {!isOptimized ? (
-                <Button
-                  className="btn-optimize"
-                  style={{
-                    backgroundColor: CUSTOM_COLOR,
-                    borderColor: CUSTOM_COLOR,
-                    fontWeight: 'bold'
-                  }}
-                  onClick={handleOptimize}
-                >
-                  🚀 {dayCount}일 코스로 최적화하기
-                </Button>
-              ) : (
-                <Dropdown as={ButtonGroup} drop="up" className="btn-optimize">
-                  <Button onClick={handleSaveFromMapPage}>
-                    💾 저장하기
-                  </Button>
           {/* ✅ '나의 일정 옆' 추천 패널 (탭 전환 없이 옆에 뜸) */}
           {showNearbyResult && (
             <div className="nearby-panel">
@@ -474,6 +456,7 @@ const MapPage = ({
 
             </div>
           )}
+          
              
         </div>
 
@@ -660,5 +643,4 @@ const MapPage = ({
     </APIProvider>
   );
 };
-
 export default MapPage;
