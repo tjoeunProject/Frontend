@@ -141,10 +141,11 @@ const MapPage = ({
     url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
   };
 
+  // ✅ (추가) "나의 일정 옆" 추천 패널 표시 여부
+  const [showNearbyResult, setShowNearbyResult] = useState(false);
+
   /* ===============================
     ✅ (핵심) 음식점 사진 URL 만들기
-    - 관광지: photos[0].getUrl() 있을 수도 있음
-    - 음식점(nearbySearch): photos[0].photo_reference 형태일 수 있음
   =============================== */
   const getPhotoUrlFromPlace = (place, maxWidth = 500) => {
     if (!place?.photos || place.photos.length === 0) return null;
@@ -228,6 +229,7 @@ const MapPage = ({
 
   const mergedBeforeOptimize = DAY_KEYS.flatMap(key => itineraryByDay[key] || []);
   const CUSTOM_COLOR = "#6C5CE7";
+  const [showSaveMenu, setShowSaveMenu] = useState(false);
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -238,116 +240,173 @@ const MapPage = ({
           <SearchBox onPlaceSelect={handleManualSearch} />
         </div>
 
-        {/* ===== 왼쪽 사이드바 ===== */}
-        <div className="sidebar">
-          <div className="sidebar-tabs">
-            <TabButton
-              isActive={activeTab === "search"}
-              onClick={() => setActiveTab("search")}
-            >
-              🔍 장소 찾기
-            </TabButton>
+        {/* ✅ 사이드바 + (나의 일정 옆) 추천 패널 컨테이너 */}
+        <div className="sidebar-container">
 
-            <TabButton
-              isActive={activeTab === "itinerary"}
-              onClick={() => setActiveTab("itinerary")}
-            >
-              📅 나의 일정 ({totalItineraryCount})
-            </TabButton>
+          {/* ===== 왼쪽 사이드바 ===== */}
+          <div className="sidebar">
+            <div className="sidebar-tabs">
+              <TabButton
+                isActive={activeTab === "search"}
+                onClick={() => setActiveTab("search")}
+              >
+                🔍 장소 찾기
+              </TabButton>
+
+              <TabButton
+                isActive={activeTab === "itinerary"}
+                onClick={() => setActiveTab("itinerary")}
+              >
+                📅 나의 일정 ({totalItineraryCount})
+              </TabButton>
+            </div>
+
+            {/* 검색 탭 */}
+            {activeTab === "search" && (
+              <div className="search-tab">
+                <p className="search-tip">상단 검색창 또는 아래 버튼으로 주변을 찾아보세요.</p>
+
+                <div className="search-buttons">
+                  <SearchPlaceButton
+                    type="restaurant"
+                    onSearchResults={setSearchResults}
+                    setShowButton={setShowButton}
+                    setActiveTab={setActiveTab}
+                  />
+                  <SearchPlaceButton
+                    type="tourist_attraction"
+                    onSearchResults={setSearchResults}
+                    setShowButton={setShowButton}
+                    setActiveTab={setActiveTab}
+                  />
+                </div>
+
+                <div className="search-results-box">
+                  {searchResults.length === 0 ? (
+                    <p className="search-empty">검색 결과가 여기에 표시됩니다.</p>
+                  ) : (
+                    <ul className="search-results-list">
+                      {searchResults.map((place) => (
+                        <SearchResultItem key={place.id} place={place} onAdd={addToItinerary} />
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 일정 탭 */}
+            {activeTab === "itinerary" && (
+              <div className="itinerary-tab">
+                <div className="itinerary-scroll">
+                  {totalItineraryCount === 0 ? (
+                    <p className="itinerary-empty">장소를 추가하세요!</p>
+                  ) : (
+                    <>
+                      {!isOptimized ? (
+                        <ItineraryListNormal
+                          list={mergedBeforeOptimize}
+                          handleOnDragEnd={handleOnDragEnd}
+                          removeFromItinerary={removeFromItinerary}
+                          onSelectPlace={handleSelectPlaceForFood}
+                        />
+                      ) : (
+                        <ItineraryListOptimized
+                          itineraryByDay={itineraryByDay}
+                          setItineraryByDay={setItineraryByDay}
+                          removeFromItinerary={removeFromItinerary}
+                          DAY_COLORS={DAY_COLORS}
+                          onSelectDay={handleSelectDayForFood}
+                          onSelectPlace={handleSelectPlaceForFood}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {!isOptimized ? (
+                  <Button
+                    className="btn-optimize"
+                    style={{
+                      backgroundColor: CUSTOM_COLOR,
+                      borderColor: CUSTOM_COLOR,
+                      fontWeight: 'bold'
+                    }}
+                    onClick={handleOptimize}
+                  >
+                    🚀 {dayCount}일 코스로 최적화하기
+                  </Button>
+                ) : (
+                  <div className="save-dropdown-wrapper">
+                <Link to="/" className="btn-save-main">
+                  💾 저장하기
+                </Link>
+
+                <button
+                  className="btn-save-toggle"
+                  onClick={() => setShowSaveMenu((prev) => !prev)}
+                >
+                  ▼
+                </button>
+
+                {showSaveMenu && (
+                  <div className="save-dropdown-menu">
+                    <div
+                      className="save-dropdown-item"
+                      onClick={() => {
+                        handleNearby();
+                        setShowNearbyResult(true);
+                        setShowSaveMenu(false);
+                      }}
+                    >
+                      🍽️ 주변 맛집 찾기
+                    </div>
+                  </div>
+                )}
+              </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* 검색 탭 */}
-          {activeTab === "search" && (
-            <div className="search-tab">
-              <p className="search-tip">상단 검색창 또는 아래 버튼으로 주변을 찾아보세요.</p>
+          {/* ✅ '나의 일정 옆' 추천 패널 (탭 전환 없이 옆에 뜸) */}
+          {showNearbyResult && (
+            <div className="nearby-panel">
 
-              <div className="search-buttons">
-                <SearchPlaceButton
-                  type="restaurant"
-                  onSearchResults={setSearchResults}
-                  setShowButton={setShowButton}
-                  setActiveTab={setActiveTab}
-                />
-                <SearchPlaceButton
-                  type="tourist_attraction"
-                  onSearchResults={setSearchResults}
-                  setShowButton={setShowButton}
-                  setActiveTab={setActiveTab}
-                />
-              </div>
+              {/* 🔥 탭 헤더 (sidebar-tabs랑 동일한 역할) */}
+              <div className="nearby-tabs">
+                <button className="nearby-tab-btn active">
+                  🍽️ 주변 추천 맛집
+                </button>
 
-              <div className="search-results-box">
-                {searchResults.length === 0 ? (
-                  <p className="search-empty">검색 결과가 여기에 표시됩니다.</p>
-                ) : (
-                  <ul className="search-results-list">
-                    {searchResults.map((place) => (
-                      <SearchResultItem key={place.id} place={place} onAdd={addToItinerary} />
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* 일정 탭 */}
-          {activeTab === "itinerary" && (
-            <div className="itinerary-tab">
-              <div className="itinerary-scroll">
-                {totalItineraryCount === 0 ? (
-                  <p className="itinerary-empty">장소를 추가하세요!</p>
-                ) : (
-                  <>
-                    {!isOptimized ? (
-                      <ItineraryListNormal
-                        list={mergedBeforeOptimize}
-                        handleOnDragEnd={handleOnDragEnd}
-                        removeFromItinerary={removeFromItinerary}
-                        onSelectPlace={handleSelectPlaceForFood}
-                      />
-                    ) : (
-                      <ItineraryListOptimized
-                        itineraryByDay={itineraryByDay}
-                        setItineraryByDay={setItineraryByDay}
-                        removeFromItinerary={removeFromItinerary}
-                        DAY_COLORS={DAY_COLORS}
-                        onSelectDay={handleSelectDayForFood}
-                        onSelectPlace={handleSelectPlaceForFood}
-                      />
-                    )}
-                  </>
-                )}
-              </div>
-
-              {!isOptimized ? (
-                <Button
-                  className="btn-optimize"
-                  style={{
-                    backgroundColor: CUSTOM_COLOR,
-                    borderColor: CUSTOM_COLOR,
-                    fontWeight: 'bold'
-                  }}
-                  onClick={handleOptimize}
+                <button
+                  className="nearby-close-btn"
+                  onClick={() => setShowNearbyResult(false)}
                 >
-                  🚀 {dayCount}일 코스로 최적화하기
-                </Button>
-              ) : (
-                <Dropdown as={ButtonGroup} drop="up" className="btn-optimize">
-                  <Button as={Link} to="/">
-                    💾 저장하기
-                  </Button>
+                  ✕
+                </button>
+              </div>
 
-                  <Dropdown.Toggle split id="dropdown-split-basic" />
-
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={handleNearby}>
-                      🔄 ㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇ
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+              {/* 🔥 컨텐츠 영역 */}
+              <div className="nearby-tab">
+                <div className="nearby-scroll">
+                  {nearbyRestaurants.length === 0 ? (
+                    <p className="nearby-empty">추천 결과가 없습니다.</p>
+                  ) : (
+                    nearbyRestaurants.map((restaurant) => (
+                  <SearchResultItem
+                    key={restaurant.id || restaurant.placeId}
+                    place={restaurant}
+                    onAdd={addToItinerary}
+                  />
+                ))
               )}
             </div>
+          </div>
+
+            </div>
           )}
+             
         </div>
 
         {/* ===== 오른쪽 지도 ===== */}
@@ -379,50 +438,49 @@ const MapPage = ({
                 onRadiusChange={setFoodRadius}
                 onClose={() => setShowFoodPanel(false)}
                 onAddRestaurant={(restaurant) => {
-              if (!foodInsertTarget) {
-                alert("추가할 위치를 정하려면 일정에서 관광지를 먼저 클릭해주세요!");
-                return;
-              }
+                  if (!foodInsertTarget) {
+                    alert("추가할 위치를 정하려면 일정에서 관광지를 먼저 클릭해주세요!");
+                    return;
+                  }
 
-              const { dayKey, index } = foodInsertTarget;
+                  const { dayKey, index } = foodInsertTarget;
 
-              // ⭐ 사진 URL 생성
-              const photoUrl = getPhotoUrlFromPlace(restaurant);
+                  // ⭐ 사진 URL 생성
+                  const photoUrl = getPhotoUrlFromPlace(restaurant);
 
-              const newItem = {
-                id: restaurant.id || Date.now().toString(),
-                placeId: restaurant.placeId,
-                name: restaurant.name,
-                rating: restaurant.rating,
-                reviews: restaurant.reviews,
-                lat: restaurant.lat,
-                lng: restaurant.lng,
-                vicinity: restaurant.vicinity,
+                  const newItem = {
+                    id: restaurant.id || Date.now().toString(),
+                    placeId: restaurant.placeId,
+                    name: restaurant.name,
+                    rating: restaurant.rating,
+                    reviews: restaurant.reviews,
+                    lat: restaurant.lat,
+                    lng: restaurant.lng,
+                    vicinity: restaurant.vicinity,
 
-                // ⭐ 반드시 photoUrl 저장해야 함
-                photoUrl: photoUrl,
+                    // ⭐ 반드시 photoUrl 저장해야 함
+                    photoUrl: photoUrl,
 
-                type: "restaurant",
-              };
+                    type: "restaurant",
+                  };
 
-              // 중복 방지
-              const exists = Object.values(itineraryByDay).some((dayList) =>
-                (dayList || []).some((p) => p.id === newItem.id)
-              );
-              if (exists) {
-                alert("이미 일정에 추가된 음식점입니다.");
-                return;
-              }
+                  // 중복 방지
+                  const exists = Object.values(itineraryByDay).some((dayList) =>
+                    (dayList || []).some((p) => p.id === newItem.id)
+                  );
+                  if (exists) {
+                    alert("이미 일정에 추가된 음식점입니다.");
+                    return;
+                  }
 
-              const updatedDay = [...(itineraryByDay[dayKey] || [])];
-              updatedDay.splice(index + 1, 0, newItem);
+                  const updatedDay = [...(itineraryByDay[dayKey] || [])];
+                  updatedDay.splice(index + 1, 0, newItem);
 
-              setItineraryByDay({
-                ...itineraryByDay,
-                [dayKey]: updatedDay,
-              });
-            }}
-
+                  setItineraryByDay({
+                    ...itineraryByDay,
+                    [dayKey]: updatedDay,
+                  });
+                }}
               />
             )}
 
