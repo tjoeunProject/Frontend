@@ -375,7 +375,7 @@
   padding: 15px;
   background: white;
   border: none;
-  border-bottom: 3px solid #2196f3; /* 이것만 사용 */
+  border-bottom: 3px solid white; /* 이것만 사용 */
   font-weight: bold;
   font-size: 16px;
   text-align: left;

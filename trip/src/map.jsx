@@ -11,6 +11,8 @@ const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const App = () => {
   const [activeTab, setActiveTab] = useState('search');
   const [searchResults, setSearchResults] = useState([]);
+  const [nearbyGoogleRestaurants, setNearbyGoogleRestaurants] = useState([]);
+  const [recommendedRestaurants, setRecommendedRestaurants] = useState([]);
   const hasFetched = useRef(false);
 
   // 12-02 이정민 수정  - 검색어 기반 검색
@@ -351,7 +353,7 @@ const handleNearby = async () => {
 
     // 5. 상태 업데이트 (맛집 리스트를 저장할 state가 있다고 가정)
     // 예: const [recommendations, setRecommendations] = useState([]);
-    setSearchResults(recommendations); 
+    setRecommendedRestaurants(recommendations);
     
     if (recommendations.length > 0) {
       alert(`주변 맛집 ${recommendations.length}곳을 찾았습니다!`);
@@ -467,6 +469,10 @@ const handleNearby = async () => {
 
       searchResults={searchResults}
       setSearchResults={setSearchResults}
+
+      nearbyGoogleRestaurants={nearbyGoogleRestaurants}
+      setNearbyGoogleRestaurants={setNearbyGoogleRestaurants}
+      recommendedRestaurants={recommendedRestaurants}
 
       itineraryByDay={itineraryByDay}
       setItineraryByDay={setItineraryByDay}

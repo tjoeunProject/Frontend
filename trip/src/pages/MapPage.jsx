@@ -115,6 +115,10 @@ const MapPage = ({
   searchResults,
   setSearchResults,
 
+  nearbyGoogleRestaurants,
+  setNearbyGoogleRestaurants,
+  recommendedRestaurants,
+
   itineraryByDay,
   setItineraryByDay,
 
@@ -136,7 +140,6 @@ const MapPage = ({
     🍜 근처 음식점 상태
   =============================== */
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const [nearbyRestaurants, setNearbyRestaurants] = useState([]);
   const [showFoodPanel, setShowFoodPanel] = useState(false);
   const [foodRadius, setFoodRadius] = useState(700);
 
@@ -440,10 +443,10 @@ const MapPage = ({
               {/* 🔥 컨텐츠 영역 */}
               <div className="nearby-tab">
                 <div className="nearby-scroll">
-                  {nearbyRestaurants.length === 0 ? (
+                  {recommendedRestaurants.length === 0 ? (
                     <p className="nearby-empty">추천 결과가 없습니다.</p>
                   ) : (
-                    nearbyRestaurants.map((restaurant) => (
+                    recommendedRestaurants.map((restaurant) => (
                   <SearchResultItem
                     key={restaurant.id || restaurant.placeId}
                     place={restaurant}
@@ -484,7 +487,7 @@ const MapPage = ({
             {showFoodPanel && (
               <FoodSidebar
                 basePlace={selectedPlace}
-                restaurants={nearbyRestaurants}
+                restaurants={nearbyGoogleRestaurants}
                 radius={foodRadius}
                 onRadiusChange={setFoodRadius}
                 onClose={() => setShowFoodPanel(false)}
@@ -511,6 +514,15 @@ const MapPage = ({
 
                     // ⭐ 반드시 photoUrl 저장해야 함
                     photoUrl: photoUrl,
+                    // ⭐ itinerary 카드 호환용 
+                    photos: photoUrl
+                      ? [
+                          {
+                            getUrl: () => photoUrl,
+                          },
+                        ]
+                      : [],
+
 
                     type: "restaurant",
                   };
@@ -536,11 +548,15 @@ const MapPage = ({
               />
             )}
 
-            {showFoodPanel && selectedPlace && (
+            {showFoodPanel &&
+            selectedPlace &&
+            selectedPlace.lat &&
+            selectedPlace.lng &&
+            !showNearbyResult && (
               <NearbyFoodController
                 selectedPlace={selectedPlace}
                 radius={foodRadius}
-                onResults={setNearbyRestaurants}
+                onResults={setNearbyGoogleRestaurants}
               />
             )}
 
@@ -630,7 +646,7 @@ const MapPage = ({
 
             {/* 🍜 근처 음식점 마커 */}
             {showFoodPanel &&
-              nearbyRestaurants.map((r) => (
+              nearbyGoogleRestaurants.map((r) => (
                 <Marker
                   key={r.id || r.place_id}
                   position={{ lat: r.lat, lng: r.lng }}
