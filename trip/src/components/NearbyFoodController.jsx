@@ -35,8 +35,18 @@ const NearbyFoodController = ({
         onResults([]);
         return;
       }
+      // 🔥 [필터링 로직 추가] 
+      // 평점(rating)이 3.5 초과이고, 리뷰수(reviews)가 10개 초과인 곳만 남김
+      const filteredResults = results.filter((r) => {
+        const rating = r.rating || 0;
+        const reviews = r.user_ratings_total || 0;
+        
+        // 3.5 이하거나 10개 이하면 false (제외됨)
+        return rating > 3.5 && reviews > 10;
+      });
 
-      const normalized = results.map((r) => {
+
+      const normalized = filteredResults.map((r) => {
         let photoUrl = null;
 
         // =============================
