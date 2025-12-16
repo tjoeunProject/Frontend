@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect } from 'react'; // import 추가 필요
-
+import { useAuth } from '../Login/AuthContext';
 
 // =====================================================================
 // 1. [Axios 인스턴스 설정]
@@ -63,6 +63,13 @@ const useRouteLogic = () => {
   const [startDate, setStartDate] = useState(''); // 여행 시작일 (YYYY-MM-DD)
   const [endDate, setEndDate] = useState('');     // 여행 종료일 (YYYY-MM-DD)
   
+  // [2] Context에서 user 정보 꺼내기
+  const { user } = useAuth();
+
+  // [3] memberId 변수 설정 (하드코딩 제거)
+  // user가 있으면 memberId를 쓰고, 없으면(비로그인) null
+  const memberId = user?.memberId || null;
+
   // ★ [핵심 데이터 구조: 2차원 배열]
   // 여행 일정은 "여러 날(Day)"과 각 날짜의 "여러 장소(Place)"로 구성됩니다.
   // schedule[0] -> 1일차 장소 목록 배열
@@ -76,8 +83,6 @@ const useRouteLogic = () => {
   // 상세 조회 시 받아온 현재 보고 있는 여행 데이터 원본
   const [currentRoute, setCurrentRoute] = useState(null);
 
-  // TODO: 실제 구현 시에는 로그인 컨텍스트(AuthContext)나 세션에서 가져와야 함
-  const memberId = 1; 
 
   // -------------------------------------------------------------------
   // [UI Helper Functions] 화면 조작을 도와주는 함수들
@@ -141,8 +146,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     const finalSchedule = paramSchedule || schedule;
 
     return {
-      memberId,
-      title: finalTitle,
+      memberId: memberId, // 이제 진짜 로그인한 사람의 ID가 들어갑니다 (예: 1, 5, 100...)      title: finalTitle,
       startDate: finalStart,
       endDate: finalEnd,
       places: finalSchedule.map((dayList, dayIndex) => 
