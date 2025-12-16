@@ -222,47 +222,42 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
       });
   };
 
-  // 2. [Read - Detail] 상세 조회 및 데이터 복원 ★ 중요
+ // 2. [Read - Detail] 상세 조회 및 복원
   const handleGetRouteDetail = (routeId) => {
-    // route id 를 통하여 루트 조회(및 루트에 속한 Place 들도 조회)
     api.getRouteDetail(routeId)
-    // data -> route 
       .then((data) => {
-        // 백엔드에서 받은 데이터를 State에 세팅
-        // Route 테이블을 가져온거임 
         setCurrentRoute(data);
         setTitle(data.title);
         setStartDate(data.startDate);
         setEndDate(data.endDate);
 
-        // ★ [데이터 역변환: 백엔드 DTO -> 프론트엔드 객체]
-        // 백엔드는 Google Place의 모든 정보를 저장하지 않을 수도 있고, 필드명이 다를 수 있습니다.
-        // 프론트엔드 컴포넌트들이 기존 Google Place 객체 형식을 기대하고 있다면,
-        // 여기서 그 형식에 맞게 다시 만들어줘야 에러가 안 납니다.
+        // ★ [복원 로직] 백엔드 DTO -> 프론트엔드 객체 변환
         const restoredSchedule = data.places.map(dayList => 
           dayList.map(dto => ({
-            // 프론트엔드에서 사용하는 이름 : 백엔드 DTO의 이름
-            place_id: dto.googlePlaceId,       // Google ID 복원
-            name: dto.name,                    // 이름 복원
-            formatted_address: dto.formattedAddress, // 주소
-            location: { lat: dto.lat, lng: dto.lng }, // 좌표 객체 재조립
-            rating: dto.rating ,                // 별점
-            user_ratings_total: dto.userRatingsTotal, // [추가] 총 리뷰 수
-            types: dto.types,                         // [추가] 장소 타입 (예: ['cafe', 'food'])
-            html_attributions: dto.htmlAttributions ? [dto.htmlAttributions] : [], // [추가] 저작권 정보 (배열 형태 권장)
-            photos: dto.photoReferences,       // 사진 정보
-            // 7. 순서 (순서)
+            place_id: dto.googlePlaceId,       // Google ID
+            id: dto.id,                        // DB ID
+            name: dto.name,                    
+            formatted_address: dto.formattedAddress,
+            location: { lat: dto.lat, lng: dto.lng }, // MapMarker 호환용
+            lat: dto.lat, // 편의상 flat하게도 가짐
+            lng: dto.lng,
+            rating: dto.rating,
+            user_ratings_total: dto.userRatingsTotal,
+            types: dto.types,
+            
+            // ★ [중요] photoUrl 별도 필드 없이, 리스트를 그대로 받음
+            // UI에서 사용할 때는: photos[0] 값을 API 키와 조합하여 이미지 URL로 만들어야 함
+            photoReferences: dto.photoReferences || [], 
+            
+            html_attributions: dto.htmlAttributions || [],
             orderIndex: dto.orderIndex
-            // 이 구조가 addPlaceToDay에서 넣는 googlePlace 객체와 최대한 비슷해야 함
           }))
         );
         
-        setSchedule(restoredSchedule); // 복원된 스케줄로 상태 업데이트
+        setSchedule(restoredSchedule);
       })
-      .catch((err) => console.error("상세 정보 조회 실패", err));
+      .catch((err) => console.error("상세 조회 실패", err));
   };
-// 데이터를 받아 지도에 띄우는 함수 
-
 
 
   // 3. [Read - List] 내 여행 목록 조회
