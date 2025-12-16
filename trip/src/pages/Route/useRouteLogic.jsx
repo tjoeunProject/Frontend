@@ -134,21 +134,50 @@ const useRouteLogic = () => {
   // -------------------------------------------------------------------
   // 백엔드 API(DTO) 스펙에 맞춰 데이터를 가공하는 함수입니다.
   // 프론트엔드의 googlePlace 객체는 너무 방대하므로, DB 저장에 필요한 핵심만 추립니다.
-  const createPayload = () => {
+const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
+    const finalTitle = paramTitle || title;
+    const finalStart = paramStart || startDate;
+    const finalEnd = paramEnd || endDate;
+    const finalSchedule = paramSchedule || schedule;
+
     return {
       memberId,
-      title,
-      startDate,
-      endDate,
-      // 2차원 배열 구조(Day -> Place)를 유지하면서 매핑
-      places: schedule.map(dayList => 
-        dayList.map(place => ({
-          // ★ Google Place 객체에서 필요한 정보만 추출
-          // 백엔드 Entity의 필드명과 일치시켜야 함
-          placeId: place.place_id, // 구글 고유 ID (가장 중요)
-          placeName: place.name    // 장소 이름
-          // 필요하다면 lat, lng, address 등도 여기서 추가해서 보냄
-        }))
+      title: finalTitle,
+      startDate: finalStart,
+      endDate: finalEnd,
+      places: finalSchedule.map((dayList, dayIndex) => 
+        dayList.map((place, index) => {
+          
+          // 🔥 [수정] ID를 찾기 위한 우선순위 로직 강화
+          // 1. place_id (구글 원본)
+          // 2. placeId (우리가 가공한 것)
+          // 3. id (경우에 따라 여기에 들어있을 수 있음)
+          const realPlaceId = place.place_id || place.placeId || place.id;
+
+          // 디버깅용: 만약 ID가 없으면 콘솔에 경고 띄우기
+          if (!realPlaceId) {
+            console.error("🚨 Place ID가 없는 장소 발견:", place);
+          }
+
+          return {
+            // 수정된 ID 할당
+            placeId: realPlaceId, 
+            
+            placeName: place.name || place.placeName, // name이 없으면 placeName 확인
+            
+            // 주소도 formatted_address, vicinity, address 등 다양할 수 있음
+            formattedAddress: place.formatted_address || place.vicinity || place.address || "주소 정보 없음", 
+            
+            // 좌표 처리
+            lat: typeof place.lat === 'function' ? place.lat() : 
+                 (place.geometry?.location?.lat ? place.geometry.location.lat() : place.lat),
+            lng: typeof place.lng === 'function' ? place.lng() : 
+                 (place.geometry?.location?.lng ? place.geometry.location.lng() : place.lng),
+            
+            rating: place.rating || 0,
+            orderIndex: index
+          };
+        })
       )
     };
   };
@@ -159,18 +188,32 @@ const useRouteLogic = () => {
   // -------------------------------------------------------------------
 
   // 1. [Create] 일정 저장
-  const handleCreateRoute = () => {
-    // 유효성 검사: 필수 입력값 체크
-    if (!title || !startDate || !endDate) {
-      alert("기본 정보를 입력해주세요.");
-      return;
+  const handleCreateRoute = (customData = null) => {
+    let payload;
+
+    if (customData) {
+      // MapPage에서 넘겨준 데이터가 있다면 그걸로 Payload 생성
+      payload = createPayload(
+        customData.title,
+        customData.startDate,
+        customData.endDate,
+        customData.schedule
+      );
+    } else {
+      // 없다면 useRouteLogic 내부 state 사용 (기존 방식)
+      // 유효성 검사
+      if (!title || !startDate || !endDate) {
+        alert("기본 정보를 입력해주세요.");
+        return;
+      }
+      payload = createPayload();
     }
 
-    // 변환된 데이터(payload)를 API로 전송
-    api.createRoute(createPayload())
+    console.log("🚀 서버로 전송할 데이터:", payload); // 디버깅용 로그
+
+    api.createRoute(payload)
       .then((newRouteId) => {
         alert("일정이 저장되었습니다!");
-        // 저장이 완료되면 상세 페이지로 이동 (UX 고려)
         navigate(`/route/detail/${newRouteId}`);
       })
       .catch((err) => {
