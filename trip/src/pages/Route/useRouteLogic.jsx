@@ -237,7 +237,7 @@ const useRouteLogic = () => {
       api.deleteRoute(routeId)
         .then(() => {
           alert("삭제되었습니다.");
-          navigate('/route/list'); // 삭제 후 목록 페이지로 이동
+          window.location.reload(); // ✅ F5 느낌 (전체 새로고침)
         })
         .catch(err => alert("삭제 실패"));
     }

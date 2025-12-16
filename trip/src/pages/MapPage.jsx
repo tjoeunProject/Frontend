@@ -28,6 +28,8 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import SplitButton from 'react-bootstrap/SplitButton';
 
+// 12/16
+import useRouteLogic from './../pages/Route/useRouteLogic';
 
 /* ============================================================
     🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
@@ -93,6 +95,7 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
 };
 
 
+
 /* ============================================================
     📍 MapPage 컴포넌트
 ============================================================ */
@@ -123,7 +126,7 @@ const MapPage = ({
   showButton,
   setShowButton,
   DAY_COLORS,
-  API_KEY
+  API_KEY,
 }) => {
   /* ===============================
     🍜 근처 음식점 상태
@@ -139,6 +142,34 @@ const MapPage = ({
 
   const FOOD_MARKER_ICON = {
     url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+  };
+
+  // 12.16
+  const {
+    setSchedule,
+    handleCreateRoute,
+  } = useRouteLogic();
+
+  const handleSaveFromMapPage = () => {
+    const schedulePayload = Object.entries(itineraryByDay).map(
+      ([dayKey, places], index) => ({
+        day: index + 1,
+        places: places.map((p) => ({
+          placeId: p.placeId || p.place_id,
+          name: p.name,
+        })),
+      })
+    );
+
+    // 🔍 1️⃣ MapPage에서 payload 확인
+    console.log("🟢 [MapPage] schedulePayload", schedulePayload);
+
+    setSchedule(schedulePayload);
+
+    // 🔍 2️⃣ setSchedule 직후 (주의: 아직 반영 안 됐을 수 있음)
+    console.log("🟡 [MapPage] setSchedule 호출 완료");
+
+    handleCreateRoute();
   };
 
   /* ===============================
@@ -333,7 +364,7 @@ const MapPage = ({
                 </Button>
               ) : (
                 <Dropdown as={ButtonGroup} drop="up" className="btn-optimize">
-                  <Button as={Link} to="/">
+                  <Button onClick={handleSaveFromMapPage}>
                     💾 저장하기
                   </Button>
 
@@ -379,49 +410,49 @@ const MapPage = ({
                 onRadiusChange={setFoodRadius}
                 onClose={() => setShowFoodPanel(false)}
                 onAddRestaurant={(restaurant) => {
-              if (!foodInsertTarget) {
-                alert("추가할 위치를 정하려면 일정에서 관광지를 먼저 클릭해주세요!");
-                return;
-              }
+                  if (!foodInsertTarget) {
+                    alert("추가할 위치를 정하려면 일정에서 관광지를 먼저 클릭해주세요!");
+                    return;
+                  }
 
-              const { dayKey, index } = foodInsertTarget;
+                  const { dayKey, index } = foodInsertTarget;
 
-              // ⭐ 사진 URL 생성
-              const photoUrl = getPhotoUrlFromPlace(restaurant);
+                  // ⭐ 사진 URL 생성
+                  const photoUrl = getPhotoUrlFromPlace(restaurant);
 
-              const newItem = {
-                id: restaurant.id || Date.now().toString(),
-                placeId: restaurant.placeId,
-                name: restaurant.name,
-                rating: restaurant.rating,
-                reviews: restaurant.reviews,
-                lat: restaurant.lat,
-                lng: restaurant.lng,
-                vicinity: restaurant.vicinity,
+                  const newItem = {
+                    id: restaurant.id || Date.now().toString(),
+                    placeId: restaurant.placeId,
+                    name: restaurant.name,
+                    rating: restaurant.rating,
+                    reviews: restaurant.reviews,
+                    lat: restaurant.lat,
+                    lng: restaurant.lng,
+                    vicinity: restaurant.vicinity,
 
-                // ⭐ 반드시 photoUrl 저장해야 함
-                photoUrl: photoUrl,
+                    // ⭐ 반드시 photoUrl 저장해야 함
+                    photoUrl: photoUrl,
 
-                type: "restaurant",
-              };
+                    type: "restaurant",
+                  };
 
-              // 중복 방지
-              const exists = Object.values(itineraryByDay).some((dayList) =>
-                (dayList || []).some((p) => p.id === newItem.id)
-              );
-              if (exists) {
-                alert("이미 일정에 추가된 음식점입니다.");
-                return;
-              }
+                  // 중복 방지
+                  const exists = Object.values(itineraryByDay).some((dayList) =>
+                    (dayList || []).some((p) => p.id === newItem.id)
+                  );
+                  if (exists) {
+                    alert("이미 일정에 추가된 음식점입니다.");
+                    return;
+                  }
 
-              const updatedDay = [...(itineraryByDay[dayKey] || [])];
-              updatedDay.splice(index + 1, 0, newItem);
+                  const updatedDay = [...(itineraryByDay[dayKey] || [])];
+                  updatedDay.splice(index + 1, 0, newItem);
 
-              setItineraryByDay({
-                ...itineraryByDay,
-                [dayKey]: updatedDay,
-              });
-            }}
+                  setItineraryByDay({
+                    ...itineraryByDay,
+                    [dayKey]: updatedDay,
+                  });
+                }}
 
               />
             )}

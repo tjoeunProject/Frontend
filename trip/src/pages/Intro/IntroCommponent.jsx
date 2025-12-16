@@ -20,6 +20,7 @@ import SolutionBackground from '../../resources/img/Intro4.png';
 import HowToMapIcon from '../../resources/img/Intro5.png';
 import RoadMapInfographic from '../../resources/img/Intro6.png';
 import LoginV2Users from '../../resources/img/Intro7.png';
+import RoutePick from '../../resources/img/RoutePick.png';
 
 
 function IntroCommponent() {
@@ -102,6 +103,45 @@ function IntroCommponent() {
         </section>
         {/* 아래다 그리드로 묶음 */}
         <section className="section-base experience-section">
+          <div className="experience-grid">
+            <div className="experience-card">
+              <img src={HowToMapIcon} className="how-to-map-icon" />
+            </div>
+            <div className="experience-card">
+              <h3>여행 준비, 이렇게 편할 수 있어요.</h3><br />
+              <p>
+                찾고 싶은 여행지가 있으면 그냥 검색만 해보세요. <br />
+                선택하는 순간 정확한 위치 정보가 지도에 표시돼요. <br />
+                영업시간, 사진, 평점까지 필요한 건 한눈에 싹 들어와요!!
+              </p>
+            </div>
+            <div className="experience-card">
+              <h4>
+                답 없는 장소가 많아지면,<br />“어디부터 가야 하지” 고민하지 마세요!!
+              </h4>
+              <br />
+              <p>
+                실제로 걸리거나 이동하는 시간을 기준으로 가장 <br />
+                효율적인 순서로 코스를 깔끔하게 정리해 드려요. <br />
+                이동은 줄이고, 여행의 여유는 채워주는 방식으로요.
+              </p>
+            </div>
+            <div className="experience-card">
+              <img src={RoadMapInfographic} className="roadmap-infographic" />
+            </div>
+            <div className="experience-card">
+              <img src={LoginV2Users} className="how-to-map-icon" />
+            </div>
+            <div className="experience-card">
+              <h3>근처에 뭐 있지?</h3>
+              <br />
+              <p>
+                일정이나 순서 바꾸고 싶으면 그냥 드래그만 하면 끝이에요.<br />
+                동선도 억지로 맞출 필요도 없고, “내” 여행답게 만드는 거죠!
+              </p>
+            </div>
+          </div>
+          <br /><br />
           <h2>여행 준비 할 때, 이런 경험 없으셨나요?</h2>
           <br />
           <div className="experience-grid">
@@ -143,58 +183,15 @@ function IntroCommponent() {
             </div>
           </div>
 
-          <br />
+          <br /><br /><br />
           <h2>여행 준비, 설렘보다 피곤함이 앞선다면?</h2>
 
-          <section
-            className="section-base solution-section"
-            style={{ backgroundImage: `url(${SolutionBackground})` }}
-          >
-          </section>
 
-          <br />
+          <img src={RoutePick} width='200px' />
 
-          <div className="experience-grid">
-            <div className="experience-card">
-              <img src={HowToMapIcon} className="how-to-map-icon" />
-            </div>
-            <div className="experience-card">
-              <h3>여행 준비, 이렇게 편할 수 있어요.</h3><br />
-              <p>
-                찾고 싶은 여행지가 있으면 그냥 검색만 해보세요. <br />
-                선택하는 순간 정확한 위치 정보가 지도에 표시돼요. <br />
-                영업시간, 사진, 평점까지 필요한 건 한눈에 싹 들어와요!!
-              </p>
-            </div>
-            <div className="experience-card">
-              <h4>
-                답 없는 장소가 많아지면,<br />“어디부터 가야 하지” 고민하지 마세요!!
-              </h4>
-              <br />
-              <p>
-                실제로 걸리거나 이동하는 시간을 기준으로 가장 <br />
-                효율적인 순서로 코스를 깔끔하게 정리해 드려요. <br />
-                이동은 줄이고, 여행의 여유는 채워주는 방식으로요.
-              </p>
-            </div>
-            <div className="experience-card">
-              <img src={RoadMapInfographic} className="roadmap-infographic" />
-            </div>
-            <div className="experience-card">
-              <img src={LoginV2Users} className="how-to-map-icon" />
-            </div>
-            <div className="experience-card">
-              <h3>근처에 뭐 있지?</h3>
-              <br />
-              <p>
-                일정이나 순서 바꾸고 싶으면 그냥 드래그만 하면 끝이에요.<br />
-                동선도 억지로 맞출 필요도 없고, “내” 여행답게 만드는 거죠!
-              </p>
-            </div>
-          </div>
         </section>
       </div>
-    </div>
+    </div >
   );
 }
 
