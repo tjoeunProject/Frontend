@@ -28,6 +28,7 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import SplitButton from 'react-bootstrap/SplitButton';
 
+import useRouteLogic from './Route/useRouteLogic';
 
 /* ============================================================
     🔥 반드시 파일 제일 위에 있어야 하는 AutoSearcher (수정본)
@@ -36,6 +37,10 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
   const map = useMap();
   const placesLib = useMapsLibrary("places");
   const hasSearched = useRef(false);
+
+  
+
+
 
   useEffect(() => {
     if (!map || !placesLib || !keyword) return;
@@ -91,6 +96,8 @@ const AutoSearcher = ({ keyword, onPlaceFound }) => {
 
   return null;
 };
+
+
 
 
 /* ============================================================
@@ -231,6 +238,48 @@ const MapPage = ({
   const CUSTOM_COLOR = "#6C5CE7";
   const [showSaveMenu, setShowSaveMenu] = useState(false);
 
+  // 12/16 저장을 위한 변수 설정
+  const { handleCreateRoute } = useRouteLogic();
+
+  // 3. 저장 버튼 클릭 시 실행할 핸들러 함수 생성
+  const onSaveClick = () => {
+    // (1) 제목 입력받기 (간단하게 prompt 사용하거나, 별도 state로 관리 필요)
+    const tripTitle = prompt("여행 제목을 입력해주세요!", "나의 멋진 여행");
+    if (!tripTitle) return;
+
+    // 1. 오늘 날짜 객체 생성
+    const today = new Date();
+    
+    // 2. 2일 뒤 날짜 객체 생성 (오늘 포함 총 3일이 되려면 +2일)
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + 2); 
+
+    // 3. scheduleData가 있으면 그걸 쓰고, 없으면 계산한 날짜 사용
+    const sDate = scheduleData?.startDate || today.toISOString().split('T')[0];
+    const eDate = scheduleData?.endDate || futureDate.toISOString().split('T')[0];
+
+
+    // (3) 데이터 변환: itineraryByDay (객체) -> schedule (2차원 배열)
+    // 예: { day1: [A], day2: [B] } -> [ [A], [B] ]
+    const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3; // 총 일수
+    const formattedSchedule = [];
+
+    for (let i = 1; i <= dayCount; i++) {
+      const dayKey = `day${i}`;
+      // 해당 날짜에 장소가 없으면 빈 배열
+      formattedSchedule.push(itineraryByDay[dayKey] || []);
+    }
+
+    // (4) useRouteLogic의 저장 함수 호출 (데이터 주입)
+    handleCreateRoute({
+      title: tripTitle,
+      startDate: sDate,
+      endDate: eDate,
+      schedule: formattedSchedule
+    });
+  };
+
+
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
       <div className="mappage-container">
@@ -338,9 +387,10 @@ const MapPage = ({
                   </Button>
                 ) : (
                   <div className="save-dropdown-wrapper">
-                <Link to="/" className="btn-save-main">
+                <button to="/" className="btn-save-main"
+                onClick={onSaveClick}>
                   💾 저장하기
-                </Link>
+                </button>
 
                 <button
                   className="btn-save-toggle"
