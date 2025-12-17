@@ -59,10 +59,10 @@ const HistoryComponent = () => {
     time: item.endDate, // 끝나는데이트
     temp: item.title, // 제목들어갈예정
     distance: item.place_name,
-    region: "대구",
+    region: item.mainPlaceName,
     tags: ["실내여행지", "바다"],
     liked: idx % 2 === 1, // 일부는 기본 좋아요 상태
-    image: `https://places.googleapis.com/v1/${item.photo_reference}/media?maxWidthPx=200&key=${API_KEY}`
+    photoUrl: `https://places.googleapis.com/v1/${item.photoUrl}/media?maxWidthPx=200&key=${API_KEY}`
   }));
 
   // ❤️ 좋아요 토글 기능
@@ -96,6 +96,7 @@ const HistoryComponent = () => {
       // 데이터가 들어오면 유효한 것으로 간주
       setIsDateSelected(true);
       setSelectedSchedule(dateData); // 데이터를 state에 저장
+
     } else {
       setIsDateSelected(false);
       setSelectedSchedule(null);
@@ -123,6 +124,7 @@ const HistoryComponent = () => {
   const handleDetail = (e) => {
     navigate(`/mapdetail/${item.detailId}`);
   }
+          console.log(myRoutes)
 
   return (
     <div className="history-wrapper">
@@ -143,7 +145,7 @@ const HistoryComponent = () => {
         <div key={item.id} className="history-card">
           {/* 이미지 영역 */}
           <div className="history-img-box">
-            <img src={item.image} alt="trip" />
+            <img src={item.photoUrl} alt="trip" />
 
 
             {/* <div className="history-like-icon" onClick={() => toggleLike(item.id)}>
@@ -192,7 +194,7 @@ const HistoryComponent = () => {
             </div>
 
             <div className="history-detail-line">
-              <span>· 여행지역</span> | <span>{item.region}</span>
+              <span>· 시작지역</span> | <span>{item.region}</span>
             </div>
 
             <div className="history-detail-line highlight">
