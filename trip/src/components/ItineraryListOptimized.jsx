@@ -1,3 +1,4 @@
+// components/ItineraryListOptimized.jsx
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import SearchResultItem from "./SearchResultItem";
@@ -9,89 +10,138 @@ const ItineraryListOptimized = ({
   DAY_COLORS,
   onSelectDay,
   onSelectPlace,
-  isToggleOptimized
+  isToggleOptimized,
+  onDragEnd, // MapPage에서 전달받은 핸들러 사용
 }) => {
   // 1) 방어 코드
   if (!itineraryByDay) return null;
 
-  const dayKeys = Object.keys(itineraryByDay).sort();
+  const dayKeys = Object.keys(itineraryByDay).sort((a, b) => {
+    // day1, day2 숫자 순서 정렬
+    const numA = parseInt(a.replace('day', ''), 10);
+    const numB = parseInt(b.replace('day', ''), 10);
+    return numA - numB;
+  });
 
-  // 2) Drag & Drop 로직
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const { source, destination } = result;
-    const sourceDay = source.droppableId;
-    const destDay = destination.droppableId;
-
-    const newState = { ...itineraryByDay };
-    newState[sourceDay] = [...(newState[sourceDay] || [])];
-    newState[destDay] = [...(newState[destDay] || [])];
-
-    const [moved] = newState[sourceDay].splice(source.index, 1);
-    newState[destDay].splice(destination.index, 0, moved);
-
-    setItineraryByDay(newState);
-  };
-
-  // 3) 랜더링 
+  // 2) 랜더링
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="itinerary-wrapper">
-        {dayKeys.map((dayKey, dayIndex) => {
-          const dayPlaces = itineraryByDay[dayKey] || [];
+      {/* type="DAY"를 추가하여 Day끼리 드래그 가능하게 설정 */}
+      <Droppable droppableId="all-days" type="DAY">
+        {(provided) => (
+          <div
+            className="itinerary-wrapper"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {dayKeys.map((dayKey, dayIndex) => {
+              const dayPlaces = itineraryByDay[dayKey] || [];
 
-          return (
-            <Droppable droppableId={dayKey} key={dayKey}>
-              {(provided) => (
-                <div
-                  className="day-box"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  onClick={() => onSelectDay(dayKey)}  // Day 기준 검색
+              return (
+                // Day 자체를 Draggable로 감싸기
+                <Draggable
+                  key={dayKey}
+                  draggableId={dayKey}
+                  index={dayIndex}
                 >
-                  {/* Day 헤더 (디자인 수정 영역) */}
-                  <div className="day-header">
-                    <h3 className="day-title">Day {dayIndex + 1}</h3>
-                  </div>
-
-                  {dayPlaces.map((place, index) => (
-                    <Draggable
-                      key={place.id}
-                      draggableId={String(place.id)}
-                      index={index}
+                  {(dayProvided, daySnapshot) => (
+                    <div
+                      className="day-box"
+                      ref={dayProvided.innerRef}
+                      {...dayProvided.draggableProps}
+                      style={{
+                        ...dayProvided.draggableProps.style,
+                        // 드래그 중일 때 약간의 스타일 변화 (선택사항)
+                        opacity: daySnapshot.isDragging ? 0.9 : 1,
+                        marginBottom: '20px',
+                        background: 'white',
+                        borderRadius: '8px',
+                        border: '1px solid #eee'
+                      }}
                     >
-                      {(provided, snapshot) => (
-                        <div
-                          className={`place-item ${
-                            snapshot.isDragging ? "dragging" : ""
-                          }`}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          onClick={(e) => {
-                            e.stopPropagation();   // Day 클릭 차단
-                            onSelectPlace(place, dayKey, index);  // place 기준 검색
-                          }}
-                        >
-                          <SearchResultItem
-                            place={place}
-                            index={index + 1}
-                            onDelete={removeFromItinerary}
-                            isToggleOptimized={isToggleOptimized}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                      {/* Day 헤더 (여기를 잡고 드래그해야 함 -> dragHandleProps) */}
+                      <div
+                        className="day-header"
+                        {...dayProvided.dragHandleProps}
+                        onClick={() => onSelectDay && onSelectDay(dayKey)}
+                        style={{
+                          cursor: 'grab', // 손바닥 모양 커서
+                          padding: '12px',
+                          borderBottom: '1px solid #eee',
+                          background: '#fafafa',
+                          borderRadius: '8px 8px 0 0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
+                      >
+                        <h3 className="day-title" style={{ margin: 0, fontSize: '18px' }}>
+                           Day {dayIndex + 1}
+                        </h3>
+                        <span style={{ fontSize: '12px', color: '#999' }}>↕</span>
+                      </div>
 
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          );
-        })}
-      </div>
+                      {/* 내부: 장소 리스트 (Droppable type="PLACE") */}
+                      {/* 기존 droppableId={dayKey} 유지 */}
+                      <Droppable droppableId={dayKey} type="PLACE">
+                        {(listProvided) => (
+                          <div
+                            ref={listProvided.innerRef}
+                            {...listProvided.droppableProps}
+                            style={{ padding: '10px', minHeight: '50px' }}
+                          >
+                            {dayPlaces.length === 0 && (
+                               <div style={{textAlign:'center', color:'#ccc', fontSize:'13px', padding:'10px'}}>
+                                 장소를 추가해주세요
+                               </div>
+                            )}
+
+                            {dayPlaces.map((place, index) => (
+                              <Draggable
+                                key={place.id}
+                                draggableId={String(place.id)}
+                                index={index}
+                              >
+                                {(placeProvided, placeSnapshot) => (
+                                  <div
+                                    className={`place-item ${
+                                      placeSnapshot.isDragging ? "dragging" : ""
+                                    }`}
+                                    ref={placeProvided.innerRef}
+                                    {...placeProvided.draggableProps}
+                                    {...placeProvided.dragHandleProps}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onSelectPlace(place, dayKey, index);
+                                    }}
+                                    style={{
+                                      ...placeProvided.draggableProps.style,
+                                      marginBottom: '8px'
+                                    }}
+                                  >
+                                    <SearchResultItem
+                                      place={place}
+                                      index={index + 1}
+                                      onDelete={removeFromItinerary}
+                                      isToggleOptimized={isToggleOptimized}
+                                    />
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {listProvided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
     </DragDropContext>
   );
 };
