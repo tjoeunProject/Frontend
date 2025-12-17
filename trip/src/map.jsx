@@ -267,9 +267,10 @@ const handleOptimize = async () => {
   try {
     const response = await axios.post("/py/optimize", {
       places: totalPlaces,
-      days: currentDays
+      days: scheduleData ? scheduleData.diffDays+1 : 3
       
     });
+    const dayCount = scheduleData ? scheduleData.diffDays+1 : 3
     console.log(totalPlaces);
 
     console.log("📡 백엔드 응답 도착:", response.data);
@@ -286,13 +287,13 @@ const handleOptimize = async () => {
     //   return Array.isArray(dayArr) ? dayArr : [];
     // };
 
-    for (let i = 0; i < currentDays; i++) {
+    for (let i = 0; i < dayCount; i++) {
       newItinerary[`day${i+1}`] = result?.[i] || [];
     }
 
     setItineraryByDay(newItinerary);
     setIsOptimized(true);
-    alert(`${currentDays}일 코스로 최적화 완료!`);
+    alert(`${dayCount}일 코스로 최적화 완료!`);
 
   } catch (err) {
     console.log("❌ 최적화 중 오류 발생:", err);
@@ -485,7 +486,7 @@ const handleNearby = async () => {
       removeFromItinerary={removeFromItinerary}
 
       isOptimized={isOptimized}
-
+      setIsOptimized={setIsOptimized}
       mapCenter={mapCenter}
       showButton={showButton}
       setShowButton={setShowButton}

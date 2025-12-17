@@ -20,7 +20,7 @@ const App = () => {
   // 🔥 [Hook 사용] useRouteLogic에서 필요한 함수와 상태를 가져옵니다.
   const { 
     handleGetRouteDetail, 
-    schedule: hookSchedule, 
+    schedules: hookSchedule, 
     title: hookTitle,
     startDate: hookStartDate,
     endDate: hookEndDate
@@ -33,7 +33,7 @@ const App = () => {
   // -----------------------------------------------------------------
   // [State] MapDetailPage에 넘겨줄 상태들
   // -----------------------------------------------------------------
-  const [scheduleData, setScheduleData] = useState(location.state?.schedule || null);
+  const [scheduleData, setScheduleData] = useState(location.state?.schedules || null);
   const [itineraryByDay, setItineraryByDay] = useState({});
   const [isOptimized, setIsOptimized] = useState(false);
   
