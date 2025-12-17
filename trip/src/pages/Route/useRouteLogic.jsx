@@ -32,6 +32,57 @@ simpleAxios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+// 🔥 2. [응답 인터셉터] 토큰 만료 시 자동 갱신 로직 (새로 추가!)
+simpleAxios.interceptors.response.use(
+  (response) => {
+    return response; // 성공하면 그대로 리턴
+  },
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 에러가 403(Forbidden)이고, 아직 재시도를 안 했다면?
+    if (error.response && error.response.status === 403 && !originalRequest._retry) {
+      originalRequest._retry = true; // 무한 루프 방지용 플래그
+
+      try {
+        const refreshToken = localStorage.getItem("refresh_token"); // 리프레시 토큰 가져오기
+
+        if (!refreshToken) {
+            // 리프레시 토큰도 없으면 진짜 로그아웃 시켜야 함
+            throw new Error("No refresh token");
+        }
+
+        // 1. 백엔드에 새 토큰 달라고 요청
+        // (주의: 이 요청은 axios.create()로 만든 게 아니라 쌩 axios를 써야 함)
+        const response = await axios.post('/api/v1/auth/refresh-token', {}, {
+            headers: {
+                'Authorization': `Bearer ${refreshToken}` // 보통 리프레시 토큰을 헤더에 실어 보냄
+            }
+        });
+
+        // 2. 새 토큰 받아서 저장
+        const newAccessToken = response.data.access_token; // 백엔드 응답 필드명 확인 필요
+        localStorage.setItem("access_token", newAccessToken);
+
+        // 3. 실패했던 요청의 헤더를 새 토큰으로 갈아끼우고 재요청
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        return simpleAxios(originalRequest);
+
+      } catch (refreshError) {
+        console.error("토큰 갱신 실패:", refreshError);
+        // 갱신 실패 시 로그아웃 처리 (localStorage 비우고 로그인 페이지로)
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
+        window.location.href = '/login'; 
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 // =====================================================================
 // 2. [API 서비스 객체]
 // =====================================================================
