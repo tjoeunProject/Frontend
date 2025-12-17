@@ -32,6 +32,57 @@ simpleAxios.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+// 🔥 2. [응답 인터셉터] 토큰 만료 시 자동 갱신 로직 (새로 추가!)
+simpleAxios.interceptors.response.use(
+  (response) => {
+    return response; // 성공하면 그대로 리턴
+  },
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 에러가 403(Forbidden)이고, 아직 재시도를 안 했다면?
+    if (error.response && error.response.status === 403 && !originalRequest._retry) {
+      originalRequest._retry = true; // 무한 루프 방지용 플래그
+
+      try {
+        const refreshToken = localStorage.getItem("refresh_token"); // 리프레시 토큰 가져오기
+
+        if (!refreshToken) {
+            // 리프레시 토큰도 없으면 진짜 로그아웃 시켜야 함
+            throw new Error("No refresh token");
+        }
+
+        // 1. 백엔드에 새 토큰 달라고 요청
+        // (주의: 이 요청은 axios.create()로 만든 게 아니라 쌩 axios를 써야 함)
+        const response = await axios.post('/api/v1/auth/refresh-token', {}, {
+            headers: {
+                'Authorization': `Bearer ${refreshToken}` // 보통 리프레시 토큰을 헤더에 실어 보냄
+            }
+        });
+
+        // 2. 새 토큰 받아서 저장
+        const newAccessToken = response.data.access_token; // 백엔드 응답 필드명 확인 필요
+        localStorage.setItem("access_token", newAccessToken);
+
+        // 3. 실패했던 요청의 헤더를 새 토큰으로 갈아끼우고 재요청
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        return simpleAxios(originalRequest);
+
+      } catch (refreshError) {
+        console.error("토큰 갱신 실패:", refreshError);
+        // 갱신 실패 시 로그아웃 처리 (localStorage 비우고 로그인 페이지로)
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
+        window.location.href = '/login'; 
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 // =====================================================================
 // 2. [API 서비스 객체]
 // =====================================================================
@@ -85,7 +136,7 @@ const useRouteLogic = () => {
   // schedule[0] -> 1일차 장소 목록 배열
   // schedule[1] -> 2일차 장소 목록 배열
   // 초기값: [ [] ] (1일차만 있고 장소는 없는 상태)
-  const [schedule, setSchedule] = useState([ [] ]); 
+  const [schedules, setSchedule] = useState([ [] ]); 
   
   // 목록 조회 시 받아온 리스트 데이터 저장소
   const [myRoutes, setMyRoutes] = useState([]);
@@ -139,7 +190,7 @@ const useRouteLogic = () => {
   // dayIndex: 몇 번째 날인지 (0부터 시작)
   // googlePlace: 구글 지도 API에서 선택한 장소 객체 (전체 정보 포함)
   const addPlaceToDay = (dayIndex, googlePlace) => {
-    const newSchedule = [...schedule]; // 불변성 유지를 위해 복사
+    const newSchedule = [...schedules]; // 불변성 유지를 위해 복사
     newSchedule[dayIndex] = [...newSchedule[dayIndex], googlePlace]; // 해당 날짜 배열에 장소 추가
     setSchedule(newSchedule); // 상태 업데이트
   };
@@ -153,7 +204,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     const finalTitle = paramTitle || title;
     const finalStart = paramStart || startDate;
     const finalEnd = paramEnd || endDate;
-    const finalSchedule = paramSchedule || schedule;
+    const finalSchedule = paramSchedule || schedules;
 
     return {
       memberId: memberId, // 이제 진짜 로그인한 사람의 ID가 들어갑니다 (예: 1, 5, 100...)      
@@ -189,7 +240,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
             lng: typeof place.lng === 'function' ? place.lng() : 
                  (place.geometry?.location?.lng ? place.geometry.location.lng() : place.lng),
             
-            rating: place.rating || 0,
+            reviews: place.rating || 0,
             orderIndex: index
           };
         })
@@ -234,6 +285,43 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
       .catch((err) => {
         console.error(err);
         alert("저장 실패: 서버 에러가 발생했습니다.");
+      });
+  };
+
+  // 5. [Update] 일정 수정
+  const handleUpdateRoute = (routeId, customData = null) => {
+    let payload;
+
+    // (1) 데이터 포장 (createPayload 재사용)
+    if (customData) {
+      // MapPage 등에서 데이터를 직접 넘겨준 경우
+      payload = createPayload(
+        customData.title,
+        customData.startDate,
+        customData.endDate,
+        customData.schedule
+      );
+    } else {
+      // 현재 hook의 state(title, schedule 등)를 사용하는 경우
+      if (!title || !startDate || !endDate) {
+        alert("기본 정보를 입력해주세요.");
+        return;
+      }
+      payload = createPayload();
+    }
+
+    console.log("🚀 수정 요청 데이터:", payload);
+
+    // (2) API 호출 (PUT)
+    api.updateRoute(routeId, payload)
+      .then(() => {
+        alert("일정이 수정되었습니다!");
+        // 수정 후 상세 페이지로 이동 (경로는 프로젝트 설정에 맞게 수정)
+        navigate(`/mapdetail/${routeId}`); 
+      })
+      .catch((err) => {
+        console.error("수정 실패:", err);
+        alert("수정 중 오류가 발생했습니다.");
       });
   };
 
@@ -304,7 +392,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     title, setTitle,
     startDate, setStartDate,
     endDate, setEndDate,
-    schedule,       // 현재 작성/조회 중인 일정 (2차원 배열)
+    schedules,       // 현재 작성/조회 중인 일정 (2차원 배열)
     myRoutes,       // 내 여행 목록 리스트
     currentRoute,   // 상세 조회된 원본 데이터
 
@@ -316,7 +404,8 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     handleCreateRoute,  // 1. [Create] 일정 저장
     handleGetRouteDetail, // 2. [Read - Detail] 상세 조회 및 데이터 복원 ★ 중요
     handleGetMyRoutes,  // 3. [Read - List] 내 여행 목록 조회
-    handleDeleteRoute // 4. [Delete] 일정 삭제
+    handleDeleteRoute, // 4. [Delete] 일정 삭제
+    handleUpdateRoute    // 🔥 [Update] 추가됨!
   };
 };
 
