@@ -132,6 +132,8 @@ const MapPage = ({
     setIsSidebarOpen(prev => !prev);
   };
 
+  const location = useLocation();
+
   /* ===============================
     🍜 근처 음식점 상태
   =============================== */
