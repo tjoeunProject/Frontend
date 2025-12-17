@@ -218,7 +218,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     api.createRoute(payload)
       .then((newRouteId) => {
         alert("일정이 저장되었습니다!");
-        navigate(`/route/detail/${newRouteId}`);
+        navigate(`/mapdetail/${newRouteId}`);
       })
       .catch((err) => {
         console.error(err);
