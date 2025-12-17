@@ -74,7 +74,12 @@ const FoodSidebar = ({
                   +
                 </button>
               </div>
+              {/* 주소(vicinity) 표시 */}
+              <div className="food-item-address" style={{ fontSize: "12px", color: "#888", marginTop: "2px" }}>
+                {r.vicinity || "주소 정보 없음"}
+              </div>
 
+              {/* 평점 및 리뷰 */}
               <div className="food-item-sub">
                 ⭐ {r.rating || "-"} · 리뷰 {r.reviews || 0}
               </div>
