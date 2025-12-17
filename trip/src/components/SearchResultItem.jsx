@@ -2,7 +2,8 @@ import React from 'react';
 import './SearchResultItem.css';
 
 const SearchResultItem = ({ place, onAdd, onDelete, index, indexColor, isToggleOptimized }) => {
-  
+  const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
   // 1. 이미지 URL 처리 (완전 안전한 버전)
 let photoUrl = '/noimage.png';
 
@@ -11,6 +12,10 @@ if (place.photoUrl) {
   photoUrl = place.photoUrl;
 }
 
+if (place.photoReferences && place.photoReferences.length > 0) {
+             photoUrl = `https://places.googleapis.com/v1/${place.photoReferences[0]}/media?maxWidthPx=400&key=${API_KEY}`;
+          }
+          
 // 2) 검색 결과(place.photos)가 있을 때 getUrl() 사용
 if (
   place.photos &&

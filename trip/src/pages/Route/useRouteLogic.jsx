@@ -136,7 +136,7 @@ const useRouteLogic = () => {
   // schedule[0] -> 1일차 장소 목록 배열
   // schedule[1] -> 2일차 장소 목록 배열
   // 초기값: [ [] ] (1일차만 있고 장소는 없는 상태)
-  const [schedule, setSchedule] = useState([ [] ]); 
+  const [schedules, setSchedule] = useState([ [] ]); 
   
   // 목록 조회 시 받아온 리스트 데이터 저장소
   const [myRoutes, setMyRoutes] = useState([]);
@@ -190,7 +190,7 @@ const useRouteLogic = () => {
   // dayIndex: 몇 번째 날인지 (0부터 시작)
   // googlePlace: 구글 지도 API에서 선택한 장소 객체 (전체 정보 포함)
   const addPlaceToDay = (dayIndex, googlePlace) => {
-    const newSchedule = [...schedule]; // 불변성 유지를 위해 복사
+    const newSchedule = [...schedules]; // 불변성 유지를 위해 복사
     newSchedule[dayIndex] = [...newSchedule[dayIndex], googlePlace]; // 해당 날짜 배열에 장소 추가
     setSchedule(newSchedule); // 상태 업데이트
   };
@@ -204,7 +204,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     const finalTitle = paramTitle || title;
     const finalStart = paramStart || startDate;
     const finalEnd = paramEnd || endDate;
-    const finalSchedule = paramSchedule || schedule;
+    const finalSchedule = paramSchedule || schedules;
 
     return {
       memberId: memberId, // 이제 진짜 로그인한 사람의 ID가 들어갑니다 (예: 1, 5, 100...)      
@@ -240,7 +240,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
             lng: typeof place.lng === 'function' ? place.lng() : 
                  (place.geometry?.location?.lng ? place.geometry.location.lng() : place.lng),
             
-            rating: place.rating || 0,
+            reviews: place.rating || 0,
             orderIndex: index
           };
         })
@@ -280,11 +280,48 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     api.createRoute(payload)
       .then((newRouteId) => {
         alert("일정이 저장되었습니다!");
-        navigate(`/route/detail/${newRouteId}`);
+        navigate(`/mapdetail/${newRouteId}`);
       })
       .catch((err) => {
         console.error(err);
         alert("저장 실패: 서버 에러가 발생했습니다.");
+      });
+  };
+
+  // 5. [Update] 일정 수정
+  const handleUpdateRoute = (routeId, customData = null) => {
+    let payload;
+
+    // (1) 데이터 포장 (createPayload 재사용)
+    if (customData) {
+      // MapPage 등에서 데이터를 직접 넘겨준 경우
+      payload = createPayload(
+        customData.title,
+        customData.startDate,
+        customData.endDate,
+        customData.schedule
+      );
+    } else {
+      // 현재 hook의 state(title, schedule 등)를 사용하는 경우
+      if (!title || !startDate || !endDate) {
+        alert("기본 정보를 입력해주세요.");
+        return;
+      }
+      payload = createPayload();
+    }
+
+    console.log("🚀 수정 요청 데이터:", payload);
+
+    // (2) API 호출 (PUT)
+    api.updateRoute(routeId, payload)
+      .then(() => {
+        alert("일정이 수정되었습니다!");
+        // 수정 후 상세 페이지로 이동 (경로는 프로젝트 설정에 맞게 수정)
+        navigate(`/mapdetail/${routeId}`); 
+      })
+      .catch((err) => {
+        console.error("수정 실패:", err);
+        alert("수정 중 오류가 발생했습니다.");
       });
   };
 
@@ -355,7 +392,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     title, setTitle,
     startDate, setStartDate,
     endDate, setEndDate,
-    schedule,       // 현재 작성/조회 중인 일정 (2차원 배열)
+    schedules,       // 현재 작성/조회 중인 일정 (2차원 배열)
     myRoutes,       // 내 여행 목록 리스트
     currentRoute,   // 상세 조회된 원본 데이터
 
@@ -367,7 +404,8 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     handleCreateRoute,  // 1. [Create] 일정 저장
     handleGetRouteDetail, // 2. [Read - Detail] 상세 조회 및 데이터 복원 ★ 중요
     handleGetMyRoutes,  // 3. [Read - List] 내 여행 목록 조회
-    handleDeleteRoute // 4. [Delete] 일정 삭제
+    handleDeleteRoute, // 4. [Delete] 일정 삭제
+    handleUpdateRoute    // 🔥 [Update] 추가됨!
   };
 };
 

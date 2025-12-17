@@ -36,6 +36,7 @@ const MapDetailPage = ({
               isToggleOptimized={true} // 항상 최적화(보기) 모드
             />
           </div>
+
         </div>
 
         {/* ===== 오른쪽 지도 ===== */}

@@ -2,8 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Map, Marker, APIProvider, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-
+import { useParams } from 'react-router-dom';
 import SearchBox from '../components/SearchBox';
 import MapRecenter from '../components/MapRecenter';
 import HandleMapIdle from '../components/HandleMapIdle';
@@ -118,6 +117,7 @@ const MapPage = ({
   handleOptimize,
   removeFromItinerary,
   isOptimized,
+  setIsOptimized,
   mapCenter,
   showButton,
   setShowButton,
@@ -291,31 +291,21 @@ const MapPage = ({
     }
   }, [scheduleData]);
 
-  // 랭킹 페이지 넘어온 장소 처리
-  useEffect(() => {
-    // location.state에 placeToAdd가 있는지 확인
-    if(location.state && location.state.placeToAdd) {
-      const receivedPlace = location.state.placeToAdd;
-      console.log("랭킹 페이지에서 장소 도착 : receivedPlace");
+  // 오늘 날짜
+  const today = new Date();
 
-      // 탭을 '장소 찾기'로 변경
-      if (setActiveTab) setActiveTab("search");
-
-      if (setSearchResults) setSearchResults([receivedPlace]);
-
-      // 2. 중요: 이미 추가했으므로 상태를 비워줌 (새로고침 시 중복 추가 방지)
-      // history.replaceState를 사용하여 현재 페이지의 state를 초기화
-      window.history.replaceState({}, document.title);
-    }
-  }, [location, setActiveTab, setSearchResults]); 
-
+  // 2일 뒤 날짜 계산
+  const future = new Date(today);
+  future.setDate(today.getDate() + 2); // 오늘 + 2일
+  
   const defaultSchedule = {
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
-    diffDays: 2
+    startDate: today.toISOString().split('T')[0],  // 오늘
+    endDate: future.toISOString().split('T')[0],   // 2일 뒤
+    diffDays: 2                                    // 날짜 차이 2
   };
+
   const schedule = scheduleData || defaultSchedule;
-  const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3;
+  const dayCount = schedule ? schedule.diffDays + 1 : 3;
   const DAY_KEYS = Array.from({ length: dayCount }, (_, i) => `day${i + 1}`);
   const totalItineraryCount = DAY_KEYS.reduce((acc, key) => {
     return acc + (itineraryByDay[key]?.length || 0);
@@ -325,16 +315,18 @@ const MapPage = ({
   const [showSaveMenu, setShowSaveMenu] = useState(false);
 
   // 12/16 저장 로직
-  const { handleCreateRoute } = useRouteLogic();
+  const { schedules, handleGetRouteDetail, handleCreateRoute, handleUpdateRoute , title, 
+    startDate, 
+    endDate} = useRouteLogic();
   const onSaveClick = () => {
     const tripTitle = prompt("여행 제목을 입력해주세요!", "나의 멋진 여행");
     if (!tripTitle) return;
     const today = new Date();
     const futureDate = new Date(today);
     futureDate.setDate(today.getDate() + 2); 
-    const sDate = scheduleData?.startDate || today.toISOString().split('T')[0];
-    const eDate = scheduleData?.endDate || futureDate.toISOString().split('T')[0];
-    const dayCount = scheduleData ? scheduleData.diffDays + 1 : 3; 
+    const sDate = schedule?.startDate || today.toISOString().split('T')[0];
+    const eDate = schedule?.endDate || futureDate.toISOString().split('T')[0];
+    const dayCount = schedule ? schedule.diffDays + 1 : 3; 
     const formattedSchedule = [];
     for (let i = 1; i <= dayCount; i++) {
       const dayKey = `day${i}`;
@@ -347,6 +339,65 @@ const MapPage = ({
       schedule: formattedSchedule
     });
   };
+  const { routeId } = useParams(); // URL에서 id 가져오기 (ex: /route/edit/55)
+  // 1. 페이지 들어오면 기존 데이터 불러와서 채워넣기
+  useEffect(() => {
+    if (routeId) {
+      handleGetRouteDetail(routeId);
+      setIsOptimized(true);
+    }
+    console.log(schedules);
+  }, [routeId]);
+
+  // 2. 수정 완료 버튼 클릭 시
+  const onUpdateClick = () => {
+    // handleUpdateRoute 호출 (routeId 필수!)
+    const formattedSchedule = [];
+    
+    // dayCount는 MapPage 상단에서 계산된 변수 사용
+    for (let i = 1; i <= dayCount; i++) {
+      const dayKey = `day${i}`; // day1, day2... (소문자 키)
+      
+      // itineraryByDay에 있는 데이터를 가져옴 (방어 로직 포함)
+      const dayData = itineraryByDay[dayKey];
+      
+      // 데이터가 객체({places: [...]})일 수도 있고 배열([...])일 수도 있으므로 확인 후 배열 추출
+      const placesList = Array.isArray(dayData) ? dayData : (dayData?.places || []);
+      
+      formattedSchedule.push(placesList);
+    }
+    handleUpdateRoute(
+      routeId, {
+        title: title,          // 기존 제목 유지
+      startDate: startDate,  // 기존 시작일 유지
+      endDate: endDate,      // 기존 종료일 유지
+      schedule: formattedSchedule // 🔥 변경된 일정 반영
+      }
+    );
+  };
+
+useEffect(() => {
+    // schedules가 유효한 배열인지 확인 (방어 코드)
+    if (schedules && Array.isArray(schedules) && schedules.length > 0) {
+      
+      const newItinerary = {};
+      
+      // schedules는 [[장소1, 장소2], [장소3]] 형태의 2차원 배열
+      schedules.forEach((dayPlaces, index) => {
+        const dayKey = `day${index + 1}`;
+        
+        // 🔥 [수정] 객체 { places: ... } 로 감싸지 말고
+        // 그냥 배열(dayPlaces)을 바로 넣으세요!
+        // 그래야 밑에서 dayPlaces.map()이 작동합니다.
+        newItinerary[dayKey] = dayPlaces; 
+      });
+
+      setItineraryByDay(newItinerary);
+      console.log("✅ 데이터 동기화 완료 (배열 구조):", newItinerary);
+    }
+  }, [schedules]);
+
+
 
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
@@ -430,7 +481,17 @@ const MapPage = ({
                   </Button>
                 ) : (
                   <div className="save-dropdown-wrapper">
-                    <button className="btn-save-main" onClick={onSaveClick}>💾 저장하기</button>
+                    {/* 🔥 [수정] routeId가 있으면 '수정하기', 없으면 '저장하기' 버튼 표시 */}
+                    {routeId ? (
+                      <button className="btn-save-main" onClick={onUpdateClick}>
+                        💾 수정하기
+                      </button>
+                    ) : (
+                      <button className="btn-save-main" onClick={onSaveClick}>
+                        💾 저장하기
+                      </button>
+                    )}
+
                     <button className="btn-save-toggle" onClick={() => setShowSaveMenu((prev) => !prev)}>▼</button>
                     {showSaveMenu && (
                       <div className="save-dropdown-menu">
