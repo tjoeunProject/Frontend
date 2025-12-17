@@ -13,7 +13,7 @@ const SearchPlaceButton = ({ type, onSearchResults, setShowButton, setActiveTab 
 
     const request = {
       location: map.getCenter(),
-      radius: 2000,
+      radius: 3000,
       type: type
     };
 
@@ -21,20 +21,18 @@ const SearchPlaceButton = ({ type, onSearchResults, setShowButton, setActiveTab 
       if (status === placesLib.PlacesServiceStatus.OK) {
         let filtered = results;
 
-        if (type === 'restaurant') {
           filtered = results.filter(
             p =>
               p.rating &&
-              p.rating >= 4.0 &&
+              p.rating >= 3.5 &&
               p.user_ratings_total &&
-              p.user_ratings_total >= 100
+              p.user_ratings_total >= 50
           );
-        }
 
         if (filtered.length === 0) {
           alert(
             type === 'restaurant'
-              ? '조건(★4.0, 리뷰100+)을 만족하는 맛집이 없어요.'
+              ? '조건(★3.5, 리뷰50+)을 만족하는 맛집이 없어요.'
               : '검색 결과가 없습니다.'
           );
           return;
