@@ -90,6 +90,7 @@ export const fetchDetails = (placeId) => {
           "rating",
           "user_ratings_total",
           "reviews",
+          "geometry" // 좌표 정보를 위해 필요함
         ],
         language: "ko",
       },
@@ -130,6 +131,10 @@ export const enrichPlaces = async (places) => {
       user_ratings_total: detail.user_ratings_total,
       photoUrl: makePhotoUrl(detail.photos?.[0]),
       review: detail.reviews?.[0]?.text || "한줄평 없음",
+      // 좌표 데이터 저장 
+      geometry: detail.geometry, 
+      lat: detail.geometry?.location?.lat(),
+      lng: detail.geometry?.location?.lng(),
     });
   }
 
