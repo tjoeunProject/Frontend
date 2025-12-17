@@ -1,20 +1,176 @@
 /* MyTravelPage.css */
 
-.mytravel-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
 .mytravel-content-area {
-  min-height: 300px;
-  border: 2px solid #90caf9;
-  border-radius: 10px;
-  padding: 30px;
+  /* 전체 콘텐츠 영역을 중앙에 배치하고 최대 폭을 지정 (필요 시) */
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.mytravel-placeholder {
-  opacity: 0.6;
+/* --- 1. 프로필 섹션 --- */
+.profile-section {
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  /* 경계선 추가 */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.profile-card {
+  /* 카드 레이아웃 스타일 (프로필 사진 등 추가 시) */
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+.nickname {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.status-message {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.hashtags .hashtag {
+  display: inline-block;
+  background-color: #dae1e2;
+  /* 밝은 배경색 */
+  color: #000000;
+  /* 강조색 */
+  padding: 3px 8px;
+  margin-right: 5px;
+  border-radius: 15px;
+  font-size: 0.95em;
+}
+
+/* 탭 메뉴 (AT, 저장, 히스토리) */
+.tab-menu {
+  display: flex;
+  /* 가로 정렬 */
+  justify-content: space-around;
+  /* 항목 간 공간 균등 배분 */
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.tab-item {
   text-align: center;
-  margin-top: 50px;
-  font-size: 17px;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 1.1em;
+}
+
+.tab-item .count {
+  display: block;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+
+/* --- 2. 요약 및 3. 계정 관리 섹션 공통 스타일 --- */
+
+.summary-section,
+.account-section {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.section-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #000;
+  /* 제목 아래 구분선 */
+  padding-bottom: 5px;
+}
+
+.summary-list,
+.account-list {
+  list-style: none;
+  /* 리스트 기본 스타일 제거 */
+  padding: 0;
+}
+
+.summary-list li,
+.account-list li {
+  padding: 8px 0;
+  border-bottom: 1px dotted #eee;
+  /* 리스트 항목 구분선 */
+}
+
+.account-list a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  /* 링크 전체를 클릭 영역으로 */
+}
+
+.account-list a:hover {
+  color: #00bcd4;
+  /* 호버 시 색상 변경 */
+}
+
+/* --- 4. 문의하기 / 고객 지원 섹션 --- */
+.support-section {
+  margin-top: 40px;
+  /* 위에 있는 계정 관리 섹션과 간격 두기 */
+  padding: 25px;
+  border: 1px solid #c7e5f1;
+  /* 테두리 강조 (선택 사항) */
+  border-radius: 8px;
+  background-color: #f0f8ff;
+  /* 연한 배경색 */
+  text-align: center;
+}
+
+.support-section .section-title {
+  font-size: 1.4em;
+  color: #007bff;
+  /* 제목 색상 변경 */
+  border-bottom: none;
+  /* 구분선 제거 */
+  margin-bottom: 10px;
+}
+
+.support-section p {
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.support-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  /* 버튼 사이 간격 */
+}
+
+.support-button {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.faq-button {
+  background-color: #ffffff;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.inquiry-button {
+  background-color: #007bff;
+  /* 주 색상 버튼 */
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.support-button:hover {
+  opacity: 0.9;
 }

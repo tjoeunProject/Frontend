@@ -66,9 +66,9 @@ function IntroCommponent() {
 
       {/* 그림 1들어갈 예정 */}
       <div>
-        <br /><br />
-        <h1>RoutePick과 함께<br />
-          여행 일정 고민을 끝내세요</h1><br /><br /><br />
+
+        <div className="intro1">RoutePick과 함께<br />
+          여행 일정 고민을 끝내세요</div>
         <h4>AI가 이동 시간과 취향을 분석해<br />
           최적의 여행 동선을 설계합니다</h4>
 
@@ -185,8 +185,6 @@ function IntroCommponent() {
 
           <br /><br /><br />
           <h2>여행 준비, 설렘보다 피곤함이 앞선다면?</h2>
-
-
           <img src={RoutePick} width='200px' />
 
         </section>

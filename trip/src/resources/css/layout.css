@@ -3,16 +3,18 @@
 
 .main-content-wrapper {
   width: 100%;
-  padding-top: 90px; /* Header가 fixed라서 여백 필요 */
+  padding-top: 70px;
+  /* Header가 fixed라서 여백 필요 */
   display: flex;
   justify-content: center;
+  flex-direction: column;
 }
 
 /* 페이지 컨텐츠 중앙 정렬 */
 .page-centered-container {
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto; 
+  margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
 }
