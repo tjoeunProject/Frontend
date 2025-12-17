@@ -12,16 +12,26 @@ import { useAuth } from '../Login/AuthContext';
 // 12/12 수정
 const token = localStorage.getItem("access_token"); 
 
+// 1. 초기 설정에서는 토큰을 넣지 마세요.
 const simpleAxios = axios.create({
   baseURL: '/sts/api/route', 
-  
-  // JSON 형식으로 데이터를 주고받겠다는 약속
-  headers: { 'Content-Type': 'application/json', 
-    // 12/12 수정
-    'Authorization' : `Bearer ${token}`, // ✅ 철자 정확히
-  }
+  headers: { 'Content-Type': 'application/json' } // Authorization 제거!
 });
 
+// 2. 요청 직전에 검사해서 넣습니다.
+simpleAxios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+    
+    // 토큰이 진짜 있을 때만 헤더에 추가
+    if (token && token !== "null" && token !== "undefined") {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 // =====================================================================
 // 2. [API 서비스 객체]
 // =====================================================================
@@ -146,7 +156,8 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
     const finalSchedule = paramSchedule || schedule;
 
     return {
-      memberId: memberId, // 이제 진짜 로그인한 사람의 ID가 들어갑니다 (예: 1, 5, 100...)      title: finalTitle,
+      memberId: memberId, // 이제 진짜 로그인한 사람의 ID가 들어갑니다 (예: 1, 5, 100...)      
+      title: finalTitle,
       startDate: finalStart,
       endDate: finalEnd,
       places: finalSchedule.map((dayList, dayIndex) => 
