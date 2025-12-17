@@ -90,13 +90,9 @@ function SurveyTwoPage() {
                     {renderTag("광주")}
                     {renderTag("대전")}
                     {renderTag("울산")}
-                    {renderTag("충북")}
-                    {renderTag("충남")}
-                    {renderTag("전북")}
-                    {renderTag("전남")}
-                    {renderTag("경북")}
-                    {renderTag("경남")}
                     {renderTag("제주")}
+                    {renderTag("오사카")}
+                    {renderTag("도쿄")}
                 </div>
 
                 <div className='survey-grid2'>
