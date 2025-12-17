@@ -112,7 +112,8 @@
   margin-top: 12px;
   color: #777;
   font-size: 16px;
-  text-decoration: underline;
+  text-decoration: none;
+
 }
 
 
@@ -238,11 +239,10 @@
   color: #555;
 }
 
-/* Header 와 페이지의 겹침을 방지하기 위한 css 코드  */
+/* Header 와 페이지의 겹침을 방지하기 위한 css 코드  1번 */
 .page-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 120px;
-  padding-bottom: 60px;
+  padding-top: 70px;
 }
