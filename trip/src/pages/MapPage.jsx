@@ -2,12 +2,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Map, Marker, APIProvider, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import SearchBox from '../components/SearchBox';
 import MapRecenter from '../components/MapRecenter';
 import HandleMapIdle from '../components/HandleMapIdle';
 import SearchPlaceButton from '../components/SearchPlaceButton';
-
 import TabButton from '../components/TabButton';
 import SearchResultItem from '../components/SearchResultItem';
 
@@ -291,6 +291,24 @@ const MapPage = ({
     }
   }, [scheduleData]);
 
+   // 랭킹 페이지 넘어온 장소 처리
+  useEffect(() => {
+    // location.state에 placeToAdd가 있는지 확인
+    if(location.state && location.state.placeToAdd) {
+      const receivedPlace = location.state.placeToAdd;
+      console.log("랭킹 페이지에서 장소 도착 : receivedPlace");
+
+      // 탭을 '장소 찾기'로 변경
+      if (setActiveTab) setActiveTab("search");
+
+      if (setSearchResults) setSearchResults([receivedPlace]);
+
+      // 2. 중요: 이미 추가했으므로 상태를 비워줌 (새로고침 시 중복 추가 방지)
+      // history.replaceState를 사용하여 현재 페이지의 state를 초기화
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, setActiveTab, setSearchResults]);
+  
   // 오늘 날짜
   const today = new Date();
 
