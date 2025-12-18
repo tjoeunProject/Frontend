@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect } from 'react'; // import 추가 필요
 import { useAuth } from '../Login/AuthContext';
+import Hashids from 'hashids';
+// 헬퍼 함수: 숫자 ID를 HashID로 변환
+const SALT = import.meta.env.VITE_SALT;
+const MIN_LENGTH = 8;
 
+const hashids = new Hashids(SALT, MIN_LENGTH);
+const encodeId = (id) => (id ? hashids.encode(id) : id);
 // =====================================================================
 // 1. [Axios 인스턴스 설정]
 // =====================================================================
@@ -317,7 +323,8 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
       .then(() => {
         alert("일정이 수정되었습니다!");
         // 수정 후 상세 페이지로 이동 (경로는 프로젝트 설정에 맞게 수정)
-        navigate(`/mapdetail/${routeId}`); 
+        const hashedId = isNaN(routeId) ? routeId : encodeId(routeId);
+        navigate(`/mapdetail/${hashedId}`); 
       })
       .catch((err) => {
         console.error("수정 실패:", err);
@@ -327,6 +334,11 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
 
  // 2. [Read - Detail] 상세 조회 및 복원
   const handleGetRouteDetail = (routeId) => {
+    // 🛑 [추가] ID가 비어있으면 서버에 요청하지 않고 멈춤!
+    if (!routeId) {
+      console.log("⚠️ ID가 없어서 요청을 중단합니다.");
+      return;
+    }
     api.getRouteDetail(routeId)
       .then((data) => {
         setCurrentRoute(data);
@@ -365,7 +377,8 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
 
   // 3. [Read - List] 내 여행 목록 조회
   const handleGetMyRoutes = () => {
-    api.getMyRoutes(memberId)
+    const hashedMemberId = encodeId(memberId);
+    api.getMyRoutes(hashedMemberId)
       .then((list) => setMyRoutes(list)) // 리스트 상태 업데이트
       .catch((err) => console.error("목록 조회 실패", err));
   };
@@ -374,8 +387,10 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
 
   // 4. [Delete] 일정 삭제
   const handleDeleteRoute = (routeId) => {
+    const hashedMemberId = encodeId(routeId);
+
     if(window.confirm("정말 삭제하시겠습니까? 복구할 수 없습니다.")) {
-      api.deleteRoute(routeId)
+      api.deleteRoute(hashedMemberId)
         .then(() => {
           alert("삭제되었습니다.");
           window.location.reload(); // ✅ F5 느낌 (전체 새로고침)
@@ -388,6 +403,7 @@ const createPayload = (paramTitle, paramStart, paramEnd, paramSchedule) => {
   // [Return] 컴포넌트로 내보낼 값과 함수들
   // -------------------------------------------------------------------
   return {
+    encodeId,
     // State 변수들 (화면에 보여줄 데이터)
     title, setTitle,
     startDate, setStartDate,

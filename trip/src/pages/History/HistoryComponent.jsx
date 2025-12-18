@@ -19,6 +19,7 @@ const HistoryComponent = () => {
   const navigate = useNavigate();
 
   const {
+    encodeId,
     title, setTitle,
     startDate, setStartDate,
     endDate, setEndDate,
@@ -184,8 +185,8 @@ const toggleLike = (id) => {
                 className="btn-detail"
                 onClick={() => {
                   console.log("➡️ 상세보기 이동 detailId:", Number(item.routeId));
-                  navigate(`/mapdetail/${Number(item.routeId)}`, {
-                    state: { detailId: Number(item.routeId) },
+                  navigate(`/mapdetail/${encodeId(item.routeId)}`, {
+                    state: { detailId: encodeId(item.routeId) },
                   });
                 }}
               >
@@ -195,7 +196,11 @@ const toggleLike = (id) => {
               <button
                 className="btn-share"
                 onClick={() => {
-                  setDetailId(String(item.routeId));
+                  // 1. 여기서 미리 암호화(encodeId)를 합니다.
+                  const hashedId = encodeId(item.routeId);
+                  
+                  // 2. State에 암호화된 ID를 저장합니다.
+                  setDetailId(hashedId);
                   setModalType("share");
                   setIsOpen(true);
                 }}
@@ -229,7 +234,7 @@ const toggleLike = (id) => {
               <input
                 type="text"
                 ref={copyLinkRef}
-                value={`http://localhost:5173/mapdetail/${detailId}`}
+                value={`${window.location.origin}/mapdetail/${detailId}`}
                 readOnly
                 style={{
                   fontSize: "14px",

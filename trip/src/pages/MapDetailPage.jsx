@@ -6,9 +6,10 @@ import ItineraryListOptimized from '../components/ItineraryListOptimized';
 import DirectionsPolyline from '../components/DirectionsPolyline';
 import './MapPage.css';
 import { useNavigate } from "react-router-dom";
-
+import { useParams } from 'react-router-dom'; // ★ 필수 import
 // 12.17 수정
 import Button from 'react-bootstrap/Button';
+import useRouteLogic from './Route/useRouteLogic';
 
 const CUSTOM_COLOR = "#6C5CE7";
 
@@ -19,10 +20,10 @@ const MapDetailPage = ({
   DAY_COLORS,
   API_KEY,
 }) => {
-  
+  const { id } = useParams();
   const navigate = useNavigate();
   const dayKeys = Object.keys(itineraryByDay).sort();
-
+  const { encodeId } = useRouteLogic();
   return (
     <APIProvider apiKey={API_KEY} libraries={["places"]}>
       <div className="mappage-container">
@@ -54,12 +55,12 @@ const MapDetailPage = ({
   }}>
     {/* 왼쪽 영역: 항목 이름을 옅게, 데이터를 진하게 */}
     <div style={{ fontSize : '14px', lineHeight: '1.8' }}>
-      <div style={{ color: '#666' }}>
+      {/* <div style={{ color: '#666' }}>
         총 이동 경로 <span style={{ color: '#333', fontWeight: '600', marginLeft: '8px' }}>12.5km</span>
       </div>
       <div style={{ color: '#666' }}>
         총 이동 시간 <span style={{ color: '#333', fontWeight: '600', marginLeft: '8px'}}>2시간 30분</span>
-      </div>
+      </div> */}
     </div>
 
     {/* 오른쪽 영역: 날짜를 살짝 흐리지만 정갈하게 */}
@@ -88,15 +89,12 @@ const MapDetailPage = ({
           <Button className="btn-optimize" style={{ backgroundColor: CUSTOM_COLOR, borderColor: CUSTOM_COLOR, fontWeight: 'bold' }}
           onClick={() => {
     // /map으로 이동하면서 현재 페이지의 데이터를 들고 가고 싶다면 state에 담아 보냅니다.
-    navigate('/map', { 
-      // state: { 
-      //   schedule: {
-      //     title: item.title,
-      //     startDate: item.date,
-      //     endDate: item.time,
-      //     routeId: item.routeId 
-      // }
-      // } 
+
+
+    navigate(`/map/${id}`, { 
+      state: {
+        id : id
+      }
     });
   }}  >
                     수정하기
