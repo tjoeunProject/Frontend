@@ -1,94 +1,127 @@
-import React, { useState, useRef } from "react";
-import '../../resources/css/HistoryPage.css';
+import React, { useState, useRef, useEffect } from "react";
+import "../../resources/css/HistoryPage.css";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { FaCloud } from "react-icons/fa6";
-import Modal from 'react-modal';
-import OwnCalendar from './../survey/OwnCalendar';
-import { Link, useNavigate } from 'react-router-dom';
-
-// 일단 mockData로 넣어둠 추후에 변경하기
-const mockData = Array.from({ length: 5 }).map((_, idx) => ({
-  id: idx + 1,
-  date: "2025. 03. 12",
-  time: "약 5시간",
-  temp: "-2°C",
-  distance: "7km",
-  region: "대구",
-  tags: ["실내여행지", "바다"],
-  liked: idx % 2 === 1, // 일부는 기본 좋아요 상태
-  image:
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=60",
-}));
+import { FaTrash } from "react-icons/fa6";
+import Modal from "react-modal";
+import OwnCalendar from "./../survey/OwnCalendar";
+import { Link, useNavigate } from "react-router-dom";
+import useRouteLogic from "./../Route/useRouteLogic";
+import RoutePick from "./../../../src/resources/img/RoutePick.png";
 
 const HistoryComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [cards, setCards] = useState(mockData);
   const copyLinkRef = useRef(null);
   const [modalType, setModalType] = useState(null);
 
-  const navigate = useNavigate(); // 훅 선언
+  
 
 
+  const navigate = useNavigate();
 
-  // ❤️ 좋아요 토글 기능
-  const toggleLike = (id) => {
-    setCards((prev) =>
-      prev.map((card) => (card.id === id ? { ...card, liked: !card.liked } : card))
-    );
+  const {
+    title, setTitle,
+    startDate, setStartDate,
+    endDate, setEndDate,
+    schedule, addPlaceToDay,
+    myRoutes, currentRoute,
+    handleCreateRoute,
+    handleGetMyRoutes,
+    handleGetRouteDetail,
+    handleDeleteRoute,
+  } = useRouteLogic();
+
+  const [detailId, setDetailId] = useState("");
+
+  const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  const mockRoute = {
+    route_id: 999,
+    name: "예시 여행 일정",
+    place_id: 0,
   };
 
+  const routesForView =
+    myRoutes && myRoutes.length > 0
+      ? myRoutes
+      : [mockRoute];
+
+  const cards = routesForView.map((item, idx) => ({
+    id: idx + 1,
+    title: item.title,
+    placeId: item.place_id,
+    routeId: item.routeId,
+    detailId: item.route_id,
+    date: item.startDate,
+    starttime: item.startDate,
+    endtime: item.endDate,
+    temp: item.title,
+    distance: item.place_name,
+    region: item.mainPlaceName,
+    tags: ["실내여행지", "바다"],
+    liked: idx % 2 === 1,
+    photoUrl: item.photoUrl
+      ? `https://places.googleapis.com/v1/${item.photoUrl}/media?maxWidthPx=200&key=${API_KEY}`
+      : RoutePick,
+  }));
+
+  
+  useEffect(() => {
+    console.log("📌 HistoryComponent mounted");
+    handleGetMyRoutes();
+  }, []);
+
+const toggleLike = (id) => {
+  setLikedIds((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    return next;
+  });
+};
+// 기존에 작성하신 cards 변수 선언 바로 아래에 추가하세요
   const handleCopy = () => {
     if (copyLinkRef.current) {
-      copyLinkRef.current.select(); // 텍스트 선택
-      document.execCommand('copy'); // 클립보드에 복사
-      // 사용자에게 복사 완료 메시지 표시 (예: alert 또는 상태 변경)
+      copyLinkRef.current.select();
+      document.execCommand("copy");
       alert("링크가 복사되었습니다!");
     }
   };
 
-  const [isDateSelected, setIsDateSelected] = useState(false); 
+  const [isDateSelected, setIsDateSelected] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
 
-
-    // 🚨 OwnCalendar에서 호출될 콜백 함수
-    const handleDateSelectComplete = (dateData) => {
-        if (dateData) {
-      // 데이터가 들어오면 유효한 것으로 간주
+  const handleDateSelectComplete = (dateData) => {
+    if (dateData) {
       setIsDateSelected(true);
-      setSelectedSchedule(dateData); // 데이터를 state에 저장
+      setSelectedSchedule(dateData);
     } else {
       setIsDateSelected(false);
       setSelectedSchedule(null);
     }
-    };
+  };
 
-    // '확인하기' 링크 클릭 핸들러 (선택 사항: alert 제거 및 모달 닫기)
-    const handleMapCheck = (e) => {
-        // isDateSelected가 false인 경우 클릭을 막기 위해 이미 CSS로 막았지만,
-        // 혹시 모를 상황을 대비해 추가적인 확인 로직을 둘 수 있습니다.
-        if (!isDateSelected) {
-            e.preventDefault(); // 기본 이동 방지
-            alert("여행 기간을 먼저 선택해 주세요.");
-            return;
-        }
-        // 🔥 여기서 navigate로 이동하며 state를 전달합니다.
-        navigate('/map', { 
-          state: { 
-            schedule: selectedSchedule 
-          } 
-        });
-    };
-
-    const handleDetail = (e) =>{
-      navigate('/mapdetail')
+  const handleMapCheck = (e) => {
+    if (!isDateSelected) {
+      e.preventDefault();
+      alert("여행 기간을 먼저 선택해 주세요.");
+      return;
     }
+
+    navigate("/map", {
+      state: {
+        schedule: selectedSchedule,
+      },
+    });
+  };
+
+  console.log(myRoutes);
 
   return (
     <div className="history-wrapper">
       <div
         className="history-card2"
         onClick={() => {
-          setModalType('create');
+          setModalType("create");
           setIsOpen(true);
         }}
       >
@@ -100,165 +133,167 @@ const HistoryComponent = () => {
 
       {cards.map((item) => (
         <div key={item.id} className="history-card">
-          {/* 이미지 영역 */}
           <div className="history-img-box">
-            <img src={item.image} alt="trip" />
+            <img src={item.photoUrl} alt="trip" />
 
-            <div className="history-like-icon" onClick={() => toggleLike(item.id)}>
-              {item.liked ? <FaHeart size={22} color="red" /> : <FaRegHeart size={22} color="#555" />}
-            </div>
+            <FaTrash
+              className="history-trash-icon"
+              size={20}
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (window.confirm("정말 이 일정을 삭제하시겠습니까?")) {
+                  await handleDeleteRoute(item.routeId);
+                  await handleGetMyRoutes();
+                }
+              }}
+            />
           </div>
 
-          {/* 내용 영역 */}
           <div className="history-info">
             <div className="history-date-line">
-              <span className="history-date">{item.date}</span>
-              <FaCloud size={18} />
-            </div>
-
+              <span className="history-date-title">{item.title}</span>  
+              <span 
+    onClick={() => toggleLike(item.id)} 
+    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+  >
+    {item.liked ? (
+  <FaHeart size={22} color="red" />
+) : (
+  <FaRegHeart size={22} color="#555" />
+)}
+  </span>           
+            </div>  
             <div className="history-time-temp">
-              <span>🕒 {item.time}</span>
-              <span>{item.temp}</span>
+              <span>🕒 {item.starttime} ~ {item.endtime}</span>
+              
             </div>
+         
+         
 
-            <div className="history-detail-line">
-              <span>· 총 이동거리</span> | <span>{item.distance}</span>
-            </div>
-
-            <div className="history-detail-line">
-              <span>· 여행지역</span> | <span>{item.region}</span>
-            </div>
-
-            <div className="history-detail-line highlight">
-              <span>· 여행지 / 음식점 추천!!</span>
-            </div>
-
-            {/* 태그 */}
-            <div className="history-tags">
+            {/* <div className="history-tags">
               {item.tags.map((t, index) => (
                 <span key={index} className="tag">
-                  #{t}
+                  태그 들어갈 예정
                 </span>
               ))}
+            </div> */}
             </div>
 
-            {/* 버튼 */}
             <div className="history-btn-area">
-              <button className="btn-detail"
-              onClick={handleDetail}
-              >자세히 보기</button>
+              <button
+                className="btn-detail"
+                onClick={() => {
+                  console.log("➡️ 상세보기 이동 detailId:", Number(item.routeId));
+                  navigate(`/mapdetail/${Number(item.routeId)}`, {
+                    state: { detailId: Number(item.routeId) },
+                  });
+                }}
+              >
+                자세히 보기
+              </button>
 
               <button
                 className="btn-share"
                 onClick={() => {
-                  setModalType('share');
+                  setDetailId(String(item.routeId));
+                  setModalType("share");
                   setIsOpen(true);
                 }}
               >
                 공유하기
               </button>
-
-              <Modal
-                onRequestClose={() => setIsOpen(false)}
-                isOpen={isOpen}
-                className="custom-modal"
-                overlayClassName="custom-modal-overlay"
-              >
-                {/* 🎯 모달 내용 조건부 렌더링 시작 */}
-                {modalType === 'share' && (
-                  <>
-                    <h2>👻 링크 만들기</h2>
-                    <br />
-
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '10px 0', // 링크 표시 영역에 적절한 패딩 부여
-                      }}
-                    >
-                      {/* 1. 링크를 보여주는 입력란 (읽기 전용) */}
-                      <input
-                        type="text"
-                        ref={copyLinkRef}
-                        value={"http://RoutePick/boards/{}?code=?"}
-                        readOnly // 사용자가 수정하지 못하도록 설정
-                        style={{
-                          fontSize: '14px',
-                          flexGrow: 1, // 남은 공간을 채우도록 설정
-                          padding: '8px',
-                          border: '1px solid #ccc',
-                        }}
-                      />
-
-                      {/* 2. 복사 버튼 */}
-                      <button className="copy-btn" onClick={handleCopy} style={{ whiteSpace: 'nowrap' }}>
-                        복사하기
-                      </button>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                      <button onClick={() => setIsOpen(false)}>닫기</button>
-                    </div>
-                  </>
-                )}
-
-                {modalType === 'create' && (
-                  <>
-                    <h2>📝 새로운 일정 생성</h2>
-                    <br />
-
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '0px 10px',
-                        fontSize: '15px',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      언제 떠나시나요?
-                    </div>
-
-                    <OwnCalendar onDateSelectComplete={handleDateSelectComplete} />
-
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                      <button
-                        to="/map"
-                        onClick={handleMapCheck}
-                        style={{
-                          display: 'inline-block',
-                          padding: '8px 14px',
-                          borderRadius: '6px',
-                          textDecoration: 'none',
-
-                          // 1. 배경색 (활성화/비활성화)
-                          background: isDateSelected ? '#ff8c00' : '#cccccc', // 주황색(활성) 또는 회색(비활성)
-                          // 2. 글자색 (대비 강조)
-                          color: isDateSelected ? '#ffffff' : '#666666', // 흰색(활성) 또는 어두운 회색(비활성)
-                          // 3. 마우스 커서 (클릭 가능/불가 시각화)
-                          cursor: isDateSelected ? 'pointer' : 'not-allowed',
-                          // 4. 투명도 (선택 사항: 비활성 시 더 흐리게)
-                          opacity: isDateSelected ? 1 : 0.6,
-                          // 5. 클릭 이벤트 차단 (기능적 비활성화)
-                          pointerEvents: isDateSelected ? 'auto' : 'none',
-                        }}
-                      >
-                        확인하기
-                      </button>
-
-                      &emsp;&emsp;&emsp;
-
-                      <button onClick={() => setIsOpen(false)}>취소하기</button>
-                    </div>
-                  </>
-                )}
-              </Modal>
             </div>
           </div>
-        </div>
+        
       ))}
+
+      <Modal
+        onRequestClose={() => setIsOpen(false)}
+        isOpen={isOpen}
+        className="custom-modal"
+        overlayClassName="custom-modal-overlay"
+      >
+        {modalType === "share" && (
+          <>
+            <h2>👻 링크 만들기</h2>
+            <br />
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "10px 0",
+              }}
+            >
+              <input
+                type="text"
+                ref={copyLinkRef}
+                value={`http://localhost:5173/mapdetail/${detailId}`}
+                readOnly
+                style={{
+                  fontSize: "14px",
+                  flexGrow: 1,
+                  padding: "8px",
+                  border: "1px solid #ccc",
+                }}
+              />
+
+              <button className="copy-btn" onClick={handleCopy}>
+                복사하기
+              </button>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+              <button onClick={() => setIsOpen(false)}>닫기</button>
+            </div>
+          </>
+        )}
+
+        {modalType === "create" && (
+          <>
+            <h2>📝 새로운 일정 생성</h2>
+            <br />
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "0px 10px",
+                fontSize: "15px",
+                fontWeight: "bold",
+              }}
+            >
+              언제 떠나시나요?
+            </div>
+
+            <OwnCalendar onDateSelectComplete={handleDateSelectComplete} />
+
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+              <button
+                onClick={handleMapCheck}
+                style={{
+                  display: "inline-block",
+                  padding: "8px 14px",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  background: isDateSelected ? "#ff8c00" : "#cccccc",
+                  color: isDateSelected ? "#ffffff" : "#666666",
+                  cursor: isDateSelected ? "pointer" : "not-allowed",
+                  opacity: isDateSelected ? 1 : 0.6,
+                  pointerEvents: isDateSelected ? "auto" : "none",
+                }}
+              >
+                확인하기
+              </button>
+
+              &emsp;&emsp;&emsp;
+
+              <button onClick={() => setIsOpen(false)}>취소하기</button>
+            </div>
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

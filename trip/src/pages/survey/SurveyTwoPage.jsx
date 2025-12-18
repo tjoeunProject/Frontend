@@ -4,11 +4,11 @@ import React, { useState } from 'react'; // useEffect는 안 써서 제거함
 import 'rsuite/dist/rsuite.min.css';
 import Footer from '../../components/common/Footer.jsx'
 import survey1 from './../../resources/img/survey1.png';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import useSurveyGuard from './useSurveyGuard.jsx';
 
 function SurveyTwoPage() {
-    
+
     // 🔥 [수정 포인트] 변수명을 selectedTags로 통일했습니다.
     // 기존: const [selectedRegions, setSelectedRegions] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
@@ -52,7 +52,7 @@ function SurveyTwoPage() {
             }
         });
     };
-    
+
     const renderTag = (label) => (
         <button
             // 🔥 [수정 포인트] selectedTags 사용 가능해짐
@@ -66,20 +66,20 @@ function SurveyTwoPage() {
     return (
         <div className="page-with-header">
             <Header />
-            <section>
+            <section className='k2'>
                 <div className='k1'>
                     <div>
                         <h3>
                             이번 여행, 어디로 떠나볼까요?
                         </h3>
-                        <br/>
+                        <br />
                         <h4>
-                            <b>여행을 떠나고 싶은 지역을</b> <br/>
+                            <b>여행을 떠나고 싶은 지역을</b> <br />
                             선택해주세요. (최대 {MAX_SELECTION}개)
                         </h4>
                     </div>
                     <div>
-                        <img src={survey1} width={250} alt="설문 이미지"/>
+                        <img src={survey1} width={250} alt="설문 이미지" />
                     </div>
                 </div>
                 <div className='survey-grid'>
@@ -90,21 +90,17 @@ function SurveyTwoPage() {
                     {renderTag("광주")}
                     {renderTag("대전")}
                     {renderTag("울산")}
-                    {renderTag("충북")}
-                    {renderTag("충남")}
-                    {renderTag("전북")}
-                    {renderTag("전남")}
-                    {renderTag("경북")}
-                    {renderTag("경남")}
                     {renderTag("제주")}
+                    {renderTag("오사카")}
+                    {renderTag("도쿄")}
                 </div>
 
                 <div className='survey-grid2'>
                     <Link to="/survey/SurveyFirstPage" className="back-button">
                         뒤로가기
                     </Link>
-                    <Link 
-                        to="/survey/SurveyThreePage" 
+                    <Link
+                        to="/survey/SurveyThreePage"
                         className="next-button2"
                         onClick={handleNextClick} // Link가 이동하기 전에 클릭 이벤트 처리
                     >

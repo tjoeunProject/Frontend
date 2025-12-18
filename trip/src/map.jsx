@@ -11,6 +11,8 @@ const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const App = () => {
   const [activeTab, setActiveTab] = useState('search');
   const [searchResults, setSearchResults] = useState([]);
+  const [nearbyGoogleRestaurants, setNearbyGoogleRestaurants] = useState([]);
+  const [recommendedRestaurants, setRecommendedRestaurants] = useState([]);
   const hasFetched = useRef(false);
 
   // 12-02 이정민 수정  - 검색어 기반 검색
@@ -265,9 +267,10 @@ const handleOptimize = async () => {
   try {
     const response = await axios.post("/py/optimize", {
       places: totalPlaces,
-      days: currentDays
+      days: scheduleData ? scheduleData.diffDays+1 : 3
       
     });
+    const dayCount = scheduleData ? scheduleData.diffDays+1 : 3
     console.log(totalPlaces);
 
     console.log("📡 백엔드 응답 도착:", response.data);
@@ -284,13 +287,13 @@ const handleOptimize = async () => {
     //   return Array.isArray(dayArr) ? dayArr : [];
     // };
 
-    for (let i = 0; i < currentDays; i++) {
+    for (let i = 0; i < dayCount; i++) {
       newItinerary[`day${i+1}`] = result?.[i] || [];
     }
 
     setItineraryByDay(newItinerary);
     setIsOptimized(true);
-    alert(`${currentDays}일 코스로 최적화 완료!`);
+    alert(`${dayCount}일 코스로 최적화 완료!`);
 
   } catch (err) {
     console.log("❌ 최적화 중 오류 발생:", err);
@@ -351,7 +354,7 @@ const handleNearby = async () => {
 
     // 5. 상태 업데이트 (맛집 리스트를 저장할 state가 있다고 가정)
     // 예: const [recommendations, setRecommendations] = useState([]);
-    setSearchResults(recommendations); 
+    setRecommendedRestaurants(recommendations);
     
     if (recommendations.length > 0) {
       alert(`주변 맛집 ${recommendations.length}곳을 찾았습니다!`);
@@ -430,6 +433,24 @@ const handleNearby = async () => {
   // [로딩 화면] AI가 생성하는 동안 보여줄 간단한 UI
 
 
+  // 저장하기 누르면 POST 동작하는지 확인할려고 만든 함수
+  const handlePost = (e) => {
+    axios
+    .post('/sts/api/route', formToJSON)
+    .then((result) => {
+      if (result.data == '일정생성 성공'){
+        alert('일정이 히스토리에 저장되었습니다!');
+      }
+      const routeInfo = {
+        Id : form.id,
+        Day_index : form.Day_index,
+        Order_index : form.Order_ondex, 
+        Place_name : form.Place_name,
+        Place_id : form.Place_id
+      }
+      sessionStorage.setItem()
+    })
+  }
 
   /* ============================================================
      📍 화면 렌더링 (MapPage로 props 전달)
@@ -450,6 +471,10 @@ const handleNearby = async () => {
       searchResults={searchResults}
       setSearchResults={setSearchResults}
 
+      nearbyGoogleRestaurants={nearbyGoogleRestaurants}
+      setNearbyGoogleRestaurants={setNearbyGoogleRestaurants}
+      recommendedRestaurants={recommendedRestaurants}
+
       itineraryByDay={itineraryByDay}
       setItineraryByDay={setItineraryByDay}
 
@@ -461,7 +486,7 @@ const handleNearby = async () => {
       removeFromItinerary={removeFromItinerary}
 
       isOptimized={isOptimized}
-
+      setIsOptimized={setIsOptimized}
       mapCenter={mapCenter}
       showButton={showButton}
       setShowButton={setShowButton}

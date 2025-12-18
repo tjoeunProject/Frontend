@@ -13,7 +13,7 @@
 
 /* 공통 섹션 여백 */
 .section-base {
-  margin: 10px 0;
+  margin: 10px 20px 10px 20px;
 }
 
 /* 공통 타이틀 */
@@ -55,15 +55,16 @@
 
 /* 검색바 */
 .search-bar-container {
-    width: 100%;
-    max-width: 650px;
-    height: 58px;
-    background-color: #EDEDED; /* 밝은 회색 */
-    border-radius: 35px;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    border: 2px solid #aaaaaa !important;
+  width: 100%;
+  max-width: 650px;
+  height: 58px;
+  background-color: #EDEDED;
+  /* 밝은 회색 */
+  border-radius: 35px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #aaaaaa !important;
 }
 
 /* 검색창 input */
@@ -80,14 +81,15 @@
 
 /* 돋보기 아이콘 – 오렌지 스타일 아니고 이미지 스타일 그대로 */
 .search-icon {
-    font-size: 22px;
-    cursor: pointer;
-    color: #333;            /* 🔍 아이콘 색 */
-    margin-left: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+  /* 🔍 아이콘 색 */
+  margin-left: 10px;
 
-    background: none !important;   
-    border: none !important;       
-    padding: 0 !important;        
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 /* CTA 버튼 */
@@ -98,7 +100,7 @@
   margin: 20px auto 0;
   font-size: 20px;
   font-weight: 700;
- background-color: #FF7A00 !important; 
+  background-color: #FF7A00 !important;
   color: white;
   border-radius: 10px;
   text-align: center;
@@ -110,7 +112,8 @@
   margin-top: 12px;
   color: #777;
   font-size: 16px;
-  text-decoration: underline;
+  text-decoration: none;
+
 }
 
 
@@ -119,20 +122,24 @@
 =========================== */
 
 .experience-grid {
-    display: grid;
-    /* 🚨 3열 -> 2열로 수정 */
-    grid-template-columns: repeat(2, 1fr);
-    
-    max-width: 1000px; /* Grid 컨테이너 최대 너비 제한 */
-    margin: 10px auto; /* 상하 마진 40px, 좌우 auto로 Grid 컨테이너를 중앙 배치 */
-    padding: 0 0px; /* 👈 좌우 패딩 20px 추가 */
-    
-    gap: 10px; /* 요소들 사이의 간격 */
-    align-items: center;
+  display: grid;
+  /* 🚨 3열 -> 2열로 수정 */
+  grid-template-columns: repeat(2, 1fr);
+
+  max-width: 1000px;
+  /* Grid 컨테이너 최대 너비 제한 */
+  margin: 10px auto;
+  /* 상하 마진 40px, 좌우 auto로 Grid 컨테이너를 중앙 배치 */
+  padding: 0 0px;
+  /* 👈 좌우 패딩 20px 추가 */
+
+  gap: 10px;
+  /* 요소들 사이의 간격 */
+  align-items: center;
 }
 
 .experience-card {
-  padding: 30px;
+  padding: 10px;
   text-align: center;
 }
 
@@ -147,11 +154,11 @@
 }
 
 .phone-tap-image {
-  width: 100%;
+  width: 80%;
 }
 
 .hotel-thumbnails-image {
-  width: 100%;
+  width: 80%;
 }
 
 .hotel-section h3 {
@@ -169,7 +176,7 @@
 }
 
 .fatigue-person-image {
-  width: 400px;
+  width: 80%;
   margin-top: 25px;
 }
 
@@ -231,11 +238,11 @@
   text-align: center;
   color: #555;
 }
-/* Header 와 페이지의 겹침을 방지하기 위한 css 코드  */
-.page-container{
+
+/* Header 와 페이지의 겹침을 방지하기 위한 css 코드  1번 */
+.page-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 120px;
-  padding-bottom: 60px;
+  padding-top: 70px;
 }

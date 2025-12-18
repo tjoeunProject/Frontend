@@ -1,3 +1,24 @@
+/* 12.17 */
+.history-img-box {
+  position: relative;
+}
+
+.history-trash-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  cursor: pointer;
+  color: white;              /* 사진 위라 흰색이 제일 안정적 */
+
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); /* 사진 위 가독성 */
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.history-trash-icon:hover {
+  transform: scale(1.15);
+  color: #ff4d4f;            /* hover 시만 경고 색 */
+}
 /* 페이지 전체 */
 .history-page {
   width: 100%;
@@ -13,6 +34,12 @@
   font-size: 30px;
   font-weight: 800;
   text-align: center;
+}
+
+.his {
+  display: flex;
+  justify-content: center;
+  padding : 5px 0 5px 0;
 }
 
 /* 카드 영역 */
@@ -69,8 +96,6 @@
 /* ❤️ 좋아요 아이콘 */
 .history-like-icon {
   position: absolute;
-  top: 10px;
-  right: 12px;
   cursor: pointer;
 }
 
@@ -80,17 +105,20 @@
 }
 
 .history-date-line {
-  display: flex;
-  justify-content: space-between;
-  font-size: 17px;
-  font-weight: 700;
+    display: flex;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 3px 0 3px 0;
+    justify-content: space-between;
 }
 
 .history-time-temp {
   display: flex;
   justify-content: space-between;
   margin-top: 6px;
+  font-size: 14px;
   font-weight: 600;
+  margin-bottom: 3px;
 }
 
 .history-detail-line {

@@ -55,3 +55,16 @@
 
   /* 기타 필요한 스타일 추가 가능 */
 }
+
+.routepick {
+  width: 50%;
+}
+
+/* 안내멘트 */
+.intro1 {
+  font-size: clamp(2.6rem, 5.5vw, 3.0rem);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  margin: 75px 0 50px 0;
+}

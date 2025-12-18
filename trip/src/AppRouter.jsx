@@ -29,6 +29,7 @@ function AppRouter() {
       <Route path="/ranking" element={<RankingPage />} />
       <Route path="/mytravel" element={<MyTravelPage />} />
       <Route path="/map" element={<MapPage />} />
+      <Route path="/map/:routeId" element={<MapPage />} />
 
       <Route path="/survey/SurveyFirstPage" element={<SurveyPage />} />
       <Route path="/survey/SurveyTwoPage" element={<SurveyPage2 />} />
@@ -37,7 +38,7 @@ function AppRouter() {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/mapdetail" element={<MapDetailPage />} />
+      <Route path="/mapdetail/:id" element={<MapDetailPage />} />
 
       <Route path="/test-spring" element={<TestConnection />} />
       <Route path="/test-page" element={<TestPage/>} />

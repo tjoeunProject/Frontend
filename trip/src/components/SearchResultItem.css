@@ -26,28 +26,38 @@
   display: flex;
   flex-direction: column;
 }
-
+/* 장소 제목: 더 크고 진하게 */
 .result-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
+  font-size: 16px;           /* 16px에서 키움 */
+  font-weight: 800;           /* 아주 두껍게 변경 */
+  color: #1a1a1a;            /* 완전 검정보다 살짝 부드러운 검정 */
+  line-height: 1.4;
+  letter-spacing: -0.3px;    /* 자간을 살짝 좁혀 응집력 있게 */
 }
 
+/* 주소 및 부가 설명: 명도 대비 조절 */
 .result-sub {
-  font-size: 13px;
-  color: #666;
-  margin: 3px 0;
+  font-size: 14px;           /* 13px에서 키움 */
+  color: #444;               /* #666보다 진하게 해서 가독성 확보 */
+  margin: 5px 0;
+  line-height: 1.2;          /* 줄 간격을 줘서 읽기 편하게 */
 }
 
+/* 평점 영역: 아이콘과 숫자 강조 */
 .result-rating {
-  font-size: 13px;
-  color: #333;
+  font-size: 14px;           /* 13px에서 키움 */
+  font-weight: 600;          /* 평점 숫자에 두께감 부여 */
+  color: #222;
+  display: flex;             /* 정렬을 깔끔하게 */
+  align-items: center;
 }
 
+/* 리뷰 개수 (괄호 안의 숫자) */
 .result-rating span {
-  color: #777;
+  color: #888;
+  font-weight: 400;          /* 리뷰 수는 상대적으로 얇게 */
+  margin-left: 2px;
 }
-
 .result-add-btn {
   background: #E3F2FD;
   color: #1976D2;

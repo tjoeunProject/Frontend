@@ -1,7 +1,7 @@
 export interface TokenModel {
   accessToken: string;
   refreshToken: string;
-  userId: string;
+  userId: number;
   isOwner: number;
 }
 

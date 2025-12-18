@@ -30,13 +30,11 @@ console.log("HEADER isLoggedIn =", isLoggedIn);
           <img src={RoutePick} alt="LOGO" className="header-logo"/>
         </Link>
         <Link to="/">소개</Link>
-        <Link to={isLoggedIn ? "/history" : "#"} // 로그인 시 /history, 아니면 현재 페이지 '#'
-              onClick={handleClick} // 이 핸들러에서 이동을 막을지 결정
-        >히스토리
+        <Link to="/history">나의 여행지
         </Link>
         <Link to="/ranking">랭킹</Link>
         <Link to={isLoggedIn ? "/mytravel" : "#"} 
-          onClick={handleClick}>나의 여행지</Link>
+          onClick={handleClick}>마이페이지</Link>
       </nav>
 
       <nav className="header-nav-right">
