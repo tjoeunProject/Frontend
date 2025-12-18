@@ -129,7 +129,9 @@ const App = () => {
             address: place.formatted_address,
             lat: place.lat,
             lng: place.lng,
-            reviews: place.rating,
+            rating : place.rating,
+            reviews: place.reviews,
+
             photoUrl: photoUrl, 
             type: 'saved'
           };
