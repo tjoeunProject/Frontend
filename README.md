@@ -111,4 +111,7 @@ AI Service (AWS Lambda / Python)
 ↓  
 External APIs / RDS  
 
-
+## 사용한 tool
+- Notion : https://www.notion.so/notion-2bc713ef7d0580ab967bef64eb2334a2
+- Figma : https://www.figma.com/design/OnD3RkutX6pj2AzEXn1GHI/Untitled?node-id=0-1&p=f&t=yTc3dGibgN984cle-0
+- pdf : [프로젝트 3차 최종발표.pdf](https://github.com/user-attachments/files/24490955/3.pdf)
