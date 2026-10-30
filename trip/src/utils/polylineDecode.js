@@ -33,7 +33,7 @@ export function decodePolyline(encoded) {
     const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
     lng += dlng;
 
-    coordinates.push({ lat: lat / 1e6, lng: lng / 1e6 });
+    coordinates.push({ lat: lat / 1e5, lng: lng / 1e5 });
   }
 
   return coordinates;

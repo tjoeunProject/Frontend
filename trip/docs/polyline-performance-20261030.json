@@ -1,0 +1,59 @@
+{
+  "metric": "decoder loop wall time in ms",
+  "node": "v24.13.0",
+  "platform": "win32",
+  "scenario": "1000 zero-delta points decoded 1000 times per batch sample",
+  "concurrency": 1,
+  "externalCalls": 0,
+  "warmups": 3,
+  "repeats": 15,
+  "iterations": 1000,
+  "order": "alternating AB/BA in one process",
+  "samples": {
+    "baseline": [
+      11.888200000000012,
+      10.954000000000008,
+      12.955399999999997,
+      12.487600000000015,
+      12.840300000000013,
+      10.909600000000012,
+      13.12239999999997,
+      12.5077,
+      10.895899999999983,
+      11.482100000000003,
+      10.830100000000016,
+      11.317899999999952,
+      11.10039999999998,
+      10.779800000000023,
+      11.09699999999998
+    ],
+    "candidate": [
+      11.697699999999998,
+      11.5779,
+      11.98399999999998,
+      11.1798,
+      11.345000000000027,
+      17.245000000000005,
+      16.324299999999994,
+      11.325599999999952,
+      11.62700000000001,
+      13.07570000000004,
+      12.692900000000009,
+      9.972800000000007,
+      12.395500000000027,
+      10.9024,
+      11.736999999999966
+    ]
+  },
+  "medianMs": {
+    "baseline": 11.317899999999952,
+    "candidate": 11.697699999999998
+  },
+  "baselineSha256": "c880a67ef727b05f75f67ebe5c950fa23b4c6cdcd159c548548efa9dd6001c4b",
+  "candidateSha256": "08e3bb188edf25d4058f1b21b9fb7d6253b969b5edc70dd45fbc0c0e66470755",
+  "fixtureSha256": "b4d5a9508b618092e6fe63778cd07ac794dd263c1d96adcba5cd3461dd4b2d5d",
+  "maximumRelativeOverhead": 0.25,
+  "maximumAbsoluteOverheadMs": 2,
+  "budgetPassed": true,
+  "limitation": "Shared zero-coordinate contract; not production rendering latency or a speedup claim. Timings include allocations and GC."
+}
