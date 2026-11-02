@@ -1,3 +1,4 @@
+import pythonApi from '../../utils/pythonApi.js';
 import React, { useState } from 'react';
 import Header from '../../components/common/Header';
 import Footer from '../../components/common/Footer.jsx';
@@ -70,17 +71,8 @@ function SurveyFourPage() {
       };
 
       // 3. 🔥 AI 일정 생성 요청
-      const response = await fetch('/py/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(generateRequest)
-      });
-
-      if (!response.ok) {
-        throw new Error('AI 일정 생성 실패');
-      }
-
-      const aiResult = await response.json();
+      const response = await pythonApi.generate(generateRequest);
+      const aiResult = response.data;
 
       // 4. 🔥 결과를 들고 Map 페이지로 이동
       navigate('/map', {

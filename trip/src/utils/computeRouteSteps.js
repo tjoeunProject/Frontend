@@ -1,5 +1,6 @@
 // src/utils/computeRouteSteps.js
-import { decodePolyline } from "./polylineDecode";
+import { decodePolyline } from "./polylineDecode.js";
+import api from "../pages/Login/axiosConfig.js";
 
 /*
   Routes API endpoint:
@@ -41,6 +42,10 @@ export async function computeRouteStepsDirect({
   }
 
   const json = await res.json();
+  return decodeRouteSteps(json);
+}
+
+function decodeRouteSteps(json) {
   const route = json?.routes?.[0];
   const steps = route?.legs?.[0]?.steps ?? [];
 
@@ -62,3 +67,15 @@ export async function computeRouteStepsDirect({
     steps: decodedSteps,
   };
 }
+
+// post is the external HTTP boundary, allowing fixture tests without paid calls.
+export function createRouteStepsClient(post = (url, body) => api.post(url, body)) {
+  return async ({ origin, destination, travelMode = "WALK", languageCode = "ko-KR" }) => {
+    const { data } = await post("/sts/api/maps/route-steps", {
+      origin, destination, travelMode, languageCode,
+    });
+    return decodeRouteSteps(data);
+  };
+}
+
+export const computeRouteStepsViaBackend = createRouteStepsClient();
