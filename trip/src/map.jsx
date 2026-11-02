@@ -1,7 +1,8 @@
 // App.jsx (수정 완료 버전)
 
 import React, { useState, useRef } from 'react';
-import axios from 'axios';
+import axios from './pages/Login/axiosConfig.js';
+import pythonApi from './utils/pythonApi.js';
 import MapPage from './pages/MapPage.jsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // 1. useLocation 추가 12-2
@@ -265,7 +266,7 @@ const handleOptimize = async () => {
 
 
   try {
-    const response = await axios.post("/py/optimize", {
+    const response = await pythonApi.optimize({
       places: totalPlaces,
       days: scheduleData ? scheduleData.diffDays+1 : 3
       
@@ -342,7 +343,7 @@ const handleNearby = async () => {
     console.log("📤 백엔드로 보내는 데이터(formattedPlaces):", formattedPlaces);
 
     // 3. API 호출
-    const response = await axios.post("/py/nearby", {
+    const response = await pythonApi.nearby({
       places: formattedPlaces, // [[...], [...]] 형태
     });
 
@@ -402,10 +403,10 @@ const handleNearby = async () => {
       console.log("🚀 1. 요청 시작:", generateRequest);
       
       // 반드시 post 요청
-      const response = await axios.post("/py/generate", generateRequest);
+      const response = await pythonApi.generate(generateRequest);
       const result = response.data?.optimized_places; 
       
-      console.log("✅ 2. 응답 도착:", response);
+      console.log("일정 응답 수신");
 
       const newItinerary = {};
       const days = generateRequest.days;
@@ -421,7 +422,7 @@ const handleNearby = async () => {
       setActiveTab('itinerary'); 
       
     } catch (err) {
-      console.error("❌ 에러 발생:", err);
+      console.error("일정 생성 실패");
       alert("AI 코스 생성 중 오류가 발생했습니다."); 
     } finally {
       setIsLoading(false); // 로딩 끝

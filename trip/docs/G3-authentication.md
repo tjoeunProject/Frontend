@@ -1,11 +1,7 @@
-# G3 frontend
+# G3 frontend final verification
 
-Linked backend: https://github.com/tjoeunProject/Backend/pull/56 . Based on G4 #73 to reuse test tooling and avoid conflicting lockfile edits. This PR contains only authentication/ID changes.
+Linked Backend #56 handles token purpose/rotation/revocation; Backend #58 validates Python requests against the live Spring session. Both map and survey generation now use the shared authenticated client, including optimize/nearby. Python photo_reference values become browser-key URLs without mutating response fixtures or exposing a server key. Existing 401 single-flight refresh,403 preservation, retry cap, session cleanup and shared Vite Hashids config remain.
 
-Shared authenticated client refreshes 401 once, shares concurrent refresh, preserves 403, rotates both stored credentials, clears failed sessions, and leaves a newer session intact. Route requests and general API now use this same factory. Hashids reads VITE_SALT and VITE_HASHIDS_MIN_LENGTH (default 8); values must match backend hashids.salt/min-length. Salt is public URL configuration, not an authorization secret.
+`node --test tests/*.test.mjs`:18 tests pass, fail/skip0. Production Vite build passed, existing >500kB warning remains. Tests include real axios with external HTTP fixtures and actual module bundling; Python route/body contracts and photo reference encoding checked. No actual Google/browser E2E. Adapter latency before working auth support is incomparable, not an improvement claim. Python execution guard timing is in Backend #58; local real Spring/Python credential integration passed.
 
-TDD: existing client rejected valid 401 recovery; same concurrent request test now succeeds with exactly one refresh and two successful retries. Existing hashid config assertion failed 4 != 8 then passed unchanged. Node suite 16 tests, zero failures/skips; actual axios with fixture HTTP adapters, actual application modules bundled by esbuild. Full Vite production build passed after clean npm ci --ignore-scripts. Existing >500kB chunk warning remains.
-
-Performance: two simultaneous expired-token requests cause exactly one refresh, two retries, and no retry loop. Baseline does not recover 401, so successful-recovery latency is not comparable (BLOCKED); network timing and actual browser storage races are unmeasured. No speedup claimed. Provider calls zero. Backend registration timing is recorded in Backend #56.
-
-Requirements review traced both general client and route hook. Maintainability review removed duplicate refresh code and Hashids configuration. Oracle migration/backend deployment must precede enabling frontend 401 flow; real authenticated browser E2E remains a release check. No auto merge.
+VITE_SALT and VITE_HASHIDS_MIN_LENGTH (default8) must match Spring. VITE_GOOGLE_MAPS_API_KEY is the existing public browser key. Configure /py proxy to forward Authorization and Python BACKEND_AUTH_URL to actual profile endpoint. Deploy with backend token schema migration and re-login plan. No merge/deploy.
